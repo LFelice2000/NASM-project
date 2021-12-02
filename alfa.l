@@ -22,7 +22,7 @@ DIGIT [0-9]
 "\t" { col += yyleng; }
 "main" { col += yyleng; fprintf(yyout, ";D:\tmain\n"); return TOK_MAIN; }
 "int" { col += yyleng; fprintf(yyout, ";D:\tint\n"); return TOK_INT; }
-"bool" { col += yyleng; fprintf(yyout, ";D:\tbool\n"); return TOK_BOOLEAN; }
+"boolean" { col += yyleng; fprintf(yyout, ";D:\tboolean\n"); return TOK_BOOLEAN; }
 "array" { col += yyleng; fprintf(yyout, ";D:\tarray\n"); return TOK_ARRAY; }
 "function" { col += yyleng; fprintf(yyout, ";D:\tfunction\n"); return TOK_FUNCTION; }
 "if" { col += yyleng; fprintf(yyout, ";D:\tif\n"); return TOK_IF; }             

@@ -1,4 +1,5 @@
 %{
+        
         #include <stdio.h>
         #include <stdlib.h>
         #include <string.h>
@@ -93,7 +94,7 @@ identificadores: identificador { fprintf(yyout, ";R18:\t<identificadores> ::= <i
 funciones: funcion funciones { fprintf(yyout, ";R20:\t<funciones> ::= <funcion> <funciones>\n"); }
             | { fprintf(yyout, ";R21:\t<funciones> ::= \n"); };
 
-funcion: TOK_FUNCTION tipo identificador TOK_PARENTESISIZQUIERDO parametros_funcion TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA declaraciones_funcion sentencias TOK_LLAVEDERECHA { fprintf(yyout, ";R22:\t<function> ::= <tipo> <indentificador> ( <parametros_funcion> ) { <declaraciones_funcion> <sentencias> }\n"); };
+funcion: TOK_FUNCTION tipo identificador TOK_PARENTESISIZQUIERDO parametros_funcion TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA declaraciones_funcion sentencias TOK_LLAVEDERECHA { fprintf(yyout, ";R22:\t<funcion>::= function <tipo> <indentificador> ( <parametros_funcion> ) { <declaraciones_funcion> <sentencias> }\n"); };
 
 parametros_funcion: parametro_funcion resto_parametros_funcion { fprintf(yyout, ";R23:\t<parametros_funcion> ::= <parametro_funcion> <resto_parametros_funcion>\n"); }
         | { fprintf(yyout, ";R24:\t<parametros_funcion> ::= \n"); };
@@ -134,7 +135,7 @@ lectura: TOK_SCANF identificador {fprintf(yyout, ";R54:\t<lectura> ::= scanf <id
 
 escritura: TOK_PRINTF exp {fprintf(yyout, ";R56:\t<escritura> ::= printf <exp>\n");};
       
-retorno_funcion: TOK_RETURN exp {fprintf(yyout, ";R61:\t<retorno_funcion> ::= return <retorno_funcion>\n");};
+retorno_funcion: TOK_RETURN exp {fprintf(yyout, ";R61:\t<retorno_funcion> ::= return <exp>\n");};
 
 exp: exp TOK_MAS exp { fprintf(yyout, ";R72:\t<exp> ::= <exp> + <exp>\n"); }
         | exp TOK_MENOS exp { fprintf(yyout, ";R73:\t<exp> ::= <exp> - <exp>\n"); }
@@ -170,7 +171,7 @@ constante: constante_logica { fprintf(yyout, ";R99:\t<constante> ::= <constante_
 constante_logica: TOK_TRUE { fprintf(yyout, ";R102:\t<constante_logica> ::= true\n"); }
                 | TOK_FALSE  { fprintf(yyout, ";R103:\t<constante_logica> ::= false\n"); };               
 
-constante_entera: numero { fprintf(yyout, ";R104:\t<constante_entera> ::= <numero>\n"); };
+constante_entera: TOK_CONSTANTE_ENTERA { fprintf(yyout, ";R104:\t<constante_entera> ::= <numero>\n"); };
 
 numero: TOK_CONSTANTE_ENTERA { fprintf(yyout, ";R105:\t<numero> ::= <digito>\n"); }
                 | numero TOK_CONSTANTE_ENTERA { fprintf(yyout, ";R106:\t<numero> ::= <numero> <digito>\n"); };
