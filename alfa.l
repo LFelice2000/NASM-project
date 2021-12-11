@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "alfa.h"
 #include "y.tab.h"
 
 int col = 1;
@@ -14,6 +15,7 @@ int error = 0;
 LETTER [a-zA-Z._]
 DIGIT [0-9]
 %%
+
 "//".* { col+=yyleng; }
 "\n" { line++; col=0; }
 "true" { col += yyleng; fprintf(yyout, ";D:\ttrue\n"); return TOK_TRUE; }
@@ -53,11 +55,11 @@ DIGIT [0-9]
 ">=" {col += yyleng; fprintf(yyout, ";D:\t>=\n"); return TOK_MAYORIGUAL; }
 "<" { col += yyleng; fprintf(yyout, ";D:\t<\n"); return TOK_MENOR; }
 ">" {col += yyleng; fprintf(yyout, ";D:\t>\n"); return TOK_MAYOR; }
-{DIGIT}+ { col += yyleng; yylval.number=atoi(yytext); fprintf(yyout, ";D\t%s\n", yytext); return TOK_CONSTANTE_ENTERA; }
-{LETTER}({DIGIT}|{LETTER})*{1,100} { if(yyleng > 100){fprintf(stdout,"****Error en [lin %d, col %d]: identificador demasiado largo (%s)\n",line,col-yyleng,yytext); error=1; return TOK_ERROR;} col += yyleng; strcpy(yylval.string,yytext); fprintf(yyout,";D:\t%s\n",yytext); return TOK_IDENTIFICADOR; }
-{DIGIT}({LETTER}{DIGIT})*  { col += yyleng; strcpy(yylval.string, yytext); fprintf(stdout,"****Error en [lin %d, col %d]: simbolo no permitido (%s)\n",line,col-yyleng,yytext); error=1; return TOK_ERROR; }
-[\_]({LETTER}{DIGIT})* { col += yyleng; strcpy(yylval.string,yytext); fprintf(stdout,"****Error en [lin %d, col %d]: simbolo no permitido (%s)\n",line,col-yyleng,yytext); error=1; return TOK_ERROR; }
-({LETTER}{DIGIT})*[\_] { col += yyleng; strcpy(yylval.string,yytext); fprintf(stdout,"****Error en [lin %d, col %d]: simbolo no permitido (%s)\n",line,col-yyleng,yytext); error=1; return TOK_ERROR; }
-. { col += yyleng; strcpy(yylval.string,yytext); fprintf(stdout,"****Error en [lin %d, col %d]: simbolo no permitido (%s)\n",line,col-yyleng,yytext); error=1; return TOK_ERROR; }
+{DIGIT}+ { col += yyleng; yylval.atributos.valor_entero=atoi(yytext); fprintf(yyout, ";D\t%s\n", yytext); return TOK_CONSTANTE_ENTERA; }
+{LETTER}({DIGIT}|{LETTER})*{1,100} {strcpy(yylval.atributos.lexema, yytext); if(yyleng > 100){fprintf(stdout,"****Error en [lin %d, col %d]: identificador demasiado largo (%s)\n",line,col-yyleng,yytext); error=1; return TOK_ERROR;} col += yyleng; strcpy(yylval.string,yytext); fprintf(yyout,";D:\t%s\n",yytext); return TOK_IDENTIFICADOR; }
+{DIGIT}({LETTER}{DIGIT})*  { col += yyleng; strcpy(yylval.atributos.lexema, yytext); fprintf(stdout,"****Error en [lin %d, col %d]: simbolo no permitido (%s)\n",line,col-yyleng,yytext); error=1; return TOK_ERROR; }
+[\_]({LETTER}{DIGIT})* { col += yyleng; strcpy(yylval.atributos.lexema,yytext); fprintf(stdout,"****Error en [lin %d, col %d]: simbolo no permitido (%s)\n",line,col-yyleng,yytext); error=1; return TOK_ERROR; }
+({LETTER}{DIGIT})*[\_] { col += yyleng; strcpy(yylval.atributos.lexema,yytext); fprintf(stdout,"****Error en [lin %d, col %d]: simbolo no permitido (%s)\n",line,col-yyleng,yytext); error=1; return TOK_ERROR; }
+. { col += yyleng; strcpy(yylval.atributos.lexema, yytext); fprintf(stdout,"****Error en [lin %d, col %d]: simbolo no permitido (%s)\n",line,col-yyleng,yytext); error=1; return TOK_ERROR; }
 
 %%
