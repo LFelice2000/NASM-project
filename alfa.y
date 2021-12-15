@@ -5,6 +5,8 @@
         #include <stdbool.h>
         #include <string.h>
         #include "alfa.h"
+        #include "y.tab.h"
+        #include "generacion.h"
 
         void yyerror(char const *str);
         extern int line, col, error;
@@ -20,6 +22,9 @@
         bool local_scope_open = false, is_in_local, declare_in_local, token_found;
         int found;
         int value;
+
+        FILE *declarations_file = NULL;
+        char nombre_variable[50];
 %}
 
 %union
@@ -88,7 +93,30 @@
 
 %%
 programa: TOK_MAIN TOK_LLAVEIZQUIERDA declaraciones funciones sentencias TOK_LLAVEDERECHA
-        { global_simbols = creat_hash_table(); if(global_simbols == NULL){ error = -1; return -1;} fprintf(yyout, ";R1:\t<programa> ::= main { <declaraciones> <funciones> <sentencias> }\n"); };
+        { declarations_file = fopen("declarations_file.txt", "w"); global_simbols = creat_hash_table(); if(global_simbols == NULL){ error = -1; return -1;} fprintf(yyout, ";R1:\t<programa> ::= main { <declaraciones> <funciones> <sentencias> }\n"); };
+
+escritura1: 
+{
+        clase_actual = 1;
+        escribir_subseccion_data(yyout);
+        escribir_cabecera_bss(yyout);
+        /*declarar variables*/
+        while(!feof(declarations_file)){
+                fscanf(declarations_file,"%s", nombre_variable);
+                
+                if(get_value_from_hstable(global_simbols, nombre_variable, strlen(nombre_variable))!= -1){
+                        declarar_variable(yyout, variable, 0, 1);
+                }
+        }
+        escribir_segmento_codigo(yyout);
+        fclose (declarations_file);
+};
+
+escritura2: 
+{
+        
+        escribir_inicio_main(yyout);
+};
 
 declaraciones: declaracion { fprintf(yyout, ";R2:\t<declaraciones> ::= <declaracion>\n");}
             | declaracion declaraciones { fprintf(yyout, ";R3:\t<declaraciones> ::= <declaracion> <declaraciones>\n");};
@@ -139,17 +167,17 @@ sentencia_simple: asignacion {fprintf(yyout, ";R34:\t<sentencia_simple> ::= <asi
 bloque: condicional { fprintf(yyout, ";R40:\t<bloque> ::= <condicional>\n"); }
             | bucle { fprintf(yyout, ";R41:\t<bloque> ::= <bucle>\n"); };
             
-asignacion: identificador TOK_ASIGNACION exp { fprintf(yyout, ";R43:\t<asignacion> ::= <identificador> = <exp>\n"); }        
+asignacion: TOK_IDENTIFICADOR TOK_ASIGNACION exp { fprintf(yyout, ";R43:\t<asignacion> ::= <identificador> = <exp>\n"); }        
             | elemento_vector TOK_ASIGNACION  exp { fprintf(yyout, ";R44:\t<asignacion> ::= <elemento_vector> = <exp>\n"); };
 
-elemento_vector: identificador TOK_CORCHETEIZQUIERDO exp TOK_CORCHETEDERECHO { fprintf(yyout, ";R48:\t<elemento_vector> ::= <identificador> [ <exp> ]\n"); };
+elemento_vector: TOK_IDENTIFICADOR TOK_CORCHETEIZQUIERDO exp TOK_CORCHETEDERECHO { fprintf(yyout, ";R48:\t<elemento_vector> ::= <identificador> [ <exp> ]\n"); };
 
 condicional: TOK_IF TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA {fprintf(yyout, ";R50\t<condicional> ::= if ( <exp> ) { <sentencias> }\n");}
            | TOK_IF TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA TOK_ELSE TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA {fprintf(yyout, ";R51\t<condicional> ::= if ( <exp> ) { <sentencias> } else { <sentencias> }\n");};       
 
 bucle: TOK_WHILE TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA { fprintf(yyout, ";R52:\t<bucle> ::= while( <exp> ) { <sentencias> }\n"); };
 
-lectura: TOK_SCANF identificador {fprintf(yyout, ";R54:\t<lectura> ::= scanf <identificador>\n");};
+lectura: TOK_SCANF TOK_IDENTIFICADOR {fprintf(yyout, ";R54:\t<lectura> ::= scanf <identificador>\n");};
 
 escritura: TOK_PRINTF exp {fprintf(yyout, ";R56:\t<escritura> ::= printf <exp>\n");};
       
@@ -163,7 +191,7 @@ exp: exp TOK_MAS exp { fprintf(yyout, ";R72:\t<exp> ::= <exp> + <exp>\n"); }
         | exp TOK_AND exp { fprintf(yyout, ";R77:\t<exp> ::= <exp> && <exp>\n"); }
         | exp TOK_OR exp { fprintf(yyout, ";R78:\t<exp> ::= <exp> || <exp>\n"); }
         | TOK_NOT exp { fprintf(yyout, ";R79:\t<exp> ::= ! <exp>\n"); }
-        | identificador {fprintf(yyout, ";R80:\t<exp> ::= <identificador>\n"); }
+        | TOK_IDENTIFICADOR {fprintf(yyout, ";R80:\t<exp> ::= <identificador>\n"); }
         | constante { fprintf(yyout, ";R81:\t<exp> ::= <constante>\n"); }
         | TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO { fprintf(yyout, ";R82:\t<exp> ::= ( <exp> )\n"); }
         | TOK_PARENTESISIZQUIERDO comparacion TOK_PARENTESISDERECHO { fprintf(yyout, ";R83:\t<exp> ::= ( <comparacion> )\n"); }
@@ -198,13 +226,14 @@ identificador: TOK_IDENTIFICADOR {
         is_in_local = false;
         declare_in_local = false;
 
+        value = $1.valor_entero;
         if(local_scope_open){
         
                 found = get_value_from_hstable(local_simbols, $1.lexema, strlen($1.lexema));
                 if (found == -1) {
 
                         if(add_node2HashTable(local_simbols, $1.lexema, strlen($1.lexema), value) == -1){
-                                printf("Error inserting the node =(\n");
+                                fprintf(stdout, "Error inserting the node =(\n");
                                 return -1;
                         }
 
@@ -220,33 +249,33 @@ identificador: TOK_IDENTIFICADOR {
         len = strlen($1.lexema);
         found = get_value_from_hstable(global_simbols, $1.lexema, len);
         if ((found == -1) && (declare_in_local == false)){ /*Declaration Successful*/
-        if (value < 0) {
-                
-                local_simbols = creat_hash_table();
-                if(!local_simbols) {
-                        printf("Error creating the local table.");
-                        return -1;
-                }
-                local_scope_open = true;
+                if (value < 0) {
+                        
+                        local_simbols = creat_hash_table();
+                        if(!local_simbols) {
+                                fprintf(stdout, "Error creating the local table.");
+                                return -1;
+                        }
+                        local_scope_open = true;
 
-                if(add_node2HashTable(global_simbols, $1.lexema, strlen($1.lexema), value) == -1){
-                        printf("Error inserting the node =(\n");
-                        return -1;
+                        if(add_node2HashTable(global_simbols, $1.lexema, strlen($1.lexema), value) == -1){
+                                printf("Error inserting the node =(\n");
+                                return -1;
+                        }
+
+                        if(add_node2HashTable(local_simbols, $1.lexema, strlen($1.lexema), value) == -1){
+                                fprintf(stdout, "Error inserting the node =(\n");
+                                return -1;
+                        }
                 }
 
-                if(add_node2HashTable(local_simbols, $1.lexema, strlen($1.lexema), value) == -1){
-                        printf("Error inserting the node =(\n");
-                        return -1;
+                else {
+                        len = strlen($1.lexema);
+                        if(add_node2HashTable(global_simbols, $1.lexema, len, value) == -1){
+                                fprintf(stdout, "Error inserting the node =(\n");
+                                return -1;
+                        }
                 }
-        }
-
-        else {
-                len = strlen($1.lexema);
-                if(add_node2HashTable(global_simbols, $1.lexema, len, value) == -1){
-                printf("Error inserting the node =(\n");
-                return -1;
-                }
-        }
         
         /* Output: declaration correct*/
         fprintf(stdout, "%s\n", $1.lexema);
