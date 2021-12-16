@@ -7,7 +7,7 @@
         #include "alfa.h"
         #include "y.tab.h"
         #include "generacion.h"
-
+        
         void yyerror(char const *str);
         extern int line, col, error;
         extern FILE *yyin;
@@ -18,10 +18,11 @@
         int tipo_actual;
         int clase_actual;
 
-        Hash_Table local_simbols, global_simbols;
+        Hash_Table *global_simbols = NULL;
+        Hash_Table *local_simbols = NULL;
         bool local_scope_open = false, is_in_local, declare_in_local, token_found;
         int found;
-        int value;
+        int value, len = 0;
 
         FILE *declarations_file = NULL;
         char nombre_variable[50];
@@ -30,8 +31,6 @@
 %union
 
 {
-	char string[200];
-	int number;
         tipo_atributos atributos;
 }
 
@@ -92,7 +91,7 @@
 %right TOK_NOT
 
 %%
-programa: TOK_MAIN TOK_LLAVEIZQUIERDA declaraciones funciones sentencias TOK_LLAVEDERECHA
+programa: TOK_MAIN TOK_LLAVEIZQUIERDA declaraciones escritura1 funciones escritura2 sentencias TOK_LLAVEDERECHA
         { declarations_file = fopen("declarations_file.txt", "w"); global_simbols = creat_hash_table(); if(global_simbols == NULL){ error = -1; return -1;} fprintf(yyout, ";R1:\t<programa> ::= main { <declaraciones> <funciones> <sentencias> }\n"); };
 
 escritura1: 
@@ -105,7 +104,7 @@ escritura1:
                 fscanf(declarations_file,"%s", nombre_variable);
                 
                 if(get_value_from_hstable(global_simbols, nombre_variable, strlen(nombre_variable))!= -1){
-                        declarar_variable(yyout, variable, 0, 1);
+                        declarar_variable(yyout, nombre_variable, 0, 1);
                 }
         }
         escribir_segmento_codigo(yyout);
@@ -217,7 +216,7 @@ constante: constante_logica { fprintf(yyout, ";R99:\t<constante> ::= <constante_
 constante_logica: TOK_TRUE { fprintf(yyout, ";R102:\t<constante_logica> ::= true\n"); }
                 | TOK_FALSE  { fprintf(yyout, ";R103:\t<constante_logica> ::= false\n"); };               
 
-constante_entera: TOK_CONSTANTE_ENTERA { fprintf(yyout, ";R104:\t<constante_entera> ::= <numero>\n"); };
+constante_entera: numero { fprintf(yyout, ";R104:\t<constante_entera> ::= <numero>\n"); };
 
 numero: TOK_CONSTANTE_ENTERA { fprintf(yyout, ";R105:\t<numero> ::= <digito>\n"); }
                 | numero TOK_CONSTANTE_ENTERA { fprintf(yyout, ";R106:\t<numero> ::= <numero> <digito>\n"); };
@@ -283,7 +282,7 @@ identificador: TOK_IDENTIFICADOR {
         
         } else if(is_in_local == true || (is_in_local == false && declare_in_local == false && found != -1)) { /* token found*/
         /* Output: declaration error*/
-                fprintf(stdout, "-1\t%s\n", token);
+                fprintf(stdout, "-1\t%s\n", $1.lexema);
         }
 
         fprintf(yyout, ";R108:\t<identificador> ::= TOK_IDENTIFICADOR\n"); 

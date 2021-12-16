@@ -30,7 +30,7 @@ typedef struct elemento {
 	int categoria; /* categoría (variable, parámetro o función)*/
 	int clase;
 	int tipo;  /* tipo (entero o booleano) */
-	int tamaño; /* tamaño (número de elementos de un vector) */
+	int tamano; /* tamaño (número de elementos de un vector) */
 	int numero_variables_locales;
 	int posicion_variable_local;
 	int numero_parametros;
