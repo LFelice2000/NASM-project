@@ -166,8 +166,50 @@ sentencia_simple: asignacion {fprintf(yyout, ";R34:\t<sentencia_simple> ::= <asi
 bloque: condicional { fprintf(yyout, ";R40:\t<bloque> ::= <condicional>\n"); }
             | bucle { fprintf(yyout, ";R41:\t<bloque> ::= <bucle>\n"); };
             
-asignacion: TOK_IDENTIFICADOR TOK_ASIGNACION exp { fprintf(yyout, ";R43:\t<asignacion> ::= <identificador> = <exp>\n"); }        
-            | elemento_vector TOK_ASIGNACION  exp { fprintf(yyout, ";R44:\t<asignacion> ::= <elemento_vector> = <exp>\n"); };
+asignacion: TOK_IDENTIFICADOR TOK_ASIGNACION exp  
+        
+        if(local_scope_open) {
+                found = get_value_from_hstable(local_simbols, $1.lexema, strlen($1.lexema));
+                if(found == -1) {
+                        found = get_value_from_hstable(global_simbols, $1.lexema, strlen($1.lexema));
+                        if(found == -1) {
+                                fprintf(stdout, "Error asignacion(43) not in local or global table\n");
+                        }     
+                }          
+        } else {
+                found = get_value_from_hstable(global_simbols, $1.lexema, strlen($1.lexema));
+                if(found == -1) {
+                    fprintf(stdout, "Error asignacion(43) not in global table\n");
+                }
+        }
+
+        if($1.tipo == VARIABLE || $1.tipo == PARAMETER || $1.tipo == FUNCTION){
+                fprintf(stdout, "Error asignacion(43): tipo == categoria\n");
+        }
+        if($1.tipo == VECTOR){
+                fprintf(stdout, "Error asignacion(43): la clase es vector\n");
+        }
+        if($1.tipo != $3.tipo){ /* Does not check table type*/
+                fprintf(stdout, "Error asignacion(43): types when asigned dont match\n");
+        }
+        
+        /* Code for poping the right part of the statement */
+        fprintf(yyout, "\tpop dword eax\n");
+
+        /* Code for accessing to the memory for the correct value, if exp is an address */
+        if($3.es_direccion == 1){
+                fprintf(yyout, "\tmov dword eax, [eax]\n");
+        }
+
+        /* Code for making the assignment */
+        fprintf(yyout, "\tmov dword [$1.lexema], eax\n");
+       
+
+        fprintf(yyout, ";R43:\t<asignacion> ::= <identificador> = <exp>\n"); 
+        
+        }        
+        
+        | elemento_vector TOK_ASIGNACION  exp { fprintf(yyout, ";R44:\t<asignacion> ::= <elemento_vector> = <exp>\n"); };
 
 elemento_vector: TOK_IDENTIFICADOR TOK_CORCHETEIZQUIERDO exp TOK_CORCHETEDERECHO { fprintf(yyout, ";R48:\t<elemento_vector> ::= <identificador> [ <exp> ]\n"); };
 
@@ -190,11 +232,11 @@ exp: exp TOK_MAS exp { fprintf(yyout, ";R72:\t<exp> ::= <exp> + <exp>\n"); }
         | exp TOK_AND exp { fprintf(yyout, ";R77:\t<exp> ::= <exp> && <exp>\n"); }
         | exp TOK_OR exp { fprintf(yyout, ";R78:\t<exp> ::= <exp> || <exp>\n"); }
         | TOK_NOT exp { fprintf(yyout, ";R79:\t<exp> ::= ! <exp>\n"); }
-        | TOK_IDENTIFICADOR {fprintf(yyout, ";R80:\t<exp> ::= <identificador>\n"); }
-        | constante { fprintf(yyout, ";R81:\t<exp> ::= <constante>\n"); }
-        | TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO { fprintf(yyout, ";R82:\t<exp> ::= ( <exp> )\n"); }
-        | TOK_PARENTESISIZQUIERDO comparacion TOK_PARENTESISDERECHO { fprintf(yyout, ";R83:\t<exp> ::= ( <comparacion> )\n"); }
-        | elemento_vector { fprintf(yyout, ";R85:\t<exp> ::= <elemento_vector>\n"); }
+        | TOK_IDENTIFICADOR { fprintf(yyout, ";R80:\t<exp> ::= <identificador>\n"); }
+        | constante { $$.tipo = $1.tipo; $$.es_direccion = $1.es_direccion; fprintf(yyout, ";R81:\t<exp> ::= <constante>\n"); }
+        | TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO { $$.tipo = $2.tipo; $$.es_direccion = $2.es_direccion; fprintf(yyout, ";R82:\t<exp> ::= ( <exp> )\n"); }
+        | TOK_PARENTESISIZQUIERDO comparacion TOK_PARENTESISDERECHO { $$.tipo = $2.tipo; $$.es_direccion = $2.es_direccion; fprintf(yyout, ";R83:\t<exp> ::= ( <comparacion> )\n"); }
+        | elemento_vector { $$.tipo = $1.tipo; $$.es_direccion = $1.es_direccion; fprintf(yyout, ";R85:\t<exp> ::= <elemento_vector>\n"); }
         | identificador TOK_PARENTESISIZQUIERDO lista_expresiones TOK_PARENTESISDERECHO { fprintf(yyout, ";R88:\t<exp> ::= <identicador> ( <lista_expresiones> )\n"); };
 
 lista_expresiones: exp resto_lista_expresiones { fprintf(yyout, ";R89:\t<lista_expresiones> ::= <exp> <resto_lista_expresiones>\n"); }
@@ -210,16 +252,21 @@ comparacion: exp TOK_IGUAL exp { fprintf(yyout, ";R93:\t<comparacion> ::= <exp> 
                 | exp TOK_MENOR exp { fprintf(yyout, ";R97:\t<comparacion> ::= <exp> < <exp>\n"); }
                 | exp TOK_MAYOR exp { fprintf(yyout, ";R98:\t<comparacion> ::= <exp> > <exp>\n"); };
 
-constante: constante_logica { fprintf(yyout, ";R99:\t<constante> ::= <constante_logica>\n"); }
-                | constante_entera { fprintf(yyout, ";R100:\t<constante> ::= <constante_entera\n"); };
+constante: constante_logica { $$.tipo = $1.tipo; $$.es_direccion = $1.es_direccion; fprintf(yyout, ";R99:\t<constante> ::= <constante_logica>\n"); }
+                | constante_entera { $$.tipo = $1.tipo; $$.es_direccion = $1.es_direccion; fprintf(yyout, ";R100:\t<constante> ::= <constante_entera\n"); };
 
 constante_logica: TOK_TRUE { fprintf(yyout, ";R102:\t<constante_logica> ::= true\n"); }
                 | TOK_FALSE  { fprintf(yyout, ";R103:\t<constante_logica> ::= false\n"); };               
 
-constante_entera: numero { fprintf(yyout, ";R104:\t<constante_entera> ::= <numero>\n"); };
-
-numero: TOK_CONSTANTE_ENTERA { fprintf(yyout, ";R105:\t<numero> ::= <digito>\n"); }
-                | numero TOK_CONSTANTE_ENTERA { fprintf(yyout, ";R106:\t<numero> ::= <numero> <digito>\n"); };
+constante_entera: TOK_CONSTANTE_ENTERA
+        $$.tipo = INT;
+        $$.es_es_direccion = 0;
+        $$.valor_entero = $1.valor_entero;
+        
+        /* escribe código con tu librería para meter en la pila la constante push dword $1.valor_entero */
+        fprintf(yyout, "\tpush dword %s\n", $1.valor_entero);
+        fprintf(yyout, ";R104:\t<constante_entera> ::= <numero>\n"); 
+};
 
 identificador: TOK_IDENTIFICADOR {
         is_in_local = false;
@@ -230,8 +277,11 @@ identificador: TOK_IDENTIFICADOR {
         
                 found = get_value_from_hstable(local_simbols, $1.lexema, strlen($1.lexema));
                 if (found == -1) {
+                        Hash_Node node;
+                        strcpy(node.key, $1.lexema)
+                        node.categoria 
 
-                        if(add_node2HashTable(local_simbols, $1.lexema, strlen($1.lexema), value) == -1){
+                        if(add_node2HashTable(local_simbols, &node) == -1){
                                 fprintf(stdout, "Error inserting the node =(\n");
                                 return -1;
                         }

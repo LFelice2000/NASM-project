@@ -45,11 +45,23 @@ static unsigned int JSHash(char* key, unsigned int key_len)
 	 nodo: nodo hash
 	 Valor de retorno: ninguno
 */
-static void init_hs_node(Hash_node *node)
+static void init_hs_node(Hash_node *node, unsigned int key_len)
 {
 	node->next = NULL;
+	node->next = (char*)malloc(key_len*sizeof(char));
+	if(!node->next) {
+		return;
+	}
+
 	node->key = NULL;
 	node->value = 0;
+	node->categoria = 0;
+	node->tipo = 0;
+	node->tamano = 0;
+	node->numero_variables_locales = 0;
+	node->posicion_variable_local = 0;
+	node->numero_parametros = 0;
+	node->posicion_parametros = 0;
 	node->is_occupyed = FLASE;
 }
 
@@ -89,9 +101,9 @@ Hash_Table *creat_hash_table(void)		// Crear una tabla hash
 	 valor: valor
 	 Valor de retorno: 0 éxito -1 falla
 */
-int add_node2HashTable(Hash_Table *Hs_table, char *key, unsigned int key_len, int value)
+int add_node2HashTable(Hash_Table *Hs_table, Hash_node *node,unsigned int key_len)
 {
-	if(!Hs_table || !key )
+	if(!Hs_table || !node->key )
 	{
 		printf("something is NULL\n");
 		return -1;
@@ -125,6 +137,7 @@ int add_node2HashTable(Hash_Table *Hs_table, char *key, unsigned int key_len, in
 			printf("no enough memory\n");
 			return -1;
 		}
+		
 		init_hs_node(tmp);
 		char *tmp_key = (char *)malloc(key_len+1);
 		if(!tmp_key)
@@ -133,6 +146,7 @@ int add_node2HashTable(Hash_Table *Hs_table, char *key, unsigned int key_len, in
 			tmp = NULL;
 			return -1;
 		}
+
 		strncpy(tmp_key, key, key_len);
 		tmp->key = tmp_key;
 		tmp->value = value;
@@ -158,7 +172,7 @@ int add_node2HashTable(Hash_Table *Hs_table, char *key, unsigned int key_len, in
 	 key_len: longitud de la clave
 	 Valor de retorno: contenido de almacenamiento, NULL si no se encuentra
 */
-int get_value_from_hstable(Hash_Table *Hs_table, char *key, unsigned int key_len)
+Hash_node *get_value_from_hstable(Hash_Table *Hs_table, char *key, unsigned int key_len)
 {
 	if( !Hs_table || !key)
 	{
