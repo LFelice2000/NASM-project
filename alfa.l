@@ -1,4 +1,5 @@
 %{
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -26,7 +27,7 @@ DIGIT [0-9]
 "int" { col += yyleng; fprintf(yyout, ";D:\tint\n"); return TOK_INT; }
 "boolean" { col += yyleng; fprintf(yyout, ";D:\tboolean\n"); return TOK_BOOLEAN; }
 "array" { col += yyleng; fprintf(yyout, ";D:\tarray\n"); return TOK_ARRAY; }
-"function" { col += yyleng; fprintf(yyout, ";D:\tfunction\n"); return TOK_FUNCTION; }
+"function" { col += yyleng; yylval.atributos.local_scope = 1; fprintf(yyout, ";D:\tfunction\n"); return TOK_FUNCTION; }
 "if" { col += yyleng; fprintf(yyout, ";D:\tif\n"); return TOK_IF; }             
 "else" { col += yyleng; fprintf(yyout, ";D:\telse\n"); return TOK_ELSE; }           
 "while" { col += yyleng; fprintf(yyout, ";D:\twhile\n"); return TOK_WHILE; }           
@@ -57,9 +58,6 @@ DIGIT [0-9]
 ">" {col += yyleng; fprintf(yyout, ";D:\t>\n"); return TOK_MAYOR; }
 {DIGIT}+ { col += yyleng; yylval.atributos.valor_entero=atoi(yytext); fprintf(yyout, ";D\t%s\n", yytext); return TOK_CONSTANTE_ENTERA; }
 {LETTER}({DIGIT}|{LETTER})*{1,100} {strcpy(yylval.atributos.lexema, yytext); if(yyleng > 100){fprintf(stdout,"****Error en [lin %d, col %d]: identificador demasiado largo (%s)\n",line,col-yyleng,yytext); error=1; return TOK_ERROR;} col += yyleng; strcpy(yylval.atributos.lexema,yytext); fprintf(yyout,";D:\t%s\n",yytext); return TOK_IDENTIFICADOR; }
-{DIGIT}({LETTER}{DIGIT})*  { col += yyleng; strcpy(yylval.atributos.lexema, yytext); fprintf(stdout,"****Error en [lin %d, col %d]: simbolo no permitido (%s)\n",line,col-yyleng,yytext); error=1; return TOK_ERROR; }
-[\_]({LETTER}{DIGIT})* { col += yyleng; strcpy(yylval.atributos.lexema,yytext); fprintf(stdout,"****Error en [lin %d, col %d]: simbolo no permitido (%s)\n",line,col-yyleng,yytext); error=1; return TOK_ERROR; }
-({LETTER}{DIGIT})*[\_] { col += yyleng; strcpy(yylval.atributos.lexema,yytext); fprintf(stdout,"****Error en [lin %d, col %d]: simbolo no permitido (%s)\n",line,col-yyleng,yytext); error=1; return TOK_ERROR; }
 . { col += yyleng; strcpy(yylval.atributos.lexema, yytext); fprintf(stdout,"****Error en [lin %d, col %d]: simbolo no permitido (%s)\n",line,col-yyleng,yytext); error=1; return TOK_ERROR; }
 
 %%

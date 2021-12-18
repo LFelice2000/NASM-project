@@ -1,11 +1,11 @@
 CFLAGS= -pedantic -g
 
-all: generacion.o hash.o y.tab.c y.tab.o lex.yy.c lex.yy.o alfa.o alfa
+all: y.tab.o lex.yy.o hash.o generacion.o pruebaSintactico.o alfa
 
 lex.yy.c: alfa.l
 	flex alfa.l
 
-lex.yy.o: lex.yy.c y.tab.h
+lex.yy.o: lex.yy.c y.tab.h alfa.h
 	gcc -c -o lex.yy.o lex.yy.c
 
 y.tab.c: alfa.y
@@ -17,14 +17,14 @@ hash.o: hash.c hash.h
 generacion.o: generacion.c generacion.h 
 	gcc $(CFLAGS) -c generacion.c
 
-y.tab.o: y.tab.c
+y.tab.o: y.tab.c alfa.h generacion.h hash.h
 	gcc $(CFLAGS) -c -o y.tab.o y.tab.c 
 
-alfa.o: alfa.c y.tab.h
-	gcc -Wall -ansi -pedantic -c -o alfa.o alfa.c
+pruebaSintactico.o: alfa.h y.tab.h
+	gcc $(CFLAGS) -c -o pruebaSintactico.o pruebaSintactico.c 
 
 alfa: generacion.h
-	gcc -o alfa generacion.o hash.o lex.yy.o y.tab.o alfa.o
+	gcc -o alfa generacion.o hash.o lex.yy.o y.tab.o pruebaSintactico.o
 
 clean:
 	rm -f alfa  *.o lex.yy.c y.tab.c y.output hash.o generacion.o

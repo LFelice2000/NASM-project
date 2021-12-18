@@ -5,8 +5,10 @@
         #include <stdbool.h>
         #include <string.h>
         #include "alfa.h"
-        #include "y.tab.h"
         #include "generacion.h"
+        #include "hash.h"
+        #include "y.tab.h"
+        
         
         void yyerror(char const *str);
         extern int line, col, error;
@@ -21,7 +23,7 @@
         Hash_Table *global_simbols = NULL;
         Hash_Table *local_simbols = NULL;
         bool local_scope_open = false, is_in_local, declare_in_local, token_found;
-        int found;
+        Hash_node *found = NULL;
         int value, len = 0;
 
         FILE *declarations_file = NULL;
@@ -73,6 +75,34 @@
 %token <atributos> TOK_FALSE
 %token TOK_ERROR
 
+%type <atributos> programa
+%type <atributos> initialize_hash
+%type <atributos> escritura1
+%type <atributos> escritura2
+%type <atributos> declaraciones
+%type <atributos> declaracion
+%type <atributos> clase
+%type <atributos> clase_escalar
+%type <atributos> clase_vector
+%type <atributos> tipo
+%type <atributos> identificadores
+%type <atributos> funciones
+%type <atributos> funcion
+%type <atributos> parametros_funcion
+%type <atributos> resto_parametros_funcion
+%type <atributos> parametro_funcion
+%type <atributos> declaraciones_funcion
+%type <atributos> sentencias
+%type <atributos> sentencia
+%type <atributos> sentencia_simple
+%type <atributos> bloque
+%type <atributos> asignacion
+%type <atributos> bucle
+%type <atributos> lectura
+%type <atributos> escritura
+%type <atributos> retorno_funcion
+%type <atributos> lista_expresiones
+%type <atributos> resto_lista_expresiones
 %type <atributos> condicional
 %type <atributos> comparacion
 %type <atributos> elemento_vector
@@ -91,30 +121,41 @@
 %right TOK_NOT
 
 %%
-programa: TOK_MAIN TOK_LLAVEIZQUIERDA declaraciones escritura1 funciones escritura2 sentencias TOK_LLAVEDERECHA
-        { declarations_file = fopen("declarations_file.txt", "w"); global_simbols = creat_hash_table(); if(global_simbols == NULL){ error = -1; return -1;} fprintf(yyout, ";R1:\t<programa> ::= main { <declaraciones> <funciones> <sentencias> }\n"); };
+programa: initialize_hash TOK_MAIN TOK_LLAVEIZQUIERDA declaraciones escritura1 funciones escritura2 sentencias TOK_LLAVEDERECHA 
+{ 
+        fprintf(yyout, ";R1:\t<programa> ::= main { <declaraciones> <funciones> <sentencias> }\n");
+};
+
+initialize_hash: {
+        
+        /*
+        declarations_file = fopen("declarations_file.txt", "w+");
+        if(!declarations_file) {
+                error = -1;
+                return -1;
+        }
+        */
+        
+        global_simbols = creat_hash_table(); 
+        if(global_simbols == NULL){ 
+                error = -1; 
+                return -1;
+        }  
+
+        clase_actual = 1;
+        escribir_subseccion_data(yyout);
+        escribir_cabecera_bss(yyout);  
+};
 
 escritura1: 
 {
-        clase_actual = 1;
-        escribir_subseccion_data(yyout);
-        escribir_cabecera_bss(yyout);
-        /*declarar variables*/
-        while(!feof(declarations_file)){
-                fscanf(declarations_file,"%s", nombre_variable);
-                
-                if(get_value_from_hstable(global_simbols, nombre_variable, strlen(nombre_variable))!= -1){
-                        declarar_variable(yyout, nombre_variable, 0, 1);
-                }
-        }
         escribir_segmento_codigo(yyout);
-        fclose (declarations_file);
 };
 
 escritura2: 
 {
-        
         escribir_inicio_main(yyout);
+        yylval.atributos.local_scope = 0;
 };
 
 declaraciones: declaracion { fprintf(yyout, ";R2:\t<declaraciones> ::= <declaracion>\n");}
@@ -139,18 +180,28 @@ identificadores: identificador { fprintf(yyout, ";R18:\t<identificadores> ::= <i
 funciones: funcion funciones { fprintf(yyout, ";R20:\t<funciones> ::= <funcion> <funciones>\n"); }
             | { fprintf(yyout, ";R21:\t<funciones> ::= \n"); };
 
-funcion: TOK_FUNCTION tipo identificador TOK_PARENTESISIZQUIERDO parametros_funcion TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA declaraciones_funcion sentencias TOK_LLAVEDERECHA { fprintf(yyout, ";R22:\t<funcion>::= function <tipo> <indentificador> ( <parametros_funcion> ) { <declaraciones_funcion> <sentencias> }\n"); };
+funcion: TOK_FUNCTION tipo identificador open_local_scope TOK_PARENTESISIZQUIERDO parametros_funcion TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA declaraciones_funcion sentencias TOK_LLAVEDERECHA { 
+        
+        fprintf(yyout, ";R22:\t<funcion> ::=function <tipo> <indentificador> ( <parametros_funcion> ) { <declaraciones_funcion> <sentencias> }\n"); 
+};
+
+open_local_scope:  {
+
+        strcpy(node.key, $$.lexema)
+        
+        add_node2HashTable(global_simbols, $3.lexema)
+}
 
 parametros_funcion: parametro_funcion resto_parametros_funcion { fprintf(yyout, ";R23:\t<parametros_funcion> ::= <parametro_funcion> <resto_parametros_funcion>\n"); }
         | { fprintf(yyout, ";R24:\t<parametros_funcion> ::= \n"); };
 
 resto_parametros_funcion: TOK_PUNTOYCOMA parametro_funcion resto_parametros_funcion { fprintf(yyout, ";R25:\t; <resto_parametros_funcion> ::= ; <parametro_funcion> <resto_parametros_funcion>\n"); }
-        | { fprintf(yyout, ";R26:\t; <resto_parametros_funcion> ::= \n"); };
+        | { fprintf(yyout, ";R26:\t <resto_parametros_funcion> ::= \n"); };
 
 parametro_funcion: tipo identificador { fprintf(yyout, ";R27:\t<parametro_funcion> ::= <tipo> <identificador>\n"); };
 
 declaraciones_funcion: declaraciones { fprintf(yyout, ";R28:\t<declaraciones_funcion> ::= <declaraciones>\n"); }
-        | { fprintf(yyout, ";R29:\t; <declaraciones_funcion> ::= \n"); };
+        | { fprintf(yyout, ";R29:\t <declaraciones_funcion> ::= \n"); };
 
 sentencias: sentencia {fprintf(yyout, ";R30:\t<sentencias> ::= <sentencia>\n");}
           | sentencia sentencias {fprintf(yyout, ";R31:\t<sentencias> ::= <sentencia> <sentencias>\n");};
@@ -166,19 +217,19 @@ sentencia_simple: asignacion {fprintf(yyout, ";R34:\t<sentencia_simple> ::= <asi
 bloque: condicional { fprintf(yyout, ";R40:\t<bloque> ::= <condicional>\n"); }
             | bucle { fprintf(yyout, ";R41:\t<bloque> ::= <bucle>\n"); };
             
-asignacion: TOK_IDENTIFICADOR TOK_ASIGNACION exp  
+asignacion: TOK_IDENTIFICADOR TOK_ASIGNACION exp  {
         
         if(local_scope_open) {
                 found = get_value_from_hstable(local_simbols, $1.lexema, strlen($1.lexema));
-                if(found == -1) {
+                if(!found) {
                         found = get_value_from_hstable(global_simbols, $1.lexema, strlen($1.lexema));
-                        if(found == -1) {
+                        if(!found) {
                                 fprintf(stdout, "Error asignacion(43) not in local or global table\n");
                         }     
                 }          
         } else {
                 found = get_value_from_hstable(global_simbols, $1.lexema, strlen($1.lexema));
-                if(found == -1) {
+                if(!found) {
                     fprintf(stdout, "Error asignacion(43) not in global table\n");
                 }
         }
@@ -220,7 +271,21 @@ bucle: TOK_WHILE TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO TOK_LLAVEIZQU
 
 lectura: TOK_SCANF TOK_IDENTIFICADOR {fprintf(yyout, ";R54:\t<lectura> ::= scanf <identificador>\n");};
 
-escritura: TOK_PRINTF exp {fprintf(yyout, ";R56:\t<escritura> ::= printf <exp>\n");};
+escritura: TOK_PRINTF exp {
+        
+        if($2.es_direccion == 1) {
+                operandoEnPilaAArgumento(yyout, 1);
+        }
+
+        if($2.tipo == BOOLEAN) {
+                escribir(yyout, 1, 1);
+        }
+        if($2.tipo == INT) {
+                escribir(yyout, 1, 0);
+        }
+        
+        fprintf(yyout, ";R56:\t<escritura> ::= printf <exp>\n");
+};
       
 retorno_funcion: TOK_RETURN exp {fprintf(yyout, ";R61:\t<retorno_funcion> ::= return <exp>\n");};
 
@@ -232,7 +297,34 @@ exp: exp TOK_MAS exp { fprintf(yyout, ";R72:\t<exp> ::= <exp> + <exp>\n"); }
         | exp TOK_AND exp { fprintf(yyout, ";R77:\t<exp> ::= <exp> && <exp>\n"); }
         | exp TOK_OR exp { fprintf(yyout, ";R78:\t<exp> ::= <exp> || <exp>\n"); }
         | TOK_NOT exp { fprintf(yyout, ";R79:\t<exp> ::= ! <exp>\n"); }
-        | TOK_IDENTIFICADOR { fprintf(yyout, ";R80:\t<exp> ::= <identificador>\n"); }
+        | TOK_IDENTIFICADOR { 
+                
+                if(local_scope_open) {
+                        found = get_value_from_hstable(local_simbols, $1.lexema, strlen($1.lexema));
+                        if(!found) {
+                                found = get_value_from_hstable(global_simbols, $1.lexema, strlen($1.lexema));
+                                if(!found) {
+                                        fprintf(stdout, "Error asignacion(80) not in local or global table\n");
+                                }     
+                        }
+
+                } else {
+                        found = get_value_from_hstable(global_simbols, $1.lexema, strlen($1.lexema));
+                        if(!found) {
+                                fprintf(stdout, "Error asignacion(80) not in global table\n");
+                        }
+                }
+
+                if(found->categoria == FUNCTION) {
+                        fprintf(stdout, "Error exp(80) bad category\n");
+                }
+
+                $$.tipo = found->tipo;
+                $$.es_direccion = 1;
+
+                fprintf(yyout, ";\tpush dword %s\n", $1.lexema);
+                fprintf(yyout, ";R80:\t<exp> ::= <identificador>\n"); 
+        }
         | constante { $$.tipo = $1.tipo; $$.es_direccion = $1.es_direccion; fprintf(yyout, ";R81:\t<exp> ::= <constante>\n"); }
         | TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO { $$.tipo = $2.tipo; $$.es_direccion = $2.es_direccion; fprintf(yyout, ";R82:\t<exp> ::= ( <exp> )\n"); }
         | TOK_PARENTESISIZQUIERDO comparacion TOK_PARENTESISDERECHO { $$.tipo = $2.tipo; $$.es_direccion = $2.es_direccion; fprintf(yyout, ";R83:\t<exp> ::= ( <comparacion> )\n"); }
@@ -258,30 +350,34 @@ constante: constante_logica { $$.tipo = $1.tipo; $$.es_direccion = $1.es_direcci
 constante_logica: TOK_TRUE { fprintf(yyout, ";R102:\t<constante_logica> ::= true\n"); }
                 | TOK_FALSE  { fprintf(yyout, ";R103:\t<constante_logica> ::= false\n"); };               
 
-constante_entera: TOK_CONSTANTE_ENTERA
+constante_entera: TOK_CONSTANTE_ENTERA {
         $$.tipo = INT;
-        $$.es_es_direccion = 0;
+        $$.es_direccion = 0;
         $$.valor_entero = $1.valor_entero;
         
         /* escribe código con tu librería para meter en la pila la constante push dword $1.valor_entero */
-        fprintf(yyout, "\tpush dword %s\n", $1.valor_entero);
+        fprintf(yyout, "\tpush dword %d\n", $1.valor_entero);
         fprintf(yyout, ";R104:\t<constante_entera> ::= <numero>\n"); 
 };
 
 identificador: TOK_IDENTIFICADOR {
+        Hash_node node;
+        int len = 0; 
+        
         is_in_local = false;
         declare_in_local = false;
 
+        init_hs_node(&node);
+        strcpy(node.key, $1.lexema);
+        node.value = $1.valor_entero;
+                
         value = $1.valor_entero;
-        if(local_scope_open){
+        if(local_scope_open) {
         
                 found = get_value_from_hstable(local_simbols, $1.lexema, strlen($1.lexema));
-                if (found == -1) {
-                        Hash_Node node;
-                        strcpy(node.key, $1.lexema)
-                        node.categoria 
-
-                        if(add_node2HashTable(local_simbols, &node) == -1){
+                if (!found) {
+                        len = strlen(node.key);
+                        if(add_node2HashTable(local_simbols, &node, len) == -1){
                                 fprintf(stdout, "Error inserting the node =(\n");
                                 return -1;
                         }
@@ -297,9 +393,9 @@ identificador: TOK_IDENTIFICADOR {
         
         len = strlen($1.lexema);
         found = get_value_from_hstable(global_simbols, $1.lexema, len);
-        if ((found == -1) && (declare_in_local == false)){ /*Declaration Successful*/
+        if ((!found) && (declare_in_local == false)){ /*Declaration Successful*/
                 if (value < 0) {
-                        
+
                         local_simbols = creat_hash_table();
                         if(!local_simbols) {
                                 fprintf(stdout, "Error creating the local table.");
@@ -307,37 +403,40 @@ identificador: TOK_IDENTIFICADOR {
                         }
                         local_scope_open = true;
 
-                        if(add_node2HashTable(global_simbols, $1.lexema, strlen($1.lexema), value) == -1){
+                        if(add_node2HashTable(global_simbols, &node, len) == -1){
                                 printf("Error inserting the node =(\n");
                                 return -1;
                         }
 
-                        if(add_node2HashTable(local_simbols, $1.lexema, strlen($1.lexema), value) == -1){
+                        if(add_node2HashTable(local_simbols, &node, len) == -1){
                                 fprintf(stdout, "Error inserting the node =(\n");
                                 return -1;
                         }
+
                 }
 
                 else {
                         len = strlen($1.lexema);
-                        if(add_node2HashTable(global_simbols, $1.lexema, len, value) == -1){
+                        if(add_node2HashTable(global_simbols, &node, len) == -1){
                                 fprintf(stdout, "Error inserting the node =(\n");
                                 return -1;
                         }
                 }
+
+                declarar_variable(yyout, $1.lexema, 0, 1);
         
-        /* Output: declaration correct*/
-        fprintf(stdout, "%s\n", $1.lexema);
+                /* Output: declaration correct*/
+                fprintf(stdout, "%s\n", $1.lexema);
 
         
-        } else if(is_in_local == true || (is_in_local == false && declare_in_local == false && found != -1)) { /* token found*/
+        } else if(is_in_local == true || (is_in_local == false && declare_in_local == false && !found)) { /* token found*/
         /* Output: declaration error*/
                 fprintf(stdout, "-1\t%s\n", $1.lexema);
         }
 
         fprintf(yyout, ";R108:\t<identificador> ::= TOK_IDENTIFICADOR\n"); 
         
-        }
+}
                 
 %%
 

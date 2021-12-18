@@ -17,6 +17,7 @@ void escribir_cabecera_bss(FILE *fpasm)
         return;
     }
 
+    fprintf(fpasm, ";escribir_cabecera_bss\n");
     fprintf(fpasm, "segment .bss\n\t__esp resd 1\n");
 }
 /*
@@ -33,9 +34,10 @@ void escribir_subseccion_data(FILE *fpasm)
         return;
     }
 
-    fprintf(fpasm, "segment .data\n\n");
-    fprintf(fpasm, "div_error_message db \"Error for Division by zero\", 0\n");
-    fprintf(fpasm, "fin_indice_fuera_rango db \"Indice fuera de rango\",0\n\n");
+    fprintf(fpasm, ";escribir_subseccion_data\n");
+    fprintf(fpasm, "segment .data\n");
+    fprintf(fpasm, "	msg_error_indice_vector db \"Indice de vector fuera de rango\", 0\n");
+    fprintf(fpasm, "	msg_error_division db \"Error division por 0\", 0\n");
 }   
 
 
@@ -60,6 +62,7 @@ void declarar_variable(FILE *fpasm, char *nombre, int tipo, int tamano)
     }
 
     /*BOOLEANO*/
+    fprintf(fpasm, ";declarar_variable\n");
     if (tipo)
     {
         fprintf(fpasm, "\t_%s resd %d\n", nombre, tamano);
@@ -91,9 +94,17 @@ void escribir_segmento_codigo(FILE *fpasm)
         return;
     }
 
-    fprintf(fpasm, "\nsegment .text\n");
+    /**	global main
+	extern malloc, free
+	extern scan_int, print_int, scan_boolean, print_boolean
+	extern print_endofline, print_blank, print_string*/
+
+    fprintf(fpasm, ";escribir_segmento_codigo\n");
+    fprintf(fpasm, "segment .text\n");
     fprintf(fpasm, "\tglobal main\n");
-    fprintf(fpasm, "\textern print_int, scan_int, print_boolean, scan_boolean, print_blank, print_endofline, print_string\n\n");
+    fprintf(fpasm, "\textern malloc, free\n");
+    fprintf(fpasm, "\textern scan_int, print_int, scan_boolean, print_boolean\n");
+    fprintf(fpasm, "\textern print_endofline, print_blank, print_string\n");
 }
 
 /*

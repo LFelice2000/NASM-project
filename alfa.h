@@ -13,6 +13,7 @@ typedef struct
     int valor_entero;
     int es_direccion;
     int etiqueta;
+    int local_scope;
 } tipo_atributos;
 
 /* CATEGORIAS*/

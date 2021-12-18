@@ -45,24 +45,22 @@ static unsigned int JSHash(char* key, unsigned int key_len)
 	 nodo: nodo hash
 	 Valor de retorno: ninguno
 */
-static void init_hs_node(Hash_node *node, unsigned int key_len)
+void init_hs_node(Hash_node *node)
 {
 	node->next = NULL;
-	node->next = (char*)malloc(key_len*sizeof(char));
-	if(!node->next) {
-		return;
-	}
-
-	node->key = NULL;
 	node->value = 0;
+
+	strcpy(node->key, "\0");
+	
 	node->categoria = 0;
-	node->tipo = 0;
 	node->tamano = 0;
-	node->numero_variables_locales = 0;
-	node->posicion_variable_local = 0;
+	node->tipo = 0;
 	node->numero_parametros = 0;
+	node->numero_variables_locales = 0;
 	node->posicion_parametros = 0;
+	node->posicion_variable_local = 0;
 	node->is_occupyed = FLASE;
+
 }
 
 /*
@@ -101,26 +99,38 @@ Hash_Table *creat_hash_table(void)		// Crear una tabla hash
 	 valor: valor
 	 Valor de retorno: 0 éxito -1 falla
 */
-int add_node2HashTable(Hash_Table *Hs_table, Hash_node *node,unsigned int key_len)
+int add_node2HashTable(Hash_Table *Hs_table, Hash_node *node, unsigned int key_len)
 {
-	if(!Hs_table || !node->key )
+	if(!Hs_table)	{
+		printf("something is NULL 2\n");
+		return -1;
+	} 
+	
+	if(!node)
 	{
-		printf("something is NULL\n");
+		printf("something is NULL 1\n");
 		return -1;
 	}
 
-	unsigned int i = JSHash(key, key_len) % MAX_TABLE_SIZE;		// Obtenga el subíndice de la tabla hash correspondiente a su valor clave a través de jhash
+	unsigned int i = JSHash(node->key, key_len) % MAX_TABLE_SIZE;		// Obtenga el subíndice de la tabla hash correspondiente a su valor clave a través de jhash
 
 	Hash_node *p = Hs_table->table[i];
 	Hash_node *pri = p;
 	
 	while(p)	// Ya hay un nodo hash en este punto, y debes ir al final de esta cadena
 	{
-		if ( strncmp(key, p->key, key_len) == 0 )	// El valor clave ya existe, actualizar el valor
+		if ( strncmp(node->key, p->key, key_len) == 0 )	// El valor clave ya existe, actualizar el valor
 		{
 			if(p->is_occupyed)
 			{
-				p->value = value;
+				p->value = node->value;
+				p->categoria = node->categoria;
+				p->tipo = node->tipo;
+				p->tamano = node->tamano;
+				p->numero_variables_locales = node->numero_variables_locales;
+				p->posicion_variable_local = node->posicion_variable_local;
+				p->numero_parametros = node->numero_parametros;
+				p->posicion_parametros = node->posicion_parametros;
 				p->is_occupyed = 1;		// Indicador de ocupación establecido en 1
 				break;
 			}
@@ -137,19 +147,22 @@ int add_node2HashTable(Hash_Table *Hs_table, Hash_node *node,unsigned int key_le
 			printf("no enough memory\n");
 			return -1;
 		}
-		
 		init_hs_node(tmp);
-		char *tmp_key = (char *)malloc(key_len+1);
-		if(!tmp_key)
-		{
-			free(tmp);
-			tmp = NULL;
-			return -1;
-		}
 
-		strncpy(tmp_key, key, key_len);
-		tmp->key = tmp_key;
-		tmp->value = value;
+		char tmp_key[MAX_LONG_ID + 1];
+		strcpy(tmp_key, "\0");
+		strcpy(tmp_key, node->key);
+
+		strcpy(tmp->key, tmp_key);
+
+		tmp->value = node->value;
+		tmp->categoria = node->categoria;
+		tmp->tipo = node->tipo;
+		tmp->tamano = node->tamano;
+		tmp->numero_variables_locales = node->numero_variables_locales;
+		tmp->posicion_variable_local = node->posicion_variable_local;
+		tmp->numero_parametros = node->numero_parametros;
+		tmp->posicion_parametros = node->posicion_parametros;
 		tmp->is_occupyed = TRUE;	// Actualiza la marca ocupada
 		
 		if(pri == NULL)		// Este punto no ha sido ocupado directamente
@@ -161,6 +174,7 @@ int add_node2HashTable(Hash_Table *Hs_table, Hash_node *node,unsigned int key_le
 			pri->next = tmp;
 		}
 	}
+
 	
 	return 0;
 }
@@ -177,7 +191,7 @@ Hash_node *get_value_from_hstable(Hash_Table *Hs_table, char *key, unsigned int 
 	if( !Hs_table || !key)
 	{
 		printf("something is NULL\n");
-		return -1;
+		return NULL;
 	}
 	
 	int i = JSHash(key,key_len) % MAX_TABLE_SIZE;
@@ -187,12 +201,12 @@ Hash_node *get_value_from_hstable(Hash_Table *Hs_table, char *key, unsigned int 
 	{
 		if(strncmp(tmp->key, key, key_len) == 0)
 		{
-			return tmp->value;
+			return tmp;
 		}
 		tmp = tmp->next;
 	}
 	
-	return -1;
+	return NULL;
 }
 
 /*
@@ -214,7 +228,6 @@ void hash_table_delete(Hash_Table *Hs_Table)
 
                 while (p)		// Hay contenido de almacenamiento en este momento
 				{
-					free(p->key);
 					p->is_occupyed = 0;
 					q = p->next;
 					if(q) {
