@@ -850,7 +850,7 @@ YY_RULE_SETUP
 case 11:
 YY_RULE_SETUP
 #line 30 "alfa.l"
-{ col += yyleng; yylval.atributos.local_scope = 1; fprintf(yyout, ";D:\tfunction\n"); return TOK_FUNCTION; }
+{ col += yyleng; fprintf(yyout, ";D:\tfunction\n"); return TOK_FUNCTION; }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
@@ -995,7 +995,7 @@ YY_RULE_SETUP
 case 40:
 YY_RULE_SETUP
 #line 59 "alfa.l"
-{ col += yyleng; yylval.atributos.valor_entero=atoi(yytext); fprintf(yyout, ";D\t%s\n", yytext); return TOK_CONSTANTE_ENTERA; }
+{ col += yyleng; yylval.atributos.valor_entero=atoi(yytext); fprintf(yyout, ";D:\t%s\n", yytext); return TOK_CONSTANTE_ENTERA; }
 	YY_BREAK
 case 41:
 YY_RULE_SETUP

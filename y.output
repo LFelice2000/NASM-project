@@ -36,86 +36,90 @@ Gramática
    16 funciones: funcion funciones
    17          | %empty
 
-   18 funcion: TOK_FUNCTION tipo identificador TOK_PARENTESISIZQUIERDO parametros_funcion TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA declaraciones_funcion sentencias TOK_LLAVEDERECHA
+   18 fn_name: TOK_FUNCTION tipo TOK_IDENTIFICADOR
 
-   19 parametros_funcion: parametro_funcion resto_parametros_funcion
-   20                   | %empty
+   19 fn_declaracion: fn_name TOK_PARENTESISIZQUIERDO parametros_funcion TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA declaraciones_funcion
 
-   21 resto_parametros_funcion: TOK_PUNTOYCOMA parametro_funcion resto_parametros_funcion
-   22                         | %empty
+   20 funcion: fn_declaracion sentencias TOK_LLAVEDERECHA
 
-   23 parametro_funcion: tipo identificador
+   21 parametros_funcion: parametro_funcion resto_parametros_funcion
+   22                   | %empty
 
-   24 declaraciones_funcion: declaraciones
-   25                      | %empty
+   23 resto_parametros_funcion: TOK_PUNTOYCOMA parametro_funcion resto_parametros_funcion
+   24                         | %empty
 
-   26 sentencias: sentencia
-   27           | sentencia sentencias
+   25 parametro_funcion: tipo identificador
 
-   28 sentencia: sentencia_simple TOK_PUNTOYCOMA
-   29          | bloque
+   26 declaraciones_funcion: declaraciones
+   27                      | %empty
 
-   30 sentencia_simple: asignacion
-   31                 | lectura
-   32                 | escritura
-   33                 | retorno_funcion
+   28 sentencias: sentencia
+   29           | sentencia sentencias
 
-   34 bloque: condicional
-   35       | bucle
+   30 sentencia: sentencia_simple TOK_PUNTOYCOMA
+   31          | bloque
 
-   36 asignacion: TOK_IDENTIFICADOR TOK_ASIGNACION exp
-   37           | elemento_vector TOK_ASIGNACION exp
+   32 sentencia_simple: asignacion
+   33                 | lectura
+   34                 | escritura
+   35                 | retorno_funcion
 
-   38 elemento_vector: TOK_IDENTIFICADOR TOK_CORCHETEIZQUIERDO exp TOK_CORCHETEDERECHO
+   36 bloque: condicional
+   37       | bucle
 
-   39 condicional: TOK_IF TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA
-   40            | TOK_IF TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA TOK_ELSE TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA
+   38 asignacion: TOK_IDENTIFICADOR TOK_ASIGNACION exp
+   39           | elemento_vector TOK_ASIGNACION exp
 
-   41 bucle: TOK_WHILE TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA
+   40 elemento_vector: TOK_IDENTIFICADOR TOK_CORCHETEIZQUIERDO exp TOK_CORCHETEDERECHO
 
-   42 lectura: TOK_SCANF TOK_IDENTIFICADOR
+   41 condicional: TOK_IF TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA
+   42            | TOK_IF TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA TOK_ELSE TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA
 
-   43 escritura: TOK_PRINTF exp
+   43 bucle: TOK_WHILE TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA
 
-   44 retorno_funcion: TOK_RETURN exp
+   44 lectura: TOK_SCANF TOK_IDENTIFICADOR
 
-   45 exp: exp TOK_MAS exp
-   46    | exp TOK_MENOS exp
-   47    | exp TOK_DIVISION exp
-   48    | exp TOK_ASTERISCO exp
-   49    | TOK_MENOS exp
-   50    | exp TOK_AND exp
-   51    | exp TOK_OR exp
-   52    | TOK_NOT exp
-   53    | TOK_IDENTIFICADOR
-   54    | constante
-   55    | TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO
-   56    | TOK_PARENTESISIZQUIERDO comparacion TOK_PARENTESISDERECHO
-   57    | elemento_vector
-   58    | identificador TOK_PARENTESISIZQUIERDO lista_expresiones TOK_PARENTESISDERECHO
+   45 escritura: TOK_PRINTF exp
 
-   59 lista_expresiones: exp resto_lista_expresiones
-   60                  | %empty
+   46 retorno_funcion: TOK_RETURN exp
 
-   61 resto_lista_expresiones: TOK_COMA exp resto_lista_expresiones
-   62                        | %empty
+   47 exp: exp TOK_MAS exp
+   48    | exp TOK_MENOS exp
+   49    | exp TOK_DIVISION exp
+   50    | exp TOK_ASTERISCO exp
+   51    | TOK_MENOS exp
+   52    | exp TOK_AND exp
+   53    | exp TOK_OR exp
+   54    | TOK_NOT exp
+   55    | TOK_IDENTIFICADOR
+   56    | constante
+   57    | TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO
+   58    | TOK_PARENTESISIZQUIERDO comparacion TOK_PARENTESISDERECHO
+   59    | elemento_vector
+   60    | identificador TOK_PARENTESISIZQUIERDO lista_expresiones TOK_PARENTESISDERECHO
 
-   63 comparacion: exp TOK_IGUAL exp
-   64            | exp TOK_DISTINTO exp
-   65            | exp TOK_MENORIGUAL exp
-   66            | exp TOK_MAYORIGUAL exp
-   67            | exp TOK_MENOR exp
-   68            | exp TOK_MAYOR exp
+   61 lista_expresiones: exp resto_lista_expresiones
+   62                  | %empty
 
-   69 constante: constante_logica
-   70          | constante_entera
+   63 resto_lista_expresiones: TOK_COMA exp resto_lista_expresiones
+   64                        | %empty
 
-   71 constante_logica: TOK_TRUE
-   72                 | TOK_FALSE
+   65 comparacion: exp TOK_IGUAL exp
+   66            | exp TOK_DISTINTO exp
+   67            | exp TOK_MENORIGUAL exp
+   68            | exp TOK_MAYORIGUAL exp
+   69            | exp TOK_MENOR exp
+   70            | exp TOK_MAYOR exp
 
-   73 constante_entera: TOK_CONSTANTE_ENTERA
+   71 constante: constante_logica
+   72          | constante_entera
 
-   74 identificador: TOK_IDENTIFICADOR
+   73 constante_logica: TOK_TRUE
+   74                 | TOK_FALSE
+
+   75 constante_entera: TOK_CONSTANTE_ENTERA
+
+   76 identificador: TOK_IDENTIFICADOR
 
 
 Terminales con las reglas donde aparecen
@@ -127,38 +131,38 @@ TOK_INT (259) 12
 TOK_BOOLEAN (260) 13
 TOK_ARRAY (261) 11
 TOK_FUNCTION (262) 18
-TOK_IF (263) 39 40
-TOK_ELSE (264) 40
-TOK_WHILE (265) 41
-TOK_SCANF (266) 42
-TOK_PRINTF (267) 43
-TOK_RETURN (268) 44
-TOK_PUNTOYCOMA (269) 7 21 28
-TOK_COMA (270) 15 61
-TOK_PARENTESISIZQUIERDO (271) 18 39 40 41 55 56 58
-TOK_PARENTESISDERECHO (272) 18 39 40 41 55 56 58
-TOK_CORCHETEIZQUIERDO (273) 11 38
-TOK_CORCHETEDERECHO (274) 11 38
-TOK_LLAVEIZQUIERDA (275) 1 18 39 40 41
-TOK_LLAVEDERECHA (276) 1 18 39 40 41
-TOK_ASIGNACION (277) 36 37
-TOK_MAS (278) 45
-TOK_MENOS (279) 46 49
-TOK_DIVISION (280) 47
-TOK_ASTERISCO (281) 48
-TOK_AND (282) 50
-TOK_OR (283) 51
-TOK_NOT (284) 52
-TOK_IGUAL (285) 63
-TOK_DISTINTO (286) 64
-TOK_MENORIGUAL (287) 65
-TOK_MAYORIGUAL (288) 66
-TOK_MENOR (289) 67
-TOK_MAYOR (290) 68
-TOK_IDENTIFICADOR (291) 36 38 42 53 74
-TOK_CONSTANTE_ENTERA (292) 73
-TOK_TRUE (293) 71
-TOK_FALSE (294) 72
+TOK_IF (263) 41 42
+TOK_ELSE (264) 42
+TOK_WHILE (265) 43
+TOK_SCANF (266) 44
+TOK_PRINTF (267) 45
+TOK_RETURN (268) 46
+TOK_PUNTOYCOMA (269) 7 23 30
+TOK_COMA (270) 15 63
+TOK_PARENTESISIZQUIERDO (271) 19 41 42 43 57 58 60
+TOK_PARENTESISDERECHO (272) 19 41 42 43 57 58 60
+TOK_CORCHETEIZQUIERDO (273) 11 40
+TOK_CORCHETEDERECHO (274) 11 40
+TOK_LLAVEIZQUIERDA (275) 1 19 41 42 43
+TOK_LLAVEDERECHA (276) 1 20 41 42 43
+TOK_ASIGNACION (277) 38 39
+TOK_MAS (278) 47
+TOK_MENOS (279) 48 51
+TOK_DIVISION (280) 49
+TOK_ASTERISCO (281) 50
+TOK_AND (282) 52
+TOK_OR (283) 53
+TOK_NOT (284) 54
+TOK_IGUAL (285) 65
+TOK_DISTINTO (286) 66
+TOK_MENORIGUAL (287) 67
+TOK_MAYORIGUAL (288) 68
+TOK_MENOR (289) 69
+TOK_MAYOR (290) 70
+TOK_IDENTIFICADOR (291) 18 38 40 44 55 76
+TOK_CONSTANTE_ENTERA (292) 75
+TOK_TRUE (293) 73
+TOK_FALSE (294) 74
 TOK_ERROR (295)
 
 
@@ -175,7 +179,7 @@ escritura1 (44)
 escritura2 (45)
     en la izquierda: 4, en la derecha: 1
 declaraciones (46)
-    en la izquierda: 5 6, en la derecha: 1 6 24
+    en la izquierda: 5 6, en la derecha: 1 6 26
 declaracion (47)
     en la izquierda: 7, en la derecha: 5 6
 clase (48)
@@ -185,61 +189,65 @@ clase_escalar (49)
 clase_vector (50)
     en la izquierda: 11, en la derecha: 9
 tipo (51)
-    en la izquierda: 12 13, en la derecha: 10 11 18 23
+    en la izquierda: 12 13, en la derecha: 10 11 18 25
 identificadores (52)
     en la izquierda: 14 15, en la derecha: 7 15
 funciones (53)
     en la izquierda: 16 17, en la derecha: 1 16
-funcion (54)
-    en la izquierda: 18, en la derecha: 16
-parametros_funcion (55)
-    en la izquierda: 19 20, en la derecha: 18
-resto_parametros_funcion (56)
-    en la izquierda: 21 22, en la derecha: 19 21
-parametro_funcion (57)
-    en la izquierda: 23, en la derecha: 19 21
-declaraciones_funcion (58)
-    en la izquierda: 24 25, en la derecha: 18
-sentencias (59)
-    en la izquierda: 26 27, en la derecha: 1 18 27 39 40 41
-sentencia (60)
-    en la izquierda: 28 29, en la derecha: 26 27
-sentencia_simple (61)
-    en la izquierda: 30 31 32 33, en la derecha: 28
-bloque (62)
-    en la izquierda: 34 35, en la derecha: 29
-asignacion (63)
-    en la izquierda: 36 37, en la derecha: 30
-elemento_vector (64)
-    en la izquierda: 38, en la derecha: 37 57
-condicional (65)
-    en la izquierda: 39 40, en la derecha: 34
-bucle (66)
-    en la izquierda: 41, en la derecha: 35
-lectura (67)
-    en la izquierda: 42, en la derecha: 31
-escritura (68)
-    en la izquierda: 43, en la derecha: 32
-retorno_funcion (69)
+fn_name (54)
+    en la izquierda: 18, en la derecha: 19
+fn_declaracion (55)
+    en la izquierda: 19, en la derecha: 20
+funcion (56)
+    en la izquierda: 20, en la derecha: 16
+parametros_funcion (57)
+    en la izquierda: 21 22, en la derecha: 19
+resto_parametros_funcion (58)
+    en la izquierda: 23 24, en la derecha: 21 23
+parametro_funcion (59)
+    en la izquierda: 25, en la derecha: 21 23
+declaraciones_funcion (60)
+    en la izquierda: 26 27, en la derecha: 19
+sentencias (61)
+    en la izquierda: 28 29, en la derecha: 1 20 29 41 42 43
+sentencia (62)
+    en la izquierda: 30 31, en la derecha: 28 29
+sentencia_simple (63)
+    en la izquierda: 32 33 34 35, en la derecha: 30
+bloque (64)
+    en la izquierda: 36 37, en la derecha: 31
+asignacion (65)
+    en la izquierda: 38 39, en la derecha: 32
+elemento_vector (66)
+    en la izquierda: 40, en la derecha: 39 59
+condicional (67)
+    en la izquierda: 41 42, en la derecha: 36
+bucle (68)
+    en la izquierda: 43, en la derecha: 37
+lectura (69)
     en la izquierda: 44, en la derecha: 33
-exp (70)
-    en la izquierda: 45 46 47 48 49 50 51 52 53 54 55 56 57 58, en la derecha:
-    36 37 38 39 40 41 43 44 45 46 47 48 49 50 51 52 55 59 61 63 64
-    65 66 67 68
-lista_expresiones (71)
-    en la izquierda: 59 60, en la derecha: 58
-resto_lista_expresiones (72)
-    en la izquierda: 61 62, en la derecha: 59 61
-comparacion (73)
-    en la izquierda: 63 64 65 66 67 68, en la derecha: 56
-constante (74)
-    en la izquierda: 69 70, en la derecha: 54
-constante_logica (75)
-    en la izquierda: 71 72, en la derecha: 69
-constante_entera (76)
-    en la izquierda: 73, en la derecha: 11 70
-identificador (77)
-    en la izquierda: 74, en la derecha: 14 15 18 23 58
+escritura (70)
+    en la izquierda: 45, en la derecha: 34
+retorno_funcion (71)
+    en la izquierda: 46, en la derecha: 35
+exp (72)
+    en la izquierda: 47 48 49 50 51 52 53 54 55 56 57 58 59 60, en la derecha:
+    38 39 40 41 42 43 45 46 47 48 49 50 51 52 53 54 57 61 63 65 66
+    67 68 69 70
+lista_expresiones (73)
+    en la izquierda: 61 62, en la derecha: 60
+resto_lista_expresiones (74)
+    en la izquierda: 63 64, en la derecha: 61 63
+comparacion (75)
+    en la izquierda: 65 66 67 68 69 70, en la derecha: 58
+constante (76)
+    en la izquierda: 71 72, en la derecha: 56
+constante_logica (77)
+    en la izquierda: 73 74, en la derecha: 71
+constante_entera (78)
+    en la izquierda: 75, en la derecha: 11 72
+identificador (79)
+    en la izquierda: 76, en la derecha: 14 15 25 60
 
 
 Estado 0
@@ -394,8 +402,10 @@ Estado 16
 
     $default  reduce usando la regla 17 (funciones)
 
-    funciones  ir al estado 23
-    funcion    ir al estado 24
+    funciones       ir al estado 23
+    fn_name         ir al estado 24
+    fn_declaracion  ir al estado 25
+    funcion         ir al estado 26
 
 
 Estado 17
@@ -407,16 +417,16 @@ Estado 17
 
 Estado 18
 
-   74 identificador: TOK_IDENTIFICADOR .
+   76 identificador: TOK_IDENTIFICADOR .
 
-    $default  reduce usando la regla 74 (identificador)
+    $default  reduce usando la regla 76 (identificador)
 
 
 Estado 19
 
     7 declaracion: clase identificadores . TOK_PUNTOYCOMA
 
-    TOK_PUNTOYCOMA  desplazar e ir al estado 25
+    TOK_PUNTOYCOMA  desplazar e ir al estado 27
 
 
 Estado 20
@@ -424,7 +434,7 @@ Estado 20
    14 identificadores: identificador .
    15                | identificador . TOK_COMA identificadores
 
-    TOK_COMA  desplazar e ir al estado 26
+    TOK_COMA  desplazar e ir al estado 28
 
     $default  reduce usando la regla 14 (identificadores)
 
@@ -433,19 +443,19 @@ Estado 21
 
    11 clase_vector: TOK_ARRAY tipo TOK_CORCHETEIZQUIERDO . constante_entera TOK_CORCHETEDERECHO
 
-    TOK_CONSTANTE_ENTERA  desplazar e ir al estado 27
+    TOK_CONSTANTE_ENTERA  desplazar e ir al estado 29
 
-    constante_entera  ir al estado 28
+    constante_entera  ir al estado 30
 
 
 Estado 22
 
-   18 funcion: TOK_FUNCTION . tipo identificador TOK_PARENTESISIZQUIERDO parametros_funcion TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA declaraciones_funcion sentencias TOK_LLAVEDERECHA
+   18 fn_name: TOK_FUNCTION . tipo TOK_IDENTIFICADOR
 
     TOK_INT      desplazar e ir al estado 6
     TOK_BOOLEAN  desplazar e ir al estado 7
 
-    tipo  ir al estado 29
+    tipo  ir al estado 31
 
 
 Estado 23
@@ -454,10 +464,41 @@ Estado 23
 
     $default  reduce usando la regla 4 (escritura2)
 
-    escritura2  ir al estado 30
+    escritura2  ir al estado 32
 
 
 Estado 24
+
+   19 fn_declaracion: fn_name . TOK_PARENTESISIZQUIERDO parametros_funcion TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA declaraciones_funcion
+
+    TOK_PARENTESISIZQUIERDO  desplazar e ir al estado 33
+
+
+Estado 25
+
+   20 funcion: fn_declaracion . sentencias TOK_LLAVEDERECHA
+
+    TOK_IF             desplazar e ir al estado 34
+    TOK_WHILE          desplazar e ir al estado 35
+    TOK_SCANF          desplazar e ir al estado 36
+    TOK_PRINTF         desplazar e ir al estado 37
+    TOK_RETURN         desplazar e ir al estado 38
+    TOK_IDENTIFICADOR  desplazar e ir al estado 39
+
+    sentencias        ir al estado 40
+    sentencia         ir al estado 41
+    sentencia_simple  ir al estado 42
+    bloque            ir al estado 43
+    asignacion        ir al estado 44
+    elemento_vector   ir al estado 45
+    condicional       ir al estado 46
+    bucle             ir al estado 47
+    lectura           ir al estado 48
+    escritura         ir al estado 49
+    retorno_funcion   ir al estado 50
+
+
+Estado 26
 
    16 funciones: funcion . funciones
 
@@ -465,1611 +506,1594 @@ Estado 24
 
     $default  reduce usando la regla 17 (funciones)
 
-    funciones  ir al estado 31
-    funcion    ir al estado 24
+    funciones       ir al estado 51
+    fn_name         ir al estado 24
+    fn_declaracion  ir al estado 25
+    funcion         ir al estado 26
 
 
-Estado 25
+Estado 27
 
     7 declaracion: clase identificadores TOK_PUNTOYCOMA .
 
     $default  reduce usando la regla 7 (declaracion)
 
 
-Estado 26
+Estado 28
 
    15 identificadores: identificador TOK_COMA . identificadores
 
     TOK_IDENTIFICADOR  desplazar e ir al estado 18
 
-    identificadores  ir al estado 32
+    identificadores  ir al estado 52
     identificador    ir al estado 20
-
-
-Estado 27
-
-   73 constante_entera: TOK_CONSTANTE_ENTERA .
-
-    $default  reduce usando la regla 73 (constante_entera)
-
-
-Estado 28
-
-   11 clase_vector: TOK_ARRAY tipo TOK_CORCHETEIZQUIERDO constante_entera . TOK_CORCHETEDERECHO
-
-    TOK_CORCHETEDERECHO  desplazar e ir al estado 33
 
 
 Estado 29
 
-   18 funcion: TOK_FUNCTION tipo . identificador TOK_PARENTESISIZQUIERDO parametros_funcion TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA declaraciones_funcion sentencias TOK_LLAVEDERECHA
+   75 constante_entera: TOK_CONSTANTE_ENTERA .
 
-    TOK_IDENTIFICADOR  desplazar e ir al estado 18
-
-    identificador  ir al estado 34
+    $default  reduce usando la regla 75 (constante_entera)
 
 
 Estado 30
 
-    1 programa: initialize_hash TOK_MAIN TOK_LLAVEIZQUIERDA declaraciones escritura1 funciones escritura2 . sentencias TOK_LLAVEDERECHA
+   11 clase_vector: TOK_ARRAY tipo TOK_CORCHETEIZQUIERDO constante_entera . TOK_CORCHETEDERECHO
 
-    TOK_IF             desplazar e ir al estado 35
-    TOK_WHILE          desplazar e ir al estado 36
-    TOK_SCANF          desplazar e ir al estado 37
-    TOK_PRINTF         desplazar e ir al estado 38
-    TOK_RETURN         desplazar e ir al estado 39
-    TOK_IDENTIFICADOR  desplazar e ir al estado 40
-
-    sentencias        ir al estado 41
-    sentencia         ir al estado 42
-    sentencia_simple  ir al estado 43
-    bloque            ir al estado 44
-    asignacion        ir al estado 45
-    elemento_vector   ir al estado 46
-    condicional       ir al estado 47
-    bucle             ir al estado 48
-    lectura           ir al estado 49
-    escritura         ir al estado 50
-    retorno_funcion   ir al estado 51
+    TOK_CORCHETEDERECHO  desplazar e ir al estado 53
 
 
 Estado 31
+
+   18 fn_name: TOK_FUNCTION tipo . TOK_IDENTIFICADOR
+
+    TOK_IDENTIFICADOR  desplazar e ir al estado 54
+
+
+Estado 32
+
+    1 programa: initialize_hash TOK_MAIN TOK_LLAVEIZQUIERDA declaraciones escritura1 funciones escritura2 . sentencias TOK_LLAVEDERECHA
+
+    TOK_IF             desplazar e ir al estado 34
+    TOK_WHILE          desplazar e ir al estado 35
+    TOK_SCANF          desplazar e ir al estado 36
+    TOK_PRINTF         desplazar e ir al estado 37
+    TOK_RETURN         desplazar e ir al estado 38
+    TOK_IDENTIFICADOR  desplazar e ir al estado 39
+
+    sentencias        ir al estado 55
+    sentencia         ir al estado 41
+    sentencia_simple  ir al estado 42
+    bloque            ir al estado 43
+    asignacion        ir al estado 44
+    elemento_vector   ir al estado 45
+    condicional       ir al estado 46
+    bucle             ir al estado 47
+    lectura           ir al estado 48
+    escritura         ir al estado 49
+    retorno_funcion   ir al estado 50
+
+
+Estado 33
+
+   19 fn_declaracion: fn_name TOK_PARENTESISIZQUIERDO . parametros_funcion TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA declaraciones_funcion
+
+    TOK_INT      desplazar e ir al estado 6
+    TOK_BOOLEAN  desplazar e ir al estado 7
+
+    $default  reduce usando la regla 22 (parametros_funcion)
+
+    tipo                ir al estado 56
+    parametros_funcion  ir al estado 57
+    parametro_funcion   ir al estado 58
+
+
+Estado 34
+
+   41 condicional: TOK_IF . TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA
+   42            | TOK_IF . TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA TOK_ELSE TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA
+
+    TOK_PARENTESISIZQUIERDO  desplazar e ir al estado 59
+
+
+Estado 35
+
+   43 bucle: TOK_WHILE . TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA
+
+    TOK_PARENTESISIZQUIERDO  desplazar e ir al estado 60
+
+
+Estado 36
+
+   44 lectura: TOK_SCANF . TOK_IDENTIFICADOR
+
+    TOK_IDENTIFICADOR  desplazar e ir al estado 61
+
+
+Estado 37
+
+   45 escritura: TOK_PRINTF . exp
+
+    TOK_PARENTESISIZQUIERDO  desplazar e ir al estado 62
+    TOK_MENOS                desplazar e ir al estado 63
+    TOK_NOT                  desplazar e ir al estado 64
+    TOK_IDENTIFICADOR        desplazar e ir al estado 65
+    TOK_CONSTANTE_ENTERA     desplazar e ir al estado 29
+    TOK_TRUE                 desplazar e ir al estado 66
+    TOK_FALSE                desplazar e ir al estado 67
+
+    elemento_vector   ir al estado 68
+    exp               ir al estado 69
+    constante         ir al estado 70
+    constante_logica  ir al estado 71
+    constante_entera  ir al estado 72
+    identificador     ir al estado 73
+
+
+Estado 38
+
+   46 retorno_funcion: TOK_RETURN . exp
+
+    TOK_PARENTESISIZQUIERDO  desplazar e ir al estado 62
+    TOK_MENOS                desplazar e ir al estado 63
+    TOK_NOT                  desplazar e ir al estado 64
+    TOK_IDENTIFICADOR        desplazar e ir al estado 65
+    TOK_CONSTANTE_ENTERA     desplazar e ir al estado 29
+    TOK_TRUE                 desplazar e ir al estado 66
+    TOK_FALSE                desplazar e ir al estado 67
+
+    elemento_vector   ir al estado 68
+    exp               ir al estado 74
+    constante         ir al estado 70
+    constante_logica  ir al estado 71
+    constante_entera  ir al estado 72
+    identificador     ir al estado 73
+
+
+Estado 39
+
+   38 asignacion: TOK_IDENTIFICADOR . TOK_ASIGNACION exp
+   40 elemento_vector: TOK_IDENTIFICADOR . TOK_CORCHETEIZQUIERDO exp TOK_CORCHETEDERECHO
+
+    TOK_CORCHETEIZQUIERDO  desplazar e ir al estado 75
+    TOK_ASIGNACION         desplazar e ir al estado 76
+
+
+Estado 40
+
+   20 funcion: fn_declaracion sentencias . TOK_LLAVEDERECHA
+
+    TOK_LLAVEDERECHA  desplazar e ir al estado 77
+
+
+Estado 41
+
+   28 sentencias: sentencia .
+   29           | sentencia . sentencias
+
+    TOK_IF             desplazar e ir al estado 34
+    TOK_WHILE          desplazar e ir al estado 35
+    TOK_SCANF          desplazar e ir al estado 36
+    TOK_PRINTF         desplazar e ir al estado 37
+    TOK_RETURN         desplazar e ir al estado 38
+    TOK_IDENTIFICADOR  desplazar e ir al estado 39
+
+    $default  reduce usando la regla 28 (sentencias)
+
+    sentencias        ir al estado 78
+    sentencia         ir al estado 41
+    sentencia_simple  ir al estado 42
+    bloque            ir al estado 43
+    asignacion        ir al estado 44
+    elemento_vector   ir al estado 45
+    condicional       ir al estado 46
+    bucle             ir al estado 47
+    lectura           ir al estado 48
+    escritura         ir al estado 49
+    retorno_funcion   ir al estado 50
+
+
+Estado 42
+
+   30 sentencia: sentencia_simple . TOK_PUNTOYCOMA
+
+    TOK_PUNTOYCOMA  desplazar e ir al estado 79
+
+
+Estado 43
+
+   31 sentencia: bloque .
+
+    $default  reduce usando la regla 31 (sentencia)
+
+
+Estado 44
+
+   32 sentencia_simple: asignacion .
+
+    $default  reduce usando la regla 32 (sentencia_simple)
+
+
+Estado 45
+
+   39 asignacion: elemento_vector . TOK_ASIGNACION exp
+
+    TOK_ASIGNACION  desplazar e ir al estado 80
+
+
+Estado 46
+
+   36 bloque: condicional .
+
+    $default  reduce usando la regla 36 (bloque)
+
+
+Estado 47
+
+   37 bloque: bucle .
+
+    $default  reduce usando la regla 37 (bloque)
+
+
+Estado 48
+
+   33 sentencia_simple: lectura .
+
+    $default  reduce usando la regla 33 (sentencia_simple)
+
+
+Estado 49
+
+   34 sentencia_simple: escritura .
+
+    $default  reduce usando la regla 34 (sentencia_simple)
+
+
+Estado 50
+
+   35 sentencia_simple: retorno_funcion .
+
+    $default  reduce usando la regla 35 (sentencia_simple)
+
+
+Estado 51
 
    16 funciones: funcion funciones .
 
     $default  reduce usando la regla 16 (funciones)
 
 
-Estado 32
+Estado 52
 
    15 identificadores: identificador TOK_COMA identificadores .
 
     $default  reduce usando la regla 15 (identificadores)
 
 
-Estado 33
+Estado 53
 
    11 clase_vector: TOK_ARRAY tipo TOK_CORCHETEIZQUIERDO constante_entera TOK_CORCHETEDERECHO .
 
     $default  reduce usando la regla 11 (clase_vector)
 
 
-Estado 34
-
-   18 funcion: TOK_FUNCTION tipo identificador . TOK_PARENTESISIZQUIERDO parametros_funcion TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA declaraciones_funcion sentencias TOK_LLAVEDERECHA
-
-    TOK_PARENTESISIZQUIERDO  desplazar e ir al estado 52
-
-
-Estado 35
-
-   39 condicional: TOK_IF . TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA
-   40            | TOK_IF . TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA TOK_ELSE TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA
-
-    TOK_PARENTESISIZQUIERDO  desplazar e ir al estado 53
-
-
-Estado 36
-
-   41 bucle: TOK_WHILE . TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA
-
-    TOK_PARENTESISIZQUIERDO  desplazar e ir al estado 54
-
-
-Estado 37
-
-   42 lectura: TOK_SCANF . TOK_IDENTIFICADOR
-
-    TOK_IDENTIFICADOR  desplazar e ir al estado 55
-
-
-Estado 38
-
-   43 escritura: TOK_PRINTF . exp
-
-    TOK_PARENTESISIZQUIERDO  desplazar e ir al estado 56
-    TOK_MENOS                desplazar e ir al estado 57
-    TOK_NOT                  desplazar e ir al estado 58
-    TOK_IDENTIFICADOR        desplazar e ir al estado 59
-    TOK_CONSTANTE_ENTERA     desplazar e ir al estado 27
-    TOK_TRUE                 desplazar e ir al estado 60
-    TOK_FALSE                desplazar e ir al estado 61
-
-    elemento_vector   ir al estado 62
-    exp               ir al estado 63
-    constante         ir al estado 64
-    constante_logica  ir al estado 65
-    constante_entera  ir al estado 66
-    identificador     ir al estado 67
-
-
-Estado 39
-
-   44 retorno_funcion: TOK_RETURN . exp
-
-    TOK_PARENTESISIZQUIERDO  desplazar e ir al estado 56
-    TOK_MENOS                desplazar e ir al estado 57
-    TOK_NOT                  desplazar e ir al estado 58
-    TOK_IDENTIFICADOR        desplazar e ir al estado 59
-    TOK_CONSTANTE_ENTERA     desplazar e ir al estado 27
-    TOK_TRUE                 desplazar e ir al estado 60
-    TOK_FALSE                desplazar e ir al estado 61
-
-    elemento_vector   ir al estado 62
-    exp               ir al estado 68
-    constante         ir al estado 64
-    constante_logica  ir al estado 65
-    constante_entera  ir al estado 66
-    identificador     ir al estado 67
-
-
-Estado 40
-
-   36 asignacion: TOK_IDENTIFICADOR . TOK_ASIGNACION exp
-   38 elemento_vector: TOK_IDENTIFICADOR . TOK_CORCHETEIZQUIERDO exp TOK_CORCHETEDERECHO
-
-    TOK_CORCHETEIZQUIERDO  desplazar e ir al estado 69
-    TOK_ASIGNACION         desplazar e ir al estado 70
-
-
-Estado 41
-
-    1 programa: initialize_hash TOK_MAIN TOK_LLAVEIZQUIERDA declaraciones escritura1 funciones escritura2 sentencias . TOK_LLAVEDERECHA
-
-    TOK_LLAVEDERECHA  desplazar e ir al estado 71
-
-
-Estado 42
-
-   26 sentencias: sentencia .
-   27           | sentencia . sentencias
-
-    TOK_IF             desplazar e ir al estado 35
-    TOK_WHILE          desplazar e ir al estado 36
-    TOK_SCANF          desplazar e ir al estado 37
-    TOK_PRINTF         desplazar e ir al estado 38
-    TOK_RETURN         desplazar e ir al estado 39
-    TOK_IDENTIFICADOR  desplazar e ir al estado 40
-
-    $default  reduce usando la regla 26 (sentencias)
-
-    sentencias        ir al estado 72
-    sentencia         ir al estado 42
-    sentencia_simple  ir al estado 43
-    bloque            ir al estado 44
-    asignacion        ir al estado 45
-    elemento_vector   ir al estado 46
-    condicional       ir al estado 47
-    bucle             ir al estado 48
-    lectura           ir al estado 49
-    escritura         ir al estado 50
-    retorno_funcion   ir al estado 51
-
-
-Estado 43
-
-   28 sentencia: sentencia_simple . TOK_PUNTOYCOMA
-
-    TOK_PUNTOYCOMA  desplazar e ir al estado 73
-
-
-Estado 44
-
-   29 sentencia: bloque .
-
-    $default  reduce usando la regla 29 (sentencia)
-
-
-Estado 45
-
-   30 sentencia_simple: asignacion .
-
-    $default  reduce usando la regla 30 (sentencia_simple)
-
-
-Estado 46
-
-   37 asignacion: elemento_vector . TOK_ASIGNACION exp
-
-    TOK_ASIGNACION  desplazar e ir al estado 74
-
-
-Estado 47
-
-   34 bloque: condicional .
-
-    $default  reduce usando la regla 34 (bloque)
-
-
-Estado 48
-
-   35 bloque: bucle .
-
-    $default  reduce usando la regla 35 (bloque)
-
-
-Estado 49
-
-   31 sentencia_simple: lectura .
-
-    $default  reduce usando la regla 31 (sentencia_simple)
-
-
-Estado 50
-
-   32 sentencia_simple: escritura .
-
-    $default  reduce usando la regla 32 (sentencia_simple)
-
-
-Estado 51
-
-   33 sentencia_simple: retorno_funcion .
-
-    $default  reduce usando la regla 33 (sentencia_simple)
-
-
-Estado 52
-
-   18 funcion: TOK_FUNCTION tipo identificador TOK_PARENTESISIZQUIERDO . parametros_funcion TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA declaraciones_funcion sentencias TOK_LLAVEDERECHA
-
-    TOK_INT      desplazar e ir al estado 6
-    TOK_BOOLEAN  desplazar e ir al estado 7
-
-    $default  reduce usando la regla 20 (parametros_funcion)
-
-    tipo                ir al estado 75
-    parametros_funcion  ir al estado 76
-    parametro_funcion   ir al estado 77
-
-
-Estado 53
-
-   39 condicional: TOK_IF TOK_PARENTESISIZQUIERDO . exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA
-   40            | TOK_IF TOK_PARENTESISIZQUIERDO . exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA TOK_ELSE TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA
-
-    TOK_PARENTESISIZQUIERDO  desplazar e ir al estado 56
-    TOK_MENOS                desplazar e ir al estado 57
-    TOK_NOT                  desplazar e ir al estado 58
-    TOK_IDENTIFICADOR        desplazar e ir al estado 59
-    TOK_CONSTANTE_ENTERA     desplazar e ir al estado 27
-    TOK_TRUE                 desplazar e ir al estado 60
-    TOK_FALSE                desplazar e ir al estado 61
-
-    elemento_vector   ir al estado 62
-    exp               ir al estado 78
-    constante         ir al estado 64
-    constante_logica  ir al estado 65
-    constante_entera  ir al estado 66
-    identificador     ir al estado 67
-
-
 Estado 54
 
-   41 bucle: TOK_WHILE TOK_PARENTESISIZQUIERDO . exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA
+   18 fn_name: TOK_FUNCTION tipo TOK_IDENTIFICADOR .
 
-    TOK_PARENTESISIZQUIERDO  desplazar e ir al estado 56
-    TOK_MENOS                desplazar e ir al estado 57
-    TOK_NOT                  desplazar e ir al estado 58
-    TOK_IDENTIFICADOR        desplazar e ir al estado 59
-    TOK_CONSTANTE_ENTERA     desplazar e ir al estado 27
-    TOK_TRUE                 desplazar e ir al estado 60
-    TOK_FALSE                desplazar e ir al estado 61
-
-    elemento_vector   ir al estado 62
-    exp               ir al estado 79
-    constante         ir al estado 64
-    constante_logica  ir al estado 65
-    constante_entera  ir al estado 66
-    identificador     ir al estado 67
+    $default  reduce usando la regla 18 (fn_name)
 
 
 Estado 55
 
-   42 lectura: TOK_SCANF TOK_IDENTIFICADOR .
+    1 programa: initialize_hash TOK_MAIN TOK_LLAVEIZQUIERDA declaraciones escritura1 funciones escritura2 sentencias . TOK_LLAVEDERECHA
 
-    $default  reduce usando la regla 42 (lectura)
+    TOK_LLAVEDERECHA  desplazar e ir al estado 81
 
 
 Estado 56
 
-   55 exp: TOK_PARENTESISIZQUIERDO . exp TOK_PARENTESISDERECHO
-   56    | TOK_PARENTESISIZQUIERDO . comparacion TOK_PARENTESISDERECHO
+   25 parametro_funcion: tipo . identificador
 
-    TOK_PARENTESISIZQUIERDO  desplazar e ir al estado 56
-    TOK_MENOS                desplazar e ir al estado 57
-    TOK_NOT                  desplazar e ir al estado 58
-    TOK_IDENTIFICADOR        desplazar e ir al estado 59
-    TOK_CONSTANTE_ENTERA     desplazar e ir al estado 27
-    TOK_TRUE                 desplazar e ir al estado 60
-    TOK_FALSE                desplazar e ir al estado 61
+    TOK_IDENTIFICADOR  desplazar e ir al estado 18
 
-    elemento_vector   ir al estado 62
-    exp               ir al estado 80
-    comparacion       ir al estado 81
-    constante         ir al estado 64
-    constante_logica  ir al estado 65
-    constante_entera  ir al estado 66
-    identificador     ir al estado 67
+    identificador  ir al estado 82
 
 
 Estado 57
 
-   49 exp: TOK_MENOS . exp
+   19 fn_declaracion: fn_name TOK_PARENTESISIZQUIERDO parametros_funcion . TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA declaraciones_funcion
 
-    TOK_PARENTESISIZQUIERDO  desplazar e ir al estado 56
-    TOK_MENOS                desplazar e ir al estado 57
-    TOK_NOT                  desplazar e ir al estado 58
-    TOK_IDENTIFICADOR        desplazar e ir al estado 59
-    TOK_CONSTANTE_ENTERA     desplazar e ir al estado 27
-    TOK_TRUE                 desplazar e ir al estado 60
-    TOK_FALSE                desplazar e ir al estado 61
-
-    elemento_vector   ir al estado 62
-    exp               ir al estado 82
-    constante         ir al estado 64
-    constante_logica  ir al estado 65
-    constante_entera  ir al estado 66
-    identificador     ir al estado 67
+    TOK_PARENTESISDERECHO  desplazar e ir al estado 83
 
 
 Estado 58
 
-   52 exp: TOK_NOT . exp
+   21 parametros_funcion: parametro_funcion . resto_parametros_funcion
 
-    TOK_PARENTESISIZQUIERDO  desplazar e ir al estado 56
-    TOK_MENOS                desplazar e ir al estado 57
-    TOK_NOT                  desplazar e ir al estado 58
-    TOK_IDENTIFICADOR        desplazar e ir al estado 59
-    TOK_CONSTANTE_ENTERA     desplazar e ir al estado 27
-    TOK_TRUE                 desplazar e ir al estado 60
-    TOK_FALSE                desplazar e ir al estado 61
+    TOK_PUNTOYCOMA  desplazar e ir al estado 84
 
-    elemento_vector   ir al estado 62
-    exp               ir al estado 83
-    constante         ir al estado 64
-    constante_logica  ir al estado 65
-    constante_entera  ir al estado 66
-    identificador     ir al estado 67
+    $default  reduce usando la regla 24 (resto_parametros_funcion)
+
+    resto_parametros_funcion  ir al estado 85
 
 
 Estado 59
 
-   38 elemento_vector: TOK_IDENTIFICADOR . TOK_CORCHETEIZQUIERDO exp TOK_CORCHETEDERECHO
-   53 exp: TOK_IDENTIFICADOR .
-   74 identificador: TOK_IDENTIFICADOR .
+   41 condicional: TOK_IF TOK_PARENTESISIZQUIERDO . exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA
+   42            | TOK_IF TOK_PARENTESISIZQUIERDO . exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA TOK_ELSE TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA
 
-    TOK_CORCHETEIZQUIERDO  desplazar e ir al estado 69
+    TOK_PARENTESISIZQUIERDO  desplazar e ir al estado 62
+    TOK_MENOS                desplazar e ir al estado 63
+    TOK_NOT                  desplazar e ir al estado 64
+    TOK_IDENTIFICADOR        desplazar e ir al estado 65
+    TOK_CONSTANTE_ENTERA     desplazar e ir al estado 29
+    TOK_TRUE                 desplazar e ir al estado 66
+    TOK_FALSE                desplazar e ir al estado 67
 
-    TOK_PARENTESISIZQUIERDO  reduce usando la regla 74 (identificador)
-    $default                 reduce usando la regla 53 (exp)
+    elemento_vector   ir al estado 68
+    exp               ir al estado 86
+    constante         ir al estado 70
+    constante_logica  ir al estado 71
+    constante_entera  ir al estado 72
+    identificador     ir al estado 73
 
 
 Estado 60
 
-   71 constante_logica: TOK_TRUE .
+   43 bucle: TOK_WHILE TOK_PARENTESISIZQUIERDO . exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA
 
-    $default  reduce usando la regla 71 (constante_logica)
+    TOK_PARENTESISIZQUIERDO  desplazar e ir al estado 62
+    TOK_MENOS                desplazar e ir al estado 63
+    TOK_NOT                  desplazar e ir al estado 64
+    TOK_IDENTIFICADOR        desplazar e ir al estado 65
+    TOK_CONSTANTE_ENTERA     desplazar e ir al estado 29
+    TOK_TRUE                 desplazar e ir al estado 66
+    TOK_FALSE                desplazar e ir al estado 67
+
+    elemento_vector   ir al estado 68
+    exp               ir al estado 87
+    constante         ir al estado 70
+    constante_logica  ir al estado 71
+    constante_entera  ir al estado 72
+    identificador     ir al estado 73
 
 
 Estado 61
 
-   72 constante_logica: TOK_FALSE .
+   44 lectura: TOK_SCANF TOK_IDENTIFICADOR .
 
-    $default  reduce usando la regla 72 (constante_logica)
+    $default  reduce usando la regla 44 (lectura)
 
 
 Estado 62
 
-   57 exp: elemento_vector .
+   57 exp: TOK_PARENTESISIZQUIERDO . exp TOK_PARENTESISDERECHO
+   58    | TOK_PARENTESISIZQUIERDO . comparacion TOK_PARENTESISDERECHO
 
-    $default  reduce usando la regla 57 (exp)
+    TOK_PARENTESISIZQUIERDO  desplazar e ir al estado 62
+    TOK_MENOS                desplazar e ir al estado 63
+    TOK_NOT                  desplazar e ir al estado 64
+    TOK_IDENTIFICADOR        desplazar e ir al estado 65
+    TOK_CONSTANTE_ENTERA     desplazar e ir al estado 29
+    TOK_TRUE                 desplazar e ir al estado 66
+    TOK_FALSE                desplazar e ir al estado 67
+
+    elemento_vector   ir al estado 68
+    exp               ir al estado 88
+    comparacion       ir al estado 89
+    constante         ir al estado 70
+    constante_logica  ir al estado 71
+    constante_entera  ir al estado 72
+    identificador     ir al estado 73
 
 
 Estado 63
 
-   43 escritura: TOK_PRINTF exp .
-   45 exp: exp . TOK_MAS exp
-   46    | exp . TOK_MENOS exp
-   47    | exp . TOK_DIVISION exp
-   48    | exp . TOK_ASTERISCO exp
-   50    | exp . TOK_AND exp
-   51    | exp . TOK_OR exp
+   51 exp: TOK_MENOS . exp
 
-    TOK_MAS        desplazar e ir al estado 84
-    TOK_MENOS      desplazar e ir al estado 85
-    TOK_DIVISION   desplazar e ir al estado 86
-    TOK_ASTERISCO  desplazar e ir al estado 87
-    TOK_AND        desplazar e ir al estado 88
-    TOK_OR         desplazar e ir al estado 89
+    TOK_PARENTESISIZQUIERDO  desplazar e ir al estado 62
+    TOK_MENOS                desplazar e ir al estado 63
+    TOK_NOT                  desplazar e ir al estado 64
+    TOK_IDENTIFICADOR        desplazar e ir al estado 65
+    TOK_CONSTANTE_ENTERA     desplazar e ir al estado 29
+    TOK_TRUE                 desplazar e ir al estado 66
+    TOK_FALSE                desplazar e ir al estado 67
 
-    $default  reduce usando la regla 43 (escritura)
+    elemento_vector   ir al estado 68
+    exp               ir al estado 90
+    constante         ir al estado 70
+    constante_logica  ir al estado 71
+    constante_entera  ir al estado 72
+    identificador     ir al estado 73
 
 
 Estado 64
 
-   54 exp: constante .
+   54 exp: TOK_NOT . exp
 
-    $default  reduce usando la regla 54 (exp)
+    TOK_PARENTESISIZQUIERDO  desplazar e ir al estado 62
+    TOK_MENOS                desplazar e ir al estado 63
+    TOK_NOT                  desplazar e ir al estado 64
+    TOK_IDENTIFICADOR        desplazar e ir al estado 65
+    TOK_CONSTANTE_ENTERA     desplazar e ir al estado 29
+    TOK_TRUE                 desplazar e ir al estado 66
+    TOK_FALSE                desplazar e ir al estado 67
+
+    elemento_vector   ir al estado 68
+    exp               ir al estado 91
+    constante         ir al estado 70
+    constante_logica  ir al estado 71
+    constante_entera  ir al estado 72
+    identificador     ir al estado 73
 
 
 Estado 65
 
-   69 constante: constante_logica .
+   40 elemento_vector: TOK_IDENTIFICADOR . TOK_CORCHETEIZQUIERDO exp TOK_CORCHETEDERECHO
+   55 exp: TOK_IDENTIFICADOR .
+   76 identificador: TOK_IDENTIFICADOR .
 
-    $default  reduce usando la regla 69 (constante)
+    TOK_CORCHETEIZQUIERDO  desplazar e ir al estado 75
+
+    TOK_PARENTESISIZQUIERDO  reduce usando la regla 76 (identificador)
+    $default                 reduce usando la regla 55 (exp)
 
 
 Estado 66
 
-   70 constante: constante_entera .
+   73 constante_logica: TOK_TRUE .
 
-    $default  reduce usando la regla 70 (constante)
+    $default  reduce usando la regla 73 (constante_logica)
 
 
 Estado 67
 
-   58 exp: identificador . TOK_PARENTESISIZQUIERDO lista_expresiones TOK_PARENTESISDERECHO
+   74 constante_logica: TOK_FALSE .
 
-    TOK_PARENTESISIZQUIERDO  desplazar e ir al estado 90
+    $default  reduce usando la regla 74 (constante_logica)
 
 
 Estado 68
 
-   44 retorno_funcion: TOK_RETURN exp .
-   45 exp: exp . TOK_MAS exp
-   46    | exp . TOK_MENOS exp
-   47    | exp . TOK_DIVISION exp
-   48    | exp . TOK_ASTERISCO exp
-   50    | exp . TOK_AND exp
-   51    | exp . TOK_OR exp
+   59 exp: elemento_vector .
 
-    TOK_MAS        desplazar e ir al estado 84
-    TOK_MENOS      desplazar e ir al estado 85
-    TOK_DIVISION   desplazar e ir al estado 86
-    TOK_ASTERISCO  desplazar e ir al estado 87
-    TOK_AND        desplazar e ir al estado 88
-    TOK_OR         desplazar e ir al estado 89
-
-    $default  reduce usando la regla 44 (retorno_funcion)
+    $default  reduce usando la regla 59 (exp)
 
 
 Estado 69
 
-   38 elemento_vector: TOK_IDENTIFICADOR TOK_CORCHETEIZQUIERDO . exp TOK_CORCHETEDERECHO
+   45 escritura: TOK_PRINTF exp .
+   47 exp: exp . TOK_MAS exp
+   48    | exp . TOK_MENOS exp
+   49    | exp . TOK_DIVISION exp
+   50    | exp . TOK_ASTERISCO exp
+   52    | exp . TOK_AND exp
+   53    | exp . TOK_OR exp
 
-    TOK_PARENTESISIZQUIERDO  desplazar e ir al estado 56
-    TOK_MENOS                desplazar e ir al estado 57
-    TOK_NOT                  desplazar e ir al estado 58
-    TOK_IDENTIFICADOR        desplazar e ir al estado 59
-    TOK_CONSTANTE_ENTERA     desplazar e ir al estado 27
-    TOK_TRUE                 desplazar e ir al estado 60
-    TOK_FALSE                desplazar e ir al estado 61
+    TOK_MAS        desplazar e ir al estado 92
+    TOK_MENOS      desplazar e ir al estado 93
+    TOK_DIVISION   desplazar e ir al estado 94
+    TOK_ASTERISCO  desplazar e ir al estado 95
+    TOK_AND        desplazar e ir al estado 96
+    TOK_OR         desplazar e ir al estado 97
 
-    elemento_vector   ir al estado 62
-    exp               ir al estado 91
-    constante         ir al estado 64
-    constante_logica  ir al estado 65
-    constante_entera  ir al estado 66
-    identificador     ir al estado 67
+    $default  reduce usando la regla 45 (escritura)
 
 
 Estado 70
 
-   36 asignacion: TOK_IDENTIFICADOR TOK_ASIGNACION . exp
+   56 exp: constante .
 
-    TOK_PARENTESISIZQUIERDO  desplazar e ir al estado 56
-    TOK_MENOS                desplazar e ir al estado 57
-    TOK_NOT                  desplazar e ir al estado 58
-    TOK_IDENTIFICADOR        desplazar e ir al estado 59
-    TOK_CONSTANTE_ENTERA     desplazar e ir al estado 27
-    TOK_TRUE                 desplazar e ir al estado 60
-    TOK_FALSE                desplazar e ir al estado 61
-
-    elemento_vector   ir al estado 62
-    exp               ir al estado 92
-    constante         ir al estado 64
-    constante_logica  ir al estado 65
-    constante_entera  ir al estado 66
-    identificador     ir al estado 67
+    $default  reduce usando la regla 56 (exp)
 
 
 Estado 71
+
+   71 constante: constante_logica .
+
+    $default  reduce usando la regla 71 (constante)
+
+
+Estado 72
+
+   72 constante: constante_entera .
+
+    $default  reduce usando la regla 72 (constante)
+
+
+Estado 73
+
+   60 exp: identificador . TOK_PARENTESISIZQUIERDO lista_expresiones TOK_PARENTESISDERECHO
+
+    TOK_PARENTESISIZQUIERDO  desplazar e ir al estado 98
+
+
+Estado 74
+
+   46 retorno_funcion: TOK_RETURN exp .
+   47 exp: exp . TOK_MAS exp
+   48    | exp . TOK_MENOS exp
+   49    | exp . TOK_DIVISION exp
+   50    | exp . TOK_ASTERISCO exp
+   52    | exp . TOK_AND exp
+   53    | exp . TOK_OR exp
+
+    TOK_MAS        desplazar e ir al estado 92
+    TOK_MENOS      desplazar e ir al estado 93
+    TOK_DIVISION   desplazar e ir al estado 94
+    TOK_ASTERISCO  desplazar e ir al estado 95
+    TOK_AND        desplazar e ir al estado 96
+    TOK_OR         desplazar e ir al estado 97
+
+    $default  reduce usando la regla 46 (retorno_funcion)
+
+
+Estado 75
+
+   40 elemento_vector: TOK_IDENTIFICADOR TOK_CORCHETEIZQUIERDO . exp TOK_CORCHETEDERECHO
+
+    TOK_PARENTESISIZQUIERDO  desplazar e ir al estado 62
+    TOK_MENOS                desplazar e ir al estado 63
+    TOK_NOT                  desplazar e ir al estado 64
+    TOK_IDENTIFICADOR        desplazar e ir al estado 65
+    TOK_CONSTANTE_ENTERA     desplazar e ir al estado 29
+    TOK_TRUE                 desplazar e ir al estado 66
+    TOK_FALSE                desplazar e ir al estado 67
+
+    elemento_vector   ir al estado 68
+    exp               ir al estado 99
+    constante         ir al estado 70
+    constante_logica  ir al estado 71
+    constante_entera  ir al estado 72
+    identificador     ir al estado 73
+
+
+Estado 76
+
+   38 asignacion: TOK_IDENTIFICADOR TOK_ASIGNACION . exp
+
+    TOK_PARENTESISIZQUIERDO  desplazar e ir al estado 62
+    TOK_MENOS                desplazar e ir al estado 63
+    TOK_NOT                  desplazar e ir al estado 64
+    TOK_IDENTIFICADOR        desplazar e ir al estado 65
+    TOK_CONSTANTE_ENTERA     desplazar e ir al estado 29
+    TOK_TRUE                 desplazar e ir al estado 66
+    TOK_FALSE                desplazar e ir al estado 67
+
+    elemento_vector   ir al estado 68
+    exp               ir al estado 100
+    constante         ir al estado 70
+    constante_logica  ir al estado 71
+    constante_entera  ir al estado 72
+    identificador     ir al estado 73
+
+
+Estado 77
+
+   20 funcion: fn_declaracion sentencias TOK_LLAVEDERECHA .
+
+    $default  reduce usando la regla 20 (funcion)
+
+
+Estado 78
+
+   29 sentencias: sentencia sentencias .
+
+    $default  reduce usando la regla 29 (sentencias)
+
+
+Estado 79
+
+   30 sentencia: sentencia_simple TOK_PUNTOYCOMA .
+
+    $default  reduce usando la regla 30 (sentencia)
+
+
+Estado 80
+
+   39 asignacion: elemento_vector TOK_ASIGNACION . exp
+
+    TOK_PARENTESISIZQUIERDO  desplazar e ir al estado 62
+    TOK_MENOS                desplazar e ir al estado 63
+    TOK_NOT                  desplazar e ir al estado 64
+    TOK_IDENTIFICADOR        desplazar e ir al estado 65
+    TOK_CONSTANTE_ENTERA     desplazar e ir al estado 29
+    TOK_TRUE                 desplazar e ir al estado 66
+    TOK_FALSE                desplazar e ir al estado 67
+
+    elemento_vector   ir al estado 68
+    exp               ir al estado 101
+    constante         ir al estado 70
+    constante_logica  ir al estado 71
+    constante_entera  ir al estado 72
+    identificador     ir al estado 73
+
+
+Estado 81
 
     1 programa: initialize_hash TOK_MAIN TOK_LLAVEIZQUIERDA declaraciones escritura1 funciones escritura2 sentencias TOK_LLAVEDERECHA .
 
     $default  reduce usando la regla 1 (programa)
 
 
-Estado 72
-
-   27 sentencias: sentencia sentencias .
-
-    $default  reduce usando la regla 27 (sentencias)
-
-
-Estado 73
-
-   28 sentencia: sentencia_simple TOK_PUNTOYCOMA .
-
-    $default  reduce usando la regla 28 (sentencia)
-
-
-Estado 74
-
-   37 asignacion: elemento_vector TOK_ASIGNACION . exp
-
-    TOK_PARENTESISIZQUIERDO  desplazar e ir al estado 56
-    TOK_MENOS                desplazar e ir al estado 57
-    TOK_NOT                  desplazar e ir al estado 58
-    TOK_IDENTIFICADOR        desplazar e ir al estado 59
-    TOK_CONSTANTE_ENTERA     desplazar e ir al estado 27
-    TOK_TRUE                 desplazar e ir al estado 60
-    TOK_FALSE                desplazar e ir al estado 61
-
-    elemento_vector   ir al estado 62
-    exp               ir al estado 93
-    constante         ir al estado 64
-    constante_logica  ir al estado 65
-    constante_entera  ir al estado 66
-    identificador     ir al estado 67
-
-
-Estado 75
-
-   23 parametro_funcion: tipo . identificador
-
-    TOK_IDENTIFICADOR  desplazar e ir al estado 18
-
-    identificador  ir al estado 94
-
-
-Estado 76
-
-   18 funcion: TOK_FUNCTION tipo identificador TOK_PARENTESISIZQUIERDO parametros_funcion . TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA declaraciones_funcion sentencias TOK_LLAVEDERECHA
-
-    TOK_PARENTESISDERECHO  desplazar e ir al estado 95
-
-
-Estado 77
-
-   19 parametros_funcion: parametro_funcion . resto_parametros_funcion
-
-    TOK_PUNTOYCOMA  desplazar e ir al estado 96
-
-    $default  reduce usando la regla 22 (resto_parametros_funcion)
-
-    resto_parametros_funcion  ir al estado 97
-
-
-Estado 78
-
-   39 condicional: TOK_IF TOK_PARENTESISIZQUIERDO exp . TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA
-   40            | TOK_IF TOK_PARENTESISIZQUIERDO exp . TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA TOK_ELSE TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA
-   45 exp: exp . TOK_MAS exp
-   46    | exp . TOK_MENOS exp
-   47    | exp . TOK_DIVISION exp
-   48    | exp . TOK_ASTERISCO exp
-   50    | exp . TOK_AND exp
-   51    | exp . TOK_OR exp
-
-    TOK_PARENTESISDERECHO  desplazar e ir al estado 98
-    TOK_MAS                desplazar e ir al estado 84
-    TOK_MENOS              desplazar e ir al estado 85
-    TOK_DIVISION           desplazar e ir al estado 86
-    TOK_ASTERISCO          desplazar e ir al estado 87
-    TOK_AND                desplazar e ir al estado 88
-    TOK_OR                 desplazar e ir al estado 89
-
-
-Estado 79
-
-   41 bucle: TOK_WHILE TOK_PARENTESISIZQUIERDO exp . TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA
-   45 exp: exp . TOK_MAS exp
-   46    | exp . TOK_MENOS exp
-   47    | exp . TOK_DIVISION exp
-   48    | exp . TOK_ASTERISCO exp
-   50    | exp . TOK_AND exp
-   51    | exp . TOK_OR exp
-
-    TOK_PARENTESISDERECHO  desplazar e ir al estado 99
-    TOK_MAS                desplazar e ir al estado 84
-    TOK_MENOS              desplazar e ir al estado 85
-    TOK_DIVISION           desplazar e ir al estado 86
-    TOK_ASTERISCO          desplazar e ir al estado 87
-    TOK_AND                desplazar e ir al estado 88
-    TOK_OR                 desplazar e ir al estado 89
-
-
-Estado 80
-
-   45 exp: exp . TOK_MAS exp
-   46    | exp . TOK_MENOS exp
-   47    | exp . TOK_DIVISION exp
-   48    | exp . TOK_ASTERISCO exp
-   50    | exp . TOK_AND exp
-   51    | exp . TOK_OR exp
-   55    | TOK_PARENTESISIZQUIERDO exp . TOK_PARENTESISDERECHO
-   63 comparacion: exp . TOK_IGUAL exp
-   64            | exp . TOK_DISTINTO exp
-   65            | exp . TOK_MENORIGUAL exp
-   66            | exp . TOK_MAYORIGUAL exp
-   67            | exp . TOK_MENOR exp
-   68            | exp . TOK_MAYOR exp
-
-    TOK_PARENTESISDERECHO  desplazar e ir al estado 100
-    TOK_MAS                desplazar e ir al estado 84
-    TOK_MENOS              desplazar e ir al estado 85
-    TOK_DIVISION           desplazar e ir al estado 86
-    TOK_ASTERISCO          desplazar e ir al estado 87
-    TOK_AND                desplazar e ir al estado 88
-    TOK_OR                 desplazar e ir al estado 89
-    TOK_IGUAL              desplazar e ir al estado 101
-    TOK_DISTINTO           desplazar e ir al estado 102
-    TOK_MENORIGUAL         desplazar e ir al estado 103
-    TOK_MAYORIGUAL         desplazar e ir al estado 104
-    TOK_MENOR              desplazar e ir al estado 105
-    TOK_MAYOR              desplazar e ir al estado 106
-
-
-Estado 81
-
-   56 exp: TOK_PARENTESISIZQUIERDO comparacion . TOK_PARENTESISDERECHO
-
-    TOK_PARENTESISDERECHO  desplazar e ir al estado 107
-
-
 Estado 82
 
-   45 exp: exp . TOK_MAS exp
-   46    | exp . TOK_MENOS exp
-   47    | exp . TOK_DIVISION exp
-   48    | exp . TOK_ASTERISCO exp
-   49    | TOK_MENOS exp .
-   50    | exp . TOK_AND exp
-   51    | exp . TOK_OR exp
+   25 parametro_funcion: tipo identificador .
 
-    TOK_DIVISION   desplazar e ir al estado 86
-    TOK_ASTERISCO  desplazar e ir al estado 87
-
-    $default  reduce usando la regla 49 (exp)
+    $default  reduce usando la regla 25 (parametro_funcion)
 
 
 Estado 83
 
-   45 exp: exp . TOK_MAS exp
-   46    | exp . TOK_MENOS exp
-   47    | exp . TOK_DIVISION exp
-   48    | exp . TOK_ASTERISCO exp
-   50    | exp . TOK_AND exp
-   51    | exp . TOK_OR exp
-   52    | TOK_NOT exp .
+   19 fn_declaracion: fn_name TOK_PARENTESISIZQUIERDO parametros_funcion TOK_PARENTESISDERECHO . TOK_LLAVEIZQUIERDA declaraciones_funcion
 
-    $default  reduce usando la regla 52 (exp)
+    TOK_LLAVEIZQUIERDA  desplazar e ir al estado 102
 
 
 Estado 84
 
-   45 exp: exp TOK_MAS . exp
-
-    TOK_PARENTESISIZQUIERDO  desplazar e ir al estado 56
-    TOK_MENOS                desplazar e ir al estado 57
-    TOK_NOT                  desplazar e ir al estado 58
-    TOK_IDENTIFICADOR        desplazar e ir al estado 59
-    TOK_CONSTANTE_ENTERA     desplazar e ir al estado 27
-    TOK_TRUE                 desplazar e ir al estado 60
-    TOK_FALSE                desplazar e ir al estado 61
-
-    elemento_vector   ir al estado 62
-    exp               ir al estado 108
-    constante         ir al estado 64
-    constante_logica  ir al estado 65
-    constante_entera  ir al estado 66
-    identificador     ir al estado 67
-
-
-Estado 85
-
-   46 exp: exp TOK_MENOS . exp
-
-    TOK_PARENTESISIZQUIERDO  desplazar e ir al estado 56
-    TOK_MENOS                desplazar e ir al estado 57
-    TOK_NOT                  desplazar e ir al estado 58
-    TOK_IDENTIFICADOR        desplazar e ir al estado 59
-    TOK_CONSTANTE_ENTERA     desplazar e ir al estado 27
-    TOK_TRUE                 desplazar e ir al estado 60
-    TOK_FALSE                desplazar e ir al estado 61
-
-    elemento_vector   ir al estado 62
-    exp               ir al estado 109
-    constante         ir al estado 64
-    constante_logica  ir al estado 65
-    constante_entera  ir al estado 66
-    identificador     ir al estado 67
-
-
-Estado 86
-
-   47 exp: exp TOK_DIVISION . exp
-
-    TOK_PARENTESISIZQUIERDO  desplazar e ir al estado 56
-    TOK_MENOS                desplazar e ir al estado 57
-    TOK_NOT                  desplazar e ir al estado 58
-    TOK_IDENTIFICADOR        desplazar e ir al estado 59
-    TOK_CONSTANTE_ENTERA     desplazar e ir al estado 27
-    TOK_TRUE                 desplazar e ir al estado 60
-    TOK_FALSE                desplazar e ir al estado 61
-
-    elemento_vector   ir al estado 62
-    exp               ir al estado 110
-    constante         ir al estado 64
-    constante_logica  ir al estado 65
-    constante_entera  ir al estado 66
-    identificador     ir al estado 67
-
-
-Estado 87
-
-   48 exp: exp TOK_ASTERISCO . exp
-
-    TOK_PARENTESISIZQUIERDO  desplazar e ir al estado 56
-    TOK_MENOS                desplazar e ir al estado 57
-    TOK_NOT                  desplazar e ir al estado 58
-    TOK_IDENTIFICADOR        desplazar e ir al estado 59
-    TOK_CONSTANTE_ENTERA     desplazar e ir al estado 27
-    TOK_TRUE                 desplazar e ir al estado 60
-    TOK_FALSE                desplazar e ir al estado 61
-
-    elemento_vector   ir al estado 62
-    exp               ir al estado 111
-    constante         ir al estado 64
-    constante_logica  ir al estado 65
-    constante_entera  ir al estado 66
-    identificador     ir al estado 67
-
-
-Estado 88
-
-   50 exp: exp TOK_AND . exp
-
-    TOK_PARENTESISIZQUIERDO  desplazar e ir al estado 56
-    TOK_MENOS                desplazar e ir al estado 57
-    TOK_NOT                  desplazar e ir al estado 58
-    TOK_IDENTIFICADOR        desplazar e ir al estado 59
-    TOK_CONSTANTE_ENTERA     desplazar e ir al estado 27
-    TOK_TRUE                 desplazar e ir al estado 60
-    TOK_FALSE                desplazar e ir al estado 61
-
-    elemento_vector   ir al estado 62
-    exp               ir al estado 112
-    constante         ir al estado 64
-    constante_logica  ir al estado 65
-    constante_entera  ir al estado 66
-    identificador     ir al estado 67
-
-
-Estado 89
-
-   51 exp: exp TOK_OR . exp
-
-    TOK_PARENTESISIZQUIERDO  desplazar e ir al estado 56
-    TOK_MENOS                desplazar e ir al estado 57
-    TOK_NOT                  desplazar e ir al estado 58
-    TOK_IDENTIFICADOR        desplazar e ir al estado 59
-    TOK_CONSTANTE_ENTERA     desplazar e ir al estado 27
-    TOK_TRUE                 desplazar e ir al estado 60
-    TOK_FALSE                desplazar e ir al estado 61
-
-    elemento_vector   ir al estado 62
-    exp               ir al estado 113
-    constante         ir al estado 64
-    constante_logica  ir al estado 65
-    constante_entera  ir al estado 66
-    identificador     ir al estado 67
-
-
-Estado 90
-
-   58 exp: identificador TOK_PARENTESISIZQUIERDO . lista_expresiones TOK_PARENTESISDERECHO
-
-    TOK_PARENTESISIZQUIERDO  desplazar e ir al estado 56
-    TOK_MENOS                desplazar e ir al estado 57
-    TOK_NOT                  desplazar e ir al estado 58
-    TOK_IDENTIFICADOR        desplazar e ir al estado 59
-    TOK_CONSTANTE_ENTERA     desplazar e ir al estado 27
-    TOK_TRUE                 desplazar e ir al estado 60
-    TOK_FALSE                desplazar e ir al estado 61
-
-    $default  reduce usando la regla 60 (lista_expresiones)
-
-    elemento_vector    ir al estado 62
-    exp                ir al estado 114
-    lista_expresiones  ir al estado 115
-    constante          ir al estado 64
-    constante_logica   ir al estado 65
-    constante_entera   ir al estado 66
-    identificador      ir al estado 67
-
-
-Estado 91
-
-   38 elemento_vector: TOK_IDENTIFICADOR TOK_CORCHETEIZQUIERDO exp . TOK_CORCHETEDERECHO
-   45 exp: exp . TOK_MAS exp
-   46    | exp . TOK_MENOS exp
-   47    | exp . TOK_DIVISION exp
-   48    | exp . TOK_ASTERISCO exp
-   50    | exp . TOK_AND exp
-   51    | exp . TOK_OR exp
-
-    TOK_CORCHETEDERECHO  desplazar e ir al estado 116
-    TOK_MAS              desplazar e ir al estado 84
-    TOK_MENOS            desplazar e ir al estado 85
-    TOK_DIVISION         desplazar e ir al estado 86
-    TOK_ASTERISCO        desplazar e ir al estado 87
-    TOK_AND              desplazar e ir al estado 88
-    TOK_OR               desplazar e ir al estado 89
-
-
-Estado 92
-
-   36 asignacion: TOK_IDENTIFICADOR TOK_ASIGNACION exp .
-   45 exp: exp . TOK_MAS exp
-   46    | exp . TOK_MENOS exp
-   47    | exp . TOK_DIVISION exp
-   48    | exp . TOK_ASTERISCO exp
-   50    | exp . TOK_AND exp
-   51    | exp . TOK_OR exp
-
-    TOK_MAS        desplazar e ir al estado 84
-    TOK_MENOS      desplazar e ir al estado 85
-    TOK_DIVISION   desplazar e ir al estado 86
-    TOK_ASTERISCO  desplazar e ir al estado 87
-    TOK_AND        desplazar e ir al estado 88
-    TOK_OR         desplazar e ir al estado 89
-
-    $default  reduce usando la regla 36 (asignacion)
-
-
-Estado 93
-
-   37 asignacion: elemento_vector TOK_ASIGNACION exp .
-   45 exp: exp . TOK_MAS exp
-   46    | exp . TOK_MENOS exp
-   47    | exp . TOK_DIVISION exp
-   48    | exp . TOK_ASTERISCO exp
-   50    | exp . TOK_AND exp
-   51    | exp . TOK_OR exp
-
-    TOK_MAS        desplazar e ir al estado 84
-    TOK_MENOS      desplazar e ir al estado 85
-    TOK_DIVISION   desplazar e ir al estado 86
-    TOK_ASTERISCO  desplazar e ir al estado 87
-    TOK_AND        desplazar e ir al estado 88
-    TOK_OR         desplazar e ir al estado 89
-
-    $default  reduce usando la regla 37 (asignacion)
-
-
-Estado 94
-
-   23 parametro_funcion: tipo identificador .
-
-    $default  reduce usando la regla 23 (parametro_funcion)
-
-
-Estado 95
-
-   18 funcion: TOK_FUNCTION tipo identificador TOK_PARENTESISIZQUIERDO parametros_funcion TOK_PARENTESISDERECHO . TOK_LLAVEIZQUIERDA declaraciones_funcion sentencias TOK_LLAVEDERECHA
-
-    TOK_LLAVEIZQUIERDA  desplazar e ir al estado 117
-
-
-Estado 96
-
-   21 resto_parametros_funcion: TOK_PUNTOYCOMA . parametro_funcion resto_parametros_funcion
+   23 resto_parametros_funcion: TOK_PUNTOYCOMA . parametro_funcion resto_parametros_funcion
 
     TOK_INT      desplazar e ir al estado 6
     TOK_BOOLEAN  desplazar e ir al estado 7
 
-    tipo               ir al estado 75
-    parametro_funcion  ir al estado 118
-
-
-Estado 97
-
-   19 parametros_funcion: parametro_funcion resto_parametros_funcion .
-
-    $default  reduce usando la regla 19 (parametros_funcion)
-
-
-Estado 98
-
-   39 condicional: TOK_IF TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO . TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA
-   40            | TOK_IF TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO . TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA TOK_ELSE TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA
-
-    TOK_LLAVEIZQUIERDA  desplazar e ir al estado 119
-
-
-Estado 99
-
-   41 bucle: TOK_WHILE TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO . TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA
-
-    TOK_LLAVEIZQUIERDA  desplazar e ir al estado 120
-
-
-Estado 100
-
-   55 exp: TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO .
-
-    $default  reduce usando la regla 55 (exp)
-
-
-Estado 101
-
-   63 comparacion: exp TOK_IGUAL . exp
-
-    TOK_PARENTESISIZQUIERDO  desplazar e ir al estado 56
-    TOK_MENOS                desplazar e ir al estado 57
-    TOK_NOT                  desplazar e ir al estado 58
-    TOK_IDENTIFICADOR        desplazar e ir al estado 59
-    TOK_CONSTANTE_ENTERA     desplazar e ir al estado 27
-    TOK_TRUE                 desplazar e ir al estado 60
-    TOK_FALSE                desplazar e ir al estado 61
-
-    elemento_vector   ir al estado 62
-    exp               ir al estado 121
-    constante         ir al estado 64
-    constante_logica  ir al estado 65
-    constante_entera  ir al estado 66
-    identificador     ir al estado 67
-
-
-Estado 102
-
-   64 comparacion: exp TOK_DISTINTO . exp
-
-    TOK_PARENTESISIZQUIERDO  desplazar e ir al estado 56
-    TOK_MENOS                desplazar e ir al estado 57
-    TOK_NOT                  desplazar e ir al estado 58
-    TOK_IDENTIFICADOR        desplazar e ir al estado 59
-    TOK_CONSTANTE_ENTERA     desplazar e ir al estado 27
-    TOK_TRUE                 desplazar e ir al estado 60
-    TOK_FALSE                desplazar e ir al estado 61
-
-    elemento_vector   ir al estado 62
-    exp               ir al estado 122
-    constante         ir al estado 64
-    constante_logica  ir al estado 65
-    constante_entera  ir al estado 66
-    identificador     ir al estado 67
-
-
-Estado 103
-
-   65 comparacion: exp TOK_MENORIGUAL . exp
-
-    TOK_PARENTESISIZQUIERDO  desplazar e ir al estado 56
-    TOK_MENOS                desplazar e ir al estado 57
-    TOK_NOT                  desplazar e ir al estado 58
-    TOK_IDENTIFICADOR        desplazar e ir al estado 59
-    TOK_CONSTANTE_ENTERA     desplazar e ir al estado 27
-    TOK_TRUE                 desplazar e ir al estado 60
-    TOK_FALSE                desplazar e ir al estado 61
-
-    elemento_vector   ir al estado 62
-    exp               ir al estado 123
-    constante         ir al estado 64
-    constante_logica  ir al estado 65
-    constante_entera  ir al estado 66
-    identificador     ir al estado 67
-
-
-Estado 104
-
-   66 comparacion: exp TOK_MAYORIGUAL . exp
-
-    TOK_PARENTESISIZQUIERDO  desplazar e ir al estado 56
-    TOK_MENOS                desplazar e ir al estado 57
-    TOK_NOT                  desplazar e ir al estado 58
-    TOK_IDENTIFICADOR        desplazar e ir al estado 59
-    TOK_CONSTANTE_ENTERA     desplazar e ir al estado 27
-    TOK_TRUE                 desplazar e ir al estado 60
-    TOK_FALSE                desplazar e ir al estado 61
-
-    elemento_vector   ir al estado 62
-    exp               ir al estado 124
-    constante         ir al estado 64
-    constante_logica  ir al estado 65
-    constante_entera  ir al estado 66
-    identificador     ir al estado 67
-
-
-Estado 105
-
-   67 comparacion: exp TOK_MENOR . exp
-
-    TOK_PARENTESISIZQUIERDO  desplazar e ir al estado 56
-    TOK_MENOS                desplazar e ir al estado 57
-    TOK_NOT                  desplazar e ir al estado 58
-    TOK_IDENTIFICADOR        desplazar e ir al estado 59
-    TOK_CONSTANTE_ENTERA     desplazar e ir al estado 27
-    TOK_TRUE                 desplazar e ir al estado 60
-    TOK_FALSE                desplazar e ir al estado 61
-
-    elemento_vector   ir al estado 62
-    exp               ir al estado 125
-    constante         ir al estado 64
-    constante_logica  ir al estado 65
-    constante_entera  ir al estado 66
-    identificador     ir al estado 67
-
-
-Estado 106
-
-   68 comparacion: exp TOK_MAYOR . exp
-
-    TOK_PARENTESISIZQUIERDO  desplazar e ir al estado 56
-    TOK_MENOS                desplazar e ir al estado 57
-    TOK_NOT                  desplazar e ir al estado 58
-    TOK_IDENTIFICADOR        desplazar e ir al estado 59
-    TOK_CONSTANTE_ENTERA     desplazar e ir al estado 27
-    TOK_TRUE                 desplazar e ir al estado 60
-    TOK_FALSE                desplazar e ir al estado 61
-
-    elemento_vector   ir al estado 62
-    exp               ir al estado 126
-    constante         ir al estado 64
-    constante_logica  ir al estado 65
-    constante_entera  ir al estado 66
-    identificador     ir al estado 67
-
-
-Estado 107
-
-   56 exp: TOK_PARENTESISIZQUIERDO comparacion TOK_PARENTESISDERECHO .
-
-    $default  reduce usando la regla 56 (exp)
-
-
-Estado 108
-
-   45 exp: exp . TOK_MAS exp
-   45    | exp TOK_MAS exp .
-   46    | exp . TOK_MENOS exp
-   47    | exp . TOK_DIVISION exp
-   48    | exp . TOK_ASTERISCO exp
-   50    | exp . TOK_AND exp
-   51    | exp . TOK_OR exp
-
-    TOK_DIVISION   desplazar e ir al estado 86
-    TOK_ASTERISCO  desplazar e ir al estado 87
-
-    $default  reduce usando la regla 45 (exp)
-
-
-Estado 109
-
-   45 exp: exp . TOK_MAS exp
-   46    | exp . TOK_MENOS exp
-   46    | exp TOK_MENOS exp .
-   47    | exp . TOK_DIVISION exp
-   48    | exp . TOK_ASTERISCO exp
-   50    | exp . TOK_AND exp
-   51    | exp . TOK_OR exp
-
-    TOK_DIVISION   desplazar e ir al estado 86
-    TOK_ASTERISCO  desplazar e ir al estado 87
-
-    $default  reduce usando la regla 46 (exp)
-
-
-Estado 110
-
-   45 exp: exp . TOK_MAS exp
-   46    | exp . TOK_MENOS exp
-   47    | exp . TOK_DIVISION exp
-   47    | exp TOK_DIVISION exp .
-   48    | exp . TOK_ASTERISCO exp
-   50    | exp . TOK_AND exp
-   51    | exp . TOK_OR exp
-
-    $default  reduce usando la regla 47 (exp)
-
-
-Estado 111
-
-   45 exp: exp . TOK_MAS exp
-   46    | exp . TOK_MENOS exp
-   47    | exp . TOK_DIVISION exp
-   48    | exp . TOK_ASTERISCO exp
-   48    | exp TOK_ASTERISCO exp .
-   50    | exp . TOK_AND exp
-   51    | exp . TOK_OR exp
-
-    $default  reduce usando la regla 48 (exp)
-
-
-Estado 112
-
-   45 exp: exp . TOK_MAS exp
-   46    | exp . TOK_MENOS exp
-   47    | exp . TOK_DIVISION exp
-   48    | exp . TOK_ASTERISCO exp
-   50    | exp . TOK_AND exp
-   50    | exp TOK_AND exp .
-   51    | exp . TOK_OR exp
-
-    TOK_MAS        desplazar e ir al estado 84
-    TOK_MENOS      desplazar e ir al estado 85
-    TOK_DIVISION   desplazar e ir al estado 86
-    TOK_ASTERISCO  desplazar e ir al estado 87
-
-    $default  reduce usando la regla 50 (exp)
-
-
-Estado 113
-
-   45 exp: exp . TOK_MAS exp
-   46    | exp . TOK_MENOS exp
-   47    | exp . TOK_DIVISION exp
-   48    | exp . TOK_ASTERISCO exp
-   50    | exp . TOK_AND exp
-   51    | exp . TOK_OR exp
-   51    | exp TOK_OR exp .
-
-    TOK_MAS        desplazar e ir al estado 84
-    TOK_MENOS      desplazar e ir al estado 85
-    TOK_DIVISION   desplazar e ir al estado 86
-    TOK_ASTERISCO  desplazar e ir al estado 87
-    TOK_AND        desplazar e ir al estado 88
+    tipo               ir al estado 56
+    parametro_funcion  ir al estado 103
+
+
+Estado 85
+
+   21 parametros_funcion: parametro_funcion resto_parametros_funcion .
+
+    $default  reduce usando la regla 21 (parametros_funcion)
+
+
+Estado 86
+
+   41 condicional: TOK_IF TOK_PARENTESISIZQUIERDO exp . TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA
+   42            | TOK_IF TOK_PARENTESISIZQUIERDO exp . TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA TOK_ELSE TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA
+   47 exp: exp . TOK_MAS exp
+   48    | exp . TOK_MENOS exp
+   49    | exp . TOK_DIVISION exp
+   50    | exp . TOK_ASTERISCO exp
+   52    | exp . TOK_AND exp
+   53    | exp . TOK_OR exp
+
+    TOK_PARENTESISDERECHO  desplazar e ir al estado 104
+    TOK_MAS                desplazar e ir al estado 92
+    TOK_MENOS              desplazar e ir al estado 93
+    TOK_DIVISION           desplazar e ir al estado 94
+    TOK_ASTERISCO          desplazar e ir al estado 95
+    TOK_AND                desplazar e ir al estado 96
+    TOK_OR                 desplazar e ir al estado 97
+
+
+Estado 87
+
+   43 bucle: TOK_WHILE TOK_PARENTESISIZQUIERDO exp . TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA
+   47 exp: exp . TOK_MAS exp
+   48    | exp . TOK_MENOS exp
+   49    | exp . TOK_DIVISION exp
+   50    | exp . TOK_ASTERISCO exp
+   52    | exp . TOK_AND exp
+   53    | exp . TOK_OR exp
+
+    TOK_PARENTESISDERECHO  desplazar e ir al estado 105
+    TOK_MAS                desplazar e ir al estado 92
+    TOK_MENOS              desplazar e ir al estado 93
+    TOK_DIVISION           desplazar e ir al estado 94
+    TOK_ASTERISCO          desplazar e ir al estado 95
+    TOK_AND                desplazar e ir al estado 96
+    TOK_OR                 desplazar e ir al estado 97
+
+
+Estado 88
+
+   47 exp: exp . TOK_MAS exp
+   48    | exp . TOK_MENOS exp
+   49    | exp . TOK_DIVISION exp
+   50    | exp . TOK_ASTERISCO exp
+   52    | exp . TOK_AND exp
+   53    | exp . TOK_OR exp
+   57    | TOK_PARENTESISIZQUIERDO exp . TOK_PARENTESISDERECHO
+   65 comparacion: exp . TOK_IGUAL exp
+   66            | exp . TOK_DISTINTO exp
+   67            | exp . TOK_MENORIGUAL exp
+   68            | exp . TOK_MAYORIGUAL exp
+   69            | exp . TOK_MENOR exp
+   70            | exp . TOK_MAYOR exp
+
+    TOK_PARENTESISDERECHO  desplazar e ir al estado 106
+    TOK_MAS                desplazar e ir al estado 92
+    TOK_MENOS              desplazar e ir al estado 93
+    TOK_DIVISION           desplazar e ir al estado 94
+    TOK_ASTERISCO          desplazar e ir al estado 95
+    TOK_AND                desplazar e ir al estado 96
+    TOK_OR                 desplazar e ir al estado 97
+    TOK_IGUAL              desplazar e ir al estado 107
+    TOK_DISTINTO           desplazar e ir al estado 108
+    TOK_MENORIGUAL         desplazar e ir al estado 109
+    TOK_MAYORIGUAL         desplazar e ir al estado 110
+    TOK_MENOR              desplazar e ir al estado 111
+    TOK_MAYOR              desplazar e ir al estado 112
+
+
+Estado 89
+
+   58 exp: TOK_PARENTESISIZQUIERDO comparacion . TOK_PARENTESISDERECHO
+
+    TOK_PARENTESISDERECHO  desplazar e ir al estado 113
+
+
+Estado 90
+
+   47 exp: exp . TOK_MAS exp
+   48    | exp . TOK_MENOS exp
+   49    | exp . TOK_DIVISION exp
+   50    | exp . TOK_ASTERISCO exp
+   51    | TOK_MENOS exp .
+   52    | exp . TOK_AND exp
+   53    | exp . TOK_OR exp
+
+    TOK_DIVISION   desplazar e ir al estado 94
+    TOK_ASTERISCO  desplazar e ir al estado 95
 
     $default  reduce usando la regla 51 (exp)
 
 
-Estado 114
+Estado 91
 
-   45 exp: exp . TOK_MAS exp
-   46    | exp . TOK_MENOS exp
-   47    | exp . TOK_DIVISION exp
-   48    | exp . TOK_ASTERISCO exp
-   50    | exp . TOK_AND exp
-   51    | exp . TOK_OR exp
-   59 lista_expresiones: exp . resto_lista_expresiones
+   47 exp: exp . TOK_MAS exp
+   48    | exp . TOK_MENOS exp
+   49    | exp . TOK_DIVISION exp
+   50    | exp . TOK_ASTERISCO exp
+   52    | exp . TOK_AND exp
+   53    | exp . TOK_OR exp
+   54    | TOK_NOT exp .
 
-    TOK_COMA       desplazar e ir al estado 127
-    TOK_MAS        desplazar e ir al estado 84
-    TOK_MENOS      desplazar e ir al estado 85
-    TOK_DIVISION   desplazar e ir al estado 86
-    TOK_ASTERISCO  desplazar e ir al estado 87
-    TOK_AND        desplazar e ir al estado 88
-    TOK_OR         desplazar e ir al estado 89
-
-    $default  reduce usando la regla 62 (resto_lista_expresiones)
-
-    resto_lista_expresiones  ir al estado 128
+    $default  reduce usando la regla 54 (exp)
 
 
-Estado 115
+Estado 92
 
-   58 exp: identificador TOK_PARENTESISIZQUIERDO lista_expresiones . TOK_PARENTESISDERECHO
+   47 exp: exp TOK_MAS . exp
 
-    TOK_PARENTESISDERECHO  desplazar e ir al estado 129
+    TOK_PARENTESISIZQUIERDO  desplazar e ir al estado 62
+    TOK_MENOS                desplazar e ir al estado 63
+    TOK_NOT                  desplazar e ir al estado 64
+    TOK_IDENTIFICADOR        desplazar e ir al estado 65
+    TOK_CONSTANTE_ENTERA     desplazar e ir al estado 29
+    TOK_TRUE                 desplazar e ir al estado 66
+    TOK_FALSE                desplazar e ir al estado 67
+
+    elemento_vector   ir al estado 68
+    exp               ir al estado 114
+    constante         ir al estado 70
+    constante_logica  ir al estado 71
+    constante_entera  ir al estado 72
+    identificador     ir al estado 73
 
 
-Estado 116
+Estado 93
 
-   38 elemento_vector: TOK_IDENTIFICADOR TOK_CORCHETEIZQUIERDO exp TOK_CORCHETEDERECHO .
+   48 exp: exp TOK_MENOS . exp
 
-    $default  reduce usando la regla 38 (elemento_vector)
+    TOK_PARENTESISIZQUIERDO  desplazar e ir al estado 62
+    TOK_MENOS                desplazar e ir al estado 63
+    TOK_NOT                  desplazar e ir al estado 64
+    TOK_IDENTIFICADOR        desplazar e ir al estado 65
+    TOK_CONSTANTE_ENTERA     desplazar e ir al estado 29
+    TOK_TRUE                 desplazar e ir al estado 66
+    TOK_FALSE                desplazar e ir al estado 67
+
+    elemento_vector   ir al estado 68
+    exp               ir al estado 115
+    constante         ir al estado 70
+    constante_logica  ir al estado 71
+    constante_entera  ir al estado 72
+    identificador     ir al estado 73
 
 
-Estado 117
+Estado 94
 
-   18 funcion: TOK_FUNCTION tipo identificador TOK_PARENTESISIZQUIERDO parametros_funcion TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA . declaraciones_funcion sentencias TOK_LLAVEDERECHA
+   49 exp: exp TOK_DIVISION . exp
+
+    TOK_PARENTESISIZQUIERDO  desplazar e ir al estado 62
+    TOK_MENOS                desplazar e ir al estado 63
+    TOK_NOT                  desplazar e ir al estado 64
+    TOK_IDENTIFICADOR        desplazar e ir al estado 65
+    TOK_CONSTANTE_ENTERA     desplazar e ir al estado 29
+    TOK_TRUE                 desplazar e ir al estado 66
+    TOK_FALSE                desplazar e ir al estado 67
+
+    elemento_vector   ir al estado 68
+    exp               ir al estado 116
+    constante         ir al estado 70
+    constante_logica  ir al estado 71
+    constante_entera  ir al estado 72
+    identificador     ir al estado 73
+
+
+Estado 95
+
+   50 exp: exp TOK_ASTERISCO . exp
+
+    TOK_PARENTESISIZQUIERDO  desplazar e ir al estado 62
+    TOK_MENOS                desplazar e ir al estado 63
+    TOK_NOT                  desplazar e ir al estado 64
+    TOK_IDENTIFICADOR        desplazar e ir al estado 65
+    TOK_CONSTANTE_ENTERA     desplazar e ir al estado 29
+    TOK_TRUE                 desplazar e ir al estado 66
+    TOK_FALSE                desplazar e ir al estado 67
+
+    elemento_vector   ir al estado 68
+    exp               ir al estado 117
+    constante         ir al estado 70
+    constante_logica  ir al estado 71
+    constante_entera  ir al estado 72
+    identificador     ir al estado 73
+
+
+Estado 96
+
+   52 exp: exp TOK_AND . exp
+
+    TOK_PARENTESISIZQUIERDO  desplazar e ir al estado 62
+    TOK_MENOS                desplazar e ir al estado 63
+    TOK_NOT                  desplazar e ir al estado 64
+    TOK_IDENTIFICADOR        desplazar e ir al estado 65
+    TOK_CONSTANTE_ENTERA     desplazar e ir al estado 29
+    TOK_TRUE                 desplazar e ir al estado 66
+    TOK_FALSE                desplazar e ir al estado 67
+
+    elemento_vector   ir al estado 68
+    exp               ir al estado 118
+    constante         ir al estado 70
+    constante_logica  ir al estado 71
+    constante_entera  ir al estado 72
+    identificador     ir al estado 73
+
+
+Estado 97
+
+   53 exp: exp TOK_OR . exp
+
+    TOK_PARENTESISIZQUIERDO  desplazar e ir al estado 62
+    TOK_MENOS                desplazar e ir al estado 63
+    TOK_NOT                  desplazar e ir al estado 64
+    TOK_IDENTIFICADOR        desplazar e ir al estado 65
+    TOK_CONSTANTE_ENTERA     desplazar e ir al estado 29
+    TOK_TRUE                 desplazar e ir al estado 66
+    TOK_FALSE                desplazar e ir al estado 67
+
+    elemento_vector   ir al estado 68
+    exp               ir al estado 119
+    constante         ir al estado 70
+    constante_logica  ir al estado 71
+    constante_entera  ir al estado 72
+    identificador     ir al estado 73
+
+
+Estado 98
+
+   60 exp: identificador TOK_PARENTESISIZQUIERDO . lista_expresiones TOK_PARENTESISDERECHO
+
+    TOK_PARENTESISIZQUIERDO  desplazar e ir al estado 62
+    TOK_MENOS                desplazar e ir al estado 63
+    TOK_NOT                  desplazar e ir al estado 64
+    TOK_IDENTIFICADOR        desplazar e ir al estado 65
+    TOK_CONSTANTE_ENTERA     desplazar e ir al estado 29
+    TOK_TRUE                 desplazar e ir al estado 66
+    TOK_FALSE                desplazar e ir al estado 67
+
+    $default  reduce usando la regla 62 (lista_expresiones)
+
+    elemento_vector    ir al estado 68
+    exp                ir al estado 120
+    lista_expresiones  ir al estado 121
+    constante          ir al estado 70
+    constante_logica   ir al estado 71
+    constante_entera   ir al estado 72
+    identificador      ir al estado 73
+
+
+Estado 99
+
+   40 elemento_vector: TOK_IDENTIFICADOR TOK_CORCHETEIZQUIERDO exp . TOK_CORCHETEDERECHO
+   47 exp: exp . TOK_MAS exp
+   48    | exp . TOK_MENOS exp
+   49    | exp . TOK_DIVISION exp
+   50    | exp . TOK_ASTERISCO exp
+   52    | exp . TOK_AND exp
+   53    | exp . TOK_OR exp
+
+    TOK_CORCHETEDERECHO  desplazar e ir al estado 122
+    TOK_MAS              desplazar e ir al estado 92
+    TOK_MENOS            desplazar e ir al estado 93
+    TOK_DIVISION         desplazar e ir al estado 94
+    TOK_ASTERISCO        desplazar e ir al estado 95
+    TOK_AND              desplazar e ir al estado 96
+    TOK_OR               desplazar e ir al estado 97
+
+
+Estado 100
+
+   38 asignacion: TOK_IDENTIFICADOR TOK_ASIGNACION exp .
+   47 exp: exp . TOK_MAS exp
+   48    | exp . TOK_MENOS exp
+   49    | exp . TOK_DIVISION exp
+   50    | exp . TOK_ASTERISCO exp
+   52    | exp . TOK_AND exp
+   53    | exp . TOK_OR exp
+
+    TOK_MAS        desplazar e ir al estado 92
+    TOK_MENOS      desplazar e ir al estado 93
+    TOK_DIVISION   desplazar e ir al estado 94
+    TOK_ASTERISCO  desplazar e ir al estado 95
+    TOK_AND        desplazar e ir al estado 96
+    TOK_OR         desplazar e ir al estado 97
+
+    $default  reduce usando la regla 38 (asignacion)
+
+
+Estado 101
+
+   39 asignacion: elemento_vector TOK_ASIGNACION exp .
+   47 exp: exp . TOK_MAS exp
+   48    | exp . TOK_MENOS exp
+   49    | exp . TOK_DIVISION exp
+   50    | exp . TOK_ASTERISCO exp
+   52    | exp . TOK_AND exp
+   53    | exp . TOK_OR exp
+
+    TOK_MAS        desplazar e ir al estado 92
+    TOK_MENOS      desplazar e ir al estado 93
+    TOK_DIVISION   desplazar e ir al estado 94
+    TOK_ASTERISCO  desplazar e ir al estado 95
+    TOK_AND        desplazar e ir al estado 96
+    TOK_OR         desplazar e ir al estado 97
+
+    $default  reduce usando la regla 39 (asignacion)
+
+
+Estado 102
+
+   19 fn_declaracion: fn_name TOK_PARENTESISIZQUIERDO parametros_funcion TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA . declaraciones_funcion
 
     TOK_INT      desplazar e ir al estado 6
     TOK_BOOLEAN  desplazar e ir al estado 7
     TOK_ARRAY    desplazar e ir al estado 8
 
-    $default  reduce usando la regla 25 (declaraciones_funcion)
+    $default  reduce usando la regla 27 (declaraciones_funcion)
 
-    declaraciones          ir al estado 130
+    declaraciones          ir al estado 123
     declaracion            ir al estado 10
     clase                  ir al estado 11
     clase_escalar          ir al estado 12
     clase_vector           ir al estado 13
     tipo                   ir al estado 14
-    declaraciones_funcion  ir al estado 131
+    declaraciones_funcion  ir al estado 124
 
 
-Estado 118
+Estado 103
 
-   21 resto_parametros_funcion: TOK_PUNTOYCOMA parametro_funcion . resto_parametros_funcion
+   23 resto_parametros_funcion: TOK_PUNTOYCOMA parametro_funcion . resto_parametros_funcion
 
-    TOK_PUNTOYCOMA  desplazar e ir al estado 96
+    TOK_PUNTOYCOMA  desplazar e ir al estado 84
 
-    $default  reduce usando la regla 22 (resto_parametros_funcion)
+    $default  reduce usando la regla 24 (resto_parametros_funcion)
 
-    resto_parametros_funcion  ir al estado 132
-
-
-Estado 119
-
-   39 condicional: TOK_IF TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA . sentencias TOK_LLAVEDERECHA
-   40            | TOK_IF TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA . sentencias TOK_LLAVEDERECHA TOK_ELSE TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA
-
-    TOK_IF             desplazar e ir al estado 35
-    TOK_WHILE          desplazar e ir al estado 36
-    TOK_SCANF          desplazar e ir al estado 37
-    TOK_PRINTF         desplazar e ir al estado 38
-    TOK_RETURN         desplazar e ir al estado 39
-    TOK_IDENTIFICADOR  desplazar e ir al estado 40
-
-    sentencias        ir al estado 133
-    sentencia         ir al estado 42
-    sentencia_simple  ir al estado 43
-    bloque            ir al estado 44
-    asignacion        ir al estado 45
-    elemento_vector   ir al estado 46
-    condicional       ir al estado 47
-    bucle             ir al estado 48
-    lectura           ir al estado 49
-    escritura         ir al estado 50
-    retorno_funcion   ir al estado 51
+    resto_parametros_funcion  ir al estado 125
 
 
-Estado 120
+Estado 104
 
-   41 bucle: TOK_WHILE TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA . sentencias TOK_LLAVEDERECHA
+   41 condicional: TOK_IF TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO . TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA
+   42            | TOK_IF TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO . TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA TOK_ELSE TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA
 
-    TOK_IF             desplazar e ir al estado 35
-    TOK_WHILE          desplazar e ir al estado 36
-    TOK_SCANF          desplazar e ir al estado 37
-    TOK_PRINTF         desplazar e ir al estado 38
-    TOK_RETURN         desplazar e ir al estado 39
-    TOK_IDENTIFICADOR  desplazar e ir al estado 40
-
-    sentencias        ir al estado 134
-    sentencia         ir al estado 42
-    sentencia_simple  ir al estado 43
-    bloque            ir al estado 44
-    asignacion        ir al estado 45
-    elemento_vector   ir al estado 46
-    condicional       ir al estado 47
-    bucle             ir al estado 48
-    lectura           ir al estado 49
-    escritura         ir al estado 50
-    retorno_funcion   ir al estado 51
+    TOK_LLAVEIZQUIERDA  desplazar e ir al estado 126
 
 
-Estado 121
+Estado 105
 
-   45 exp: exp . TOK_MAS exp
-   46    | exp . TOK_MENOS exp
-   47    | exp . TOK_DIVISION exp
-   48    | exp . TOK_ASTERISCO exp
-   50    | exp . TOK_AND exp
-   51    | exp . TOK_OR exp
-   63 comparacion: exp TOK_IGUAL exp .
+   43 bucle: TOK_WHILE TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO . TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA
 
-    TOK_MAS        desplazar e ir al estado 84
-    TOK_MENOS      desplazar e ir al estado 85
-    TOK_DIVISION   desplazar e ir al estado 86
-    TOK_ASTERISCO  desplazar e ir al estado 87
-    TOK_AND        desplazar e ir al estado 88
-    TOK_OR         desplazar e ir al estado 89
-
-    $default  reduce usando la regla 63 (comparacion)
+    TOK_LLAVEIZQUIERDA  desplazar e ir al estado 127
 
 
-Estado 122
+Estado 106
 
-   45 exp: exp . TOK_MAS exp
-   46    | exp . TOK_MENOS exp
-   47    | exp . TOK_DIVISION exp
-   48    | exp . TOK_ASTERISCO exp
-   50    | exp . TOK_AND exp
-   51    | exp . TOK_OR exp
-   64 comparacion: exp TOK_DISTINTO exp .
+   57 exp: TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO .
 
-    TOK_MAS        desplazar e ir al estado 84
-    TOK_MENOS      desplazar e ir al estado 85
-    TOK_DIVISION   desplazar e ir al estado 86
-    TOK_ASTERISCO  desplazar e ir al estado 87
-    TOK_AND        desplazar e ir al estado 88
-    TOK_OR         desplazar e ir al estado 89
-
-    $default  reduce usando la regla 64 (comparacion)
+    $default  reduce usando la regla 57 (exp)
 
 
-Estado 123
+Estado 107
 
-   45 exp: exp . TOK_MAS exp
-   46    | exp . TOK_MENOS exp
-   47    | exp . TOK_DIVISION exp
-   48    | exp . TOK_ASTERISCO exp
-   50    | exp . TOK_AND exp
-   51    | exp . TOK_OR exp
-   65 comparacion: exp TOK_MENORIGUAL exp .
+   65 comparacion: exp TOK_IGUAL . exp
 
-    TOK_MAS        desplazar e ir al estado 84
-    TOK_MENOS      desplazar e ir al estado 85
-    TOK_DIVISION   desplazar e ir al estado 86
-    TOK_ASTERISCO  desplazar e ir al estado 87
-    TOK_AND        desplazar e ir al estado 88
-    TOK_OR         desplazar e ir al estado 89
+    TOK_PARENTESISIZQUIERDO  desplazar e ir al estado 62
+    TOK_MENOS                desplazar e ir al estado 63
+    TOK_NOT                  desplazar e ir al estado 64
+    TOK_IDENTIFICADOR        desplazar e ir al estado 65
+    TOK_CONSTANTE_ENTERA     desplazar e ir al estado 29
+    TOK_TRUE                 desplazar e ir al estado 66
+    TOK_FALSE                desplazar e ir al estado 67
 
-    $default  reduce usando la regla 65 (comparacion)
-
-
-Estado 124
-
-   45 exp: exp . TOK_MAS exp
-   46    | exp . TOK_MENOS exp
-   47    | exp . TOK_DIVISION exp
-   48    | exp . TOK_ASTERISCO exp
-   50    | exp . TOK_AND exp
-   51    | exp . TOK_OR exp
-   66 comparacion: exp TOK_MAYORIGUAL exp .
-
-    TOK_MAS        desplazar e ir al estado 84
-    TOK_MENOS      desplazar e ir al estado 85
-    TOK_DIVISION   desplazar e ir al estado 86
-    TOK_ASTERISCO  desplazar e ir al estado 87
-    TOK_AND        desplazar e ir al estado 88
-    TOK_OR         desplazar e ir al estado 89
-
-    $default  reduce usando la regla 66 (comparacion)
+    elemento_vector   ir al estado 68
+    exp               ir al estado 128
+    constante         ir al estado 70
+    constante_logica  ir al estado 71
+    constante_entera  ir al estado 72
+    identificador     ir al estado 73
 
 
-Estado 125
+Estado 108
 
-   45 exp: exp . TOK_MAS exp
-   46    | exp . TOK_MENOS exp
-   47    | exp . TOK_DIVISION exp
-   48    | exp . TOK_ASTERISCO exp
-   50    | exp . TOK_AND exp
-   51    | exp . TOK_OR exp
-   67 comparacion: exp TOK_MENOR exp .
+   66 comparacion: exp TOK_DISTINTO . exp
 
-    TOK_MAS        desplazar e ir al estado 84
-    TOK_MENOS      desplazar e ir al estado 85
-    TOK_DIVISION   desplazar e ir al estado 86
-    TOK_ASTERISCO  desplazar e ir al estado 87
-    TOK_AND        desplazar e ir al estado 88
-    TOK_OR         desplazar e ir al estado 89
+    TOK_PARENTESISIZQUIERDO  desplazar e ir al estado 62
+    TOK_MENOS                desplazar e ir al estado 63
+    TOK_NOT                  desplazar e ir al estado 64
+    TOK_IDENTIFICADOR        desplazar e ir al estado 65
+    TOK_CONSTANTE_ENTERA     desplazar e ir al estado 29
+    TOK_TRUE                 desplazar e ir al estado 66
+    TOK_FALSE                desplazar e ir al estado 67
 
-    $default  reduce usando la regla 67 (comparacion)
-
-
-Estado 126
-
-   45 exp: exp . TOK_MAS exp
-   46    | exp . TOK_MENOS exp
-   47    | exp . TOK_DIVISION exp
-   48    | exp . TOK_ASTERISCO exp
-   50    | exp . TOK_AND exp
-   51    | exp . TOK_OR exp
-   68 comparacion: exp TOK_MAYOR exp .
-
-    TOK_MAS        desplazar e ir al estado 84
-    TOK_MENOS      desplazar e ir al estado 85
-    TOK_DIVISION   desplazar e ir al estado 86
-    TOK_ASTERISCO  desplazar e ir al estado 87
-    TOK_AND        desplazar e ir al estado 88
-    TOK_OR         desplazar e ir al estado 89
-
-    $default  reduce usando la regla 68 (comparacion)
+    elemento_vector   ir al estado 68
+    exp               ir al estado 129
+    constante         ir al estado 70
+    constante_logica  ir al estado 71
+    constante_entera  ir al estado 72
+    identificador     ir al estado 73
 
 
-Estado 127
+Estado 109
 
-   61 resto_lista_expresiones: TOK_COMA . exp resto_lista_expresiones
+   67 comparacion: exp TOK_MENORIGUAL . exp
 
-    TOK_PARENTESISIZQUIERDO  desplazar e ir al estado 56
-    TOK_MENOS                desplazar e ir al estado 57
-    TOK_NOT                  desplazar e ir al estado 58
-    TOK_IDENTIFICADOR        desplazar e ir al estado 59
-    TOK_CONSTANTE_ENTERA     desplazar e ir al estado 27
-    TOK_TRUE                 desplazar e ir al estado 60
-    TOK_FALSE                desplazar e ir al estado 61
+    TOK_PARENTESISIZQUIERDO  desplazar e ir al estado 62
+    TOK_MENOS                desplazar e ir al estado 63
+    TOK_NOT                  desplazar e ir al estado 64
+    TOK_IDENTIFICADOR        desplazar e ir al estado 65
+    TOK_CONSTANTE_ENTERA     desplazar e ir al estado 29
+    TOK_TRUE                 desplazar e ir al estado 66
+    TOK_FALSE                desplazar e ir al estado 67
 
-    elemento_vector   ir al estado 62
-    exp               ir al estado 135
-    constante         ir al estado 64
-    constante_logica  ir al estado 65
-    constante_entera  ir al estado 66
-    identificador     ir al estado 67
-
-
-Estado 128
-
-   59 lista_expresiones: exp resto_lista_expresiones .
-
-    $default  reduce usando la regla 59 (lista_expresiones)
+    elemento_vector   ir al estado 68
+    exp               ir al estado 130
+    constante         ir al estado 70
+    constante_logica  ir al estado 71
+    constante_entera  ir al estado 72
+    identificador     ir al estado 73
 
 
-Estado 129
+Estado 110
 
-   58 exp: identificador TOK_PARENTESISIZQUIERDO lista_expresiones TOK_PARENTESISDERECHO .
+   68 comparacion: exp TOK_MAYORIGUAL . exp
+
+    TOK_PARENTESISIZQUIERDO  desplazar e ir al estado 62
+    TOK_MENOS                desplazar e ir al estado 63
+    TOK_NOT                  desplazar e ir al estado 64
+    TOK_IDENTIFICADOR        desplazar e ir al estado 65
+    TOK_CONSTANTE_ENTERA     desplazar e ir al estado 29
+    TOK_TRUE                 desplazar e ir al estado 66
+    TOK_FALSE                desplazar e ir al estado 67
+
+    elemento_vector   ir al estado 68
+    exp               ir al estado 131
+    constante         ir al estado 70
+    constante_logica  ir al estado 71
+    constante_entera  ir al estado 72
+    identificador     ir al estado 73
+
+
+Estado 111
+
+   69 comparacion: exp TOK_MENOR . exp
+
+    TOK_PARENTESISIZQUIERDO  desplazar e ir al estado 62
+    TOK_MENOS                desplazar e ir al estado 63
+    TOK_NOT                  desplazar e ir al estado 64
+    TOK_IDENTIFICADOR        desplazar e ir al estado 65
+    TOK_CONSTANTE_ENTERA     desplazar e ir al estado 29
+    TOK_TRUE                 desplazar e ir al estado 66
+    TOK_FALSE                desplazar e ir al estado 67
+
+    elemento_vector   ir al estado 68
+    exp               ir al estado 132
+    constante         ir al estado 70
+    constante_logica  ir al estado 71
+    constante_entera  ir al estado 72
+    identificador     ir al estado 73
+
+
+Estado 112
+
+   70 comparacion: exp TOK_MAYOR . exp
+
+    TOK_PARENTESISIZQUIERDO  desplazar e ir al estado 62
+    TOK_MENOS                desplazar e ir al estado 63
+    TOK_NOT                  desplazar e ir al estado 64
+    TOK_IDENTIFICADOR        desplazar e ir al estado 65
+    TOK_CONSTANTE_ENTERA     desplazar e ir al estado 29
+    TOK_TRUE                 desplazar e ir al estado 66
+    TOK_FALSE                desplazar e ir al estado 67
+
+    elemento_vector   ir al estado 68
+    exp               ir al estado 133
+    constante         ir al estado 70
+    constante_logica  ir al estado 71
+    constante_entera  ir al estado 72
+    identificador     ir al estado 73
+
+
+Estado 113
+
+   58 exp: TOK_PARENTESISIZQUIERDO comparacion TOK_PARENTESISDERECHO .
 
     $default  reduce usando la regla 58 (exp)
 
 
+Estado 114
+
+   47 exp: exp . TOK_MAS exp
+   47    | exp TOK_MAS exp .
+   48    | exp . TOK_MENOS exp
+   49    | exp . TOK_DIVISION exp
+   50    | exp . TOK_ASTERISCO exp
+   52    | exp . TOK_AND exp
+   53    | exp . TOK_OR exp
+
+    TOK_DIVISION   desplazar e ir al estado 94
+    TOK_ASTERISCO  desplazar e ir al estado 95
+
+    $default  reduce usando la regla 47 (exp)
+
+
+Estado 115
+
+   47 exp: exp . TOK_MAS exp
+   48    | exp . TOK_MENOS exp
+   48    | exp TOK_MENOS exp .
+   49    | exp . TOK_DIVISION exp
+   50    | exp . TOK_ASTERISCO exp
+   52    | exp . TOK_AND exp
+   53    | exp . TOK_OR exp
+
+    TOK_DIVISION   desplazar e ir al estado 94
+    TOK_ASTERISCO  desplazar e ir al estado 95
+
+    $default  reduce usando la regla 48 (exp)
+
+
+Estado 116
+
+   47 exp: exp . TOK_MAS exp
+   48    | exp . TOK_MENOS exp
+   49    | exp . TOK_DIVISION exp
+   49    | exp TOK_DIVISION exp .
+   50    | exp . TOK_ASTERISCO exp
+   52    | exp . TOK_AND exp
+   53    | exp . TOK_OR exp
+
+    $default  reduce usando la regla 49 (exp)
+
+
+Estado 117
+
+   47 exp: exp . TOK_MAS exp
+   48    | exp . TOK_MENOS exp
+   49    | exp . TOK_DIVISION exp
+   50    | exp . TOK_ASTERISCO exp
+   50    | exp TOK_ASTERISCO exp .
+   52    | exp . TOK_AND exp
+   53    | exp . TOK_OR exp
+
+    $default  reduce usando la regla 50 (exp)
+
+
+Estado 118
+
+   47 exp: exp . TOK_MAS exp
+   48    | exp . TOK_MENOS exp
+   49    | exp . TOK_DIVISION exp
+   50    | exp . TOK_ASTERISCO exp
+   52    | exp . TOK_AND exp
+   52    | exp TOK_AND exp .
+   53    | exp . TOK_OR exp
+
+    TOK_MAS        desplazar e ir al estado 92
+    TOK_MENOS      desplazar e ir al estado 93
+    TOK_DIVISION   desplazar e ir al estado 94
+    TOK_ASTERISCO  desplazar e ir al estado 95
+
+    $default  reduce usando la regla 52 (exp)
+
+
+Estado 119
+
+   47 exp: exp . TOK_MAS exp
+   48    | exp . TOK_MENOS exp
+   49    | exp . TOK_DIVISION exp
+   50    | exp . TOK_ASTERISCO exp
+   52    | exp . TOK_AND exp
+   53    | exp . TOK_OR exp
+   53    | exp TOK_OR exp .
+
+    TOK_MAS        desplazar e ir al estado 92
+    TOK_MENOS      desplazar e ir al estado 93
+    TOK_DIVISION   desplazar e ir al estado 94
+    TOK_ASTERISCO  desplazar e ir al estado 95
+    TOK_AND        desplazar e ir al estado 96
+
+    $default  reduce usando la regla 53 (exp)
+
+
+Estado 120
+
+   47 exp: exp . TOK_MAS exp
+   48    | exp . TOK_MENOS exp
+   49    | exp . TOK_DIVISION exp
+   50    | exp . TOK_ASTERISCO exp
+   52    | exp . TOK_AND exp
+   53    | exp . TOK_OR exp
+   61 lista_expresiones: exp . resto_lista_expresiones
+
+    TOK_COMA       desplazar e ir al estado 134
+    TOK_MAS        desplazar e ir al estado 92
+    TOK_MENOS      desplazar e ir al estado 93
+    TOK_DIVISION   desplazar e ir al estado 94
+    TOK_ASTERISCO  desplazar e ir al estado 95
+    TOK_AND        desplazar e ir al estado 96
+    TOK_OR         desplazar e ir al estado 97
+
+    $default  reduce usando la regla 64 (resto_lista_expresiones)
+
+    resto_lista_expresiones  ir al estado 135
+
+
+Estado 121
+
+   60 exp: identificador TOK_PARENTESISIZQUIERDO lista_expresiones . TOK_PARENTESISDERECHO
+
+    TOK_PARENTESISDERECHO  desplazar e ir al estado 136
+
+
+Estado 122
+
+   40 elemento_vector: TOK_IDENTIFICADOR TOK_CORCHETEIZQUIERDO exp TOK_CORCHETEDERECHO .
+
+    $default  reduce usando la regla 40 (elemento_vector)
+
+
+Estado 123
+
+   26 declaraciones_funcion: declaraciones .
+
+    $default  reduce usando la regla 26 (declaraciones_funcion)
+
+
+Estado 124
+
+   19 fn_declaracion: fn_name TOK_PARENTESISIZQUIERDO parametros_funcion TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA declaraciones_funcion .
+
+    $default  reduce usando la regla 19 (fn_declaracion)
+
+
+Estado 125
+
+   23 resto_parametros_funcion: TOK_PUNTOYCOMA parametro_funcion resto_parametros_funcion .
+
+    $default  reduce usando la regla 23 (resto_parametros_funcion)
+
+
+Estado 126
+
+   41 condicional: TOK_IF TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA . sentencias TOK_LLAVEDERECHA
+   42            | TOK_IF TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA . sentencias TOK_LLAVEDERECHA TOK_ELSE TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA
+
+    TOK_IF             desplazar e ir al estado 34
+    TOK_WHILE          desplazar e ir al estado 35
+    TOK_SCANF          desplazar e ir al estado 36
+    TOK_PRINTF         desplazar e ir al estado 37
+    TOK_RETURN         desplazar e ir al estado 38
+    TOK_IDENTIFICADOR  desplazar e ir al estado 39
+
+    sentencias        ir al estado 137
+    sentencia         ir al estado 41
+    sentencia_simple  ir al estado 42
+    bloque            ir al estado 43
+    asignacion        ir al estado 44
+    elemento_vector   ir al estado 45
+    condicional       ir al estado 46
+    bucle             ir al estado 47
+    lectura           ir al estado 48
+    escritura         ir al estado 49
+    retorno_funcion   ir al estado 50
+
+
+Estado 127
+
+   43 bucle: TOK_WHILE TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA . sentencias TOK_LLAVEDERECHA
+
+    TOK_IF             desplazar e ir al estado 34
+    TOK_WHILE          desplazar e ir al estado 35
+    TOK_SCANF          desplazar e ir al estado 36
+    TOK_PRINTF         desplazar e ir al estado 37
+    TOK_RETURN         desplazar e ir al estado 38
+    TOK_IDENTIFICADOR  desplazar e ir al estado 39
+
+    sentencias        ir al estado 138
+    sentencia         ir al estado 41
+    sentencia_simple  ir al estado 42
+    bloque            ir al estado 43
+    asignacion        ir al estado 44
+    elemento_vector   ir al estado 45
+    condicional       ir al estado 46
+    bucle             ir al estado 47
+    lectura           ir al estado 48
+    escritura         ir al estado 49
+    retorno_funcion   ir al estado 50
+
+
+Estado 128
+
+   47 exp: exp . TOK_MAS exp
+   48    | exp . TOK_MENOS exp
+   49    | exp . TOK_DIVISION exp
+   50    | exp . TOK_ASTERISCO exp
+   52    | exp . TOK_AND exp
+   53    | exp . TOK_OR exp
+   65 comparacion: exp TOK_IGUAL exp .
+
+    TOK_MAS        desplazar e ir al estado 92
+    TOK_MENOS      desplazar e ir al estado 93
+    TOK_DIVISION   desplazar e ir al estado 94
+    TOK_ASTERISCO  desplazar e ir al estado 95
+    TOK_AND        desplazar e ir al estado 96
+    TOK_OR         desplazar e ir al estado 97
+
+    $default  reduce usando la regla 65 (comparacion)
+
+
+Estado 129
+
+   47 exp: exp . TOK_MAS exp
+   48    | exp . TOK_MENOS exp
+   49    | exp . TOK_DIVISION exp
+   50    | exp . TOK_ASTERISCO exp
+   52    | exp . TOK_AND exp
+   53    | exp . TOK_OR exp
+   66 comparacion: exp TOK_DISTINTO exp .
+
+    TOK_MAS        desplazar e ir al estado 92
+    TOK_MENOS      desplazar e ir al estado 93
+    TOK_DIVISION   desplazar e ir al estado 94
+    TOK_ASTERISCO  desplazar e ir al estado 95
+    TOK_AND        desplazar e ir al estado 96
+    TOK_OR         desplazar e ir al estado 97
+
+    $default  reduce usando la regla 66 (comparacion)
+
+
 Estado 130
 
-   24 declaraciones_funcion: declaraciones .
+   47 exp: exp . TOK_MAS exp
+   48    | exp . TOK_MENOS exp
+   49    | exp . TOK_DIVISION exp
+   50    | exp . TOK_ASTERISCO exp
+   52    | exp . TOK_AND exp
+   53    | exp . TOK_OR exp
+   67 comparacion: exp TOK_MENORIGUAL exp .
 
-    $default  reduce usando la regla 24 (declaraciones_funcion)
+    TOK_MAS        desplazar e ir al estado 92
+    TOK_MENOS      desplazar e ir al estado 93
+    TOK_DIVISION   desplazar e ir al estado 94
+    TOK_ASTERISCO  desplazar e ir al estado 95
+    TOK_AND        desplazar e ir al estado 96
+    TOK_OR         desplazar e ir al estado 97
+
+    $default  reduce usando la regla 67 (comparacion)
 
 
 Estado 131
 
-   18 funcion: TOK_FUNCTION tipo identificador TOK_PARENTESISIZQUIERDO parametros_funcion TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA declaraciones_funcion . sentencias TOK_LLAVEDERECHA
+   47 exp: exp . TOK_MAS exp
+   48    | exp . TOK_MENOS exp
+   49    | exp . TOK_DIVISION exp
+   50    | exp . TOK_ASTERISCO exp
+   52    | exp . TOK_AND exp
+   53    | exp . TOK_OR exp
+   68 comparacion: exp TOK_MAYORIGUAL exp .
 
-    TOK_IF             desplazar e ir al estado 35
-    TOK_WHILE          desplazar e ir al estado 36
-    TOK_SCANF          desplazar e ir al estado 37
-    TOK_PRINTF         desplazar e ir al estado 38
-    TOK_RETURN         desplazar e ir al estado 39
-    TOK_IDENTIFICADOR  desplazar e ir al estado 40
+    TOK_MAS        desplazar e ir al estado 92
+    TOK_MENOS      desplazar e ir al estado 93
+    TOK_DIVISION   desplazar e ir al estado 94
+    TOK_ASTERISCO  desplazar e ir al estado 95
+    TOK_AND        desplazar e ir al estado 96
+    TOK_OR         desplazar e ir al estado 97
 
-    sentencias        ir al estado 136
-    sentencia         ir al estado 42
-    sentencia_simple  ir al estado 43
-    bloque            ir al estado 44
-    asignacion        ir al estado 45
-    elemento_vector   ir al estado 46
-    condicional       ir al estado 47
-    bucle             ir al estado 48
-    lectura           ir al estado 49
-    escritura         ir al estado 50
-    retorno_funcion   ir al estado 51
+    $default  reduce usando la regla 68 (comparacion)
 
 
 Estado 132
 
-   21 resto_parametros_funcion: TOK_PUNTOYCOMA parametro_funcion resto_parametros_funcion .
+   47 exp: exp . TOK_MAS exp
+   48    | exp . TOK_MENOS exp
+   49    | exp . TOK_DIVISION exp
+   50    | exp . TOK_ASTERISCO exp
+   52    | exp . TOK_AND exp
+   53    | exp . TOK_OR exp
+   69 comparacion: exp TOK_MENOR exp .
 
-    $default  reduce usando la regla 21 (resto_parametros_funcion)
+    TOK_MAS        desplazar e ir al estado 92
+    TOK_MENOS      desplazar e ir al estado 93
+    TOK_DIVISION   desplazar e ir al estado 94
+    TOK_ASTERISCO  desplazar e ir al estado 95
+    TOK_AND        desplazar e ir al estado 96
+    TOK_OR         desplazar e ir al estado 97
+
+    $default  reduce usando la regla 69 (comparacion)
 
 
 Estado 133
 
-   39 condicional: TOK_IF TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA sentencias . TOK_LLAVEDERECHA
-   40            | TOK_IF TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA sentencias . TOK_LLAVEDERECHA TOK_ELSE TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA
+   47 exp: exp . TOK_MAS exp
+   48    | exp . TOK_MENOS exp
+   49    | exp . TOK_DIVISION exp
+   50    | exp . TOK_ASTERISCO exp
+   52    | exp . TOK_AND exp
+   53    | exp . TOK_OR exp
+   70 comparacion: exp TOK_MAYOR exp .
 
-    TOK_LLAVEDERECHA  desplazar e ir al estado 137
+    TOK_MAS        desplazar e ir al estado 92
+    TOK_MENOS      desplazar e ir al estado 93
+    TOK_DIVISION   desplazar e ir al estado 94
+    TOK_ASTERISCO  desplazar e ir al estado 95
+    TOK_AND        desplazar e ir al estado 96
+    TOK_OR         desplazar e ir al estado 97
+
+    $default  reduce usando la regla 70 (comparacion)
 
 
 Estado 134
 
-   41 bucle: TOK_WHILE TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA sentencias . TOK_LLAVEDERECHA
+   63 resto_lista_expresiones: TOK_COMA . exp resto_lista_expresiones
 
-    TOK_LLAVEDERECHA  desplazar e ir al estado 138
+    TOK_PARENTESISIZQUIERDO  desplazar e ir al estado 62
+    TOK_MENOS                desplazar e ir al estado 63
+    TOK_NOT                  desplazar e ir al estado 64
+    TOK_IDENTIFICADOR        desplazar e ir al estado 65
+    TOK_CONSTANTE_ENTERA     desplazar e ir al estado 29
+    TOK_TRUE                 desplazar e ir al estado 66
+    TOK_FALSE                desplazar e ir al estado 67
+
+    elemento_vector   ir al estado 68
+    exp               ir al estado 139
+    constante         ir al estado 70
+    constante_logica  ir al estado 71
+    constante_entera  ir al estado 72
+    identificador     ir al estado 73
 
 
 Estado 135
 
-   45 exp: exp . TOK_MAS exp
-   46    | exp . TOK_MENOS exp
-   47    | exp . TOK_DIVISION exp
-   48    | exp . TOK_ASTERISCO exp
-   50    | exp . TOK_AND exp
-   51    | exp . TOK_OR exp
-   61 resto_lista_expresiones: TOK_COMA exp . resto_lista_expresiones
+   61 lista_expresiones: exp resto_lista_expresiones .
 
-    TOK_COMA       desplazar e ir al estado 127
-    TOK_MAS        desplazar e ir al estado 84
-    TOK_MENOS      desplazar e ir al estado 85
-    TOK_DIVISION   desplazar e ir al estado 86
-    TOK_ASTERISCO  desplazar e ir al estado 87
-    TOK_AND        desplazar e ir al estado 88
-    TOK_OR         desplazar e ir al estado 89
-
-    $default  reduce usando la regla 62 (resto_lista_expresiones)
-
-    resto_lista_expresiones  ir al estado 139
+    $default  reduce usando la regla 61 (lista_expresiones)
 
 
 Estado 136
 
-   18 funcion: TOK_FUNCTION tipo identificador TOK_PARENTESISIZQUIERDO parametros_funcion TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA declaraciones_funcion sentencias . TOK_LLAVEDERECHA
+   60 exp: identificador TOK_PARENTESISIZQUIERDO lista_expresiones TOK_PARENTESISDERECHO .
 
-    TOK_LLAVEDERECHA  desplazar e ir al estado 140
+    $default  reduce usando la regla 60 (exp)
 
 
 Estado 137
 
-   39 condicional: TOK_IF TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA .
-   40            | TOK_IF TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA . TOK_ELSE TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA
+   41 condicional: TOK_IF TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA sentencias . TOK_LLAVEDERECHA
+   42            | TOK_IF TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA sentencias . TOK_LLAVEDERECHA TOK_ELSE TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA
 
-    TOK_ELSE  desplazar e ir al estado 141
-
-    $default  reduce usando la regla 39 (condicional)
+    TOK_LLAVEDERECHA  desplazar e ir al estado 140
 
 
 Estado 138
 
-   41 bucle: TOK_WHILE TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA .
+   43 bucle: TOK_WHILE TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA sentencias . TOK_LLAVEDERECHA
 
-    $default  reduce usando la regla 41 (bucle)
+    TOK_LLAVEDERECHA  desplazar e ir al estado 141
 
 
 Estado 139
 
-   61 resto_lista_expresiones: TOK_COMA exp resto_lista_expresiones .
+   47 exp: exp . TOK_MAS exp
+   48    | exp . TOK_MENOS exp
+   49    | exp . TOK_DIVISION exp
+   50    | exp . TOK_ASTERISCO exp
+   52    | exp . TOK_AND exp
+   53    | exp . TOK_OR exp
+   63 resto_lista_expresiones: TOK_COMA exp . resto_lista_expresiones
 
-    $default  reduce usando la regla 61 (resto_lista_expresiones)
+    TOK_COMA       desplazar e ir al estado 134
+    TOK_MAS        desplazar e ir al estado 92
+    TOK_MENOS      desplazar e ir al estado 93
+    TOK_DIVISION   desplazar e ir al estado 94
+    TOK_ASTERISCO  desplazar e ir al estado 95
+    TOK_AND        desplazar e ir al estado 96
+    TOK_OR         desplazar e ir al estado 97
+
+    $default  reduce usando la regla 64 (resto_lista_expresiones)
+
+    resto_lista_expresiones  ir al estado 142
 
 
 Estado 140
 
-   18 funcion: TOK_FUNCTION tipo identificador TOK_PARENTESISIZQUIERDO parametros_funcion TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA declaraciones_funcion sentencias TOK_LLAVEDERECHA .
+   41 condicional: TOK_IF TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA .
+   42            | TOK_IF TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA . TOK_ELSE TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA
 
-    $default  reduce usando la regla 18 (funcion)
+    TOK_ELSE  desplazar e ir al estado 143
+
+    $default  reduce usando la regla 41 (condicional)
 
 
 Estado 141
 
-   40 condicional: TOK_IF TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA TOK_ELSE . TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA
+   43 bucle: TOK_WHILE TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA .
 
-    TOK_LLAVEIZQUIERDA  desplazar e ir al estado 142
+    $default  reduce usando la regla 43 (bucle)
 
 
 Estado 142
 
-   40 condicional: TOK_IF TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA TOK_ELSE TOK_LLAVEIZQUIERDA . sentencias TOK_LLAVEDERECHA
+   63 resto_lista_expresiones: TOK_COMA exp resto_lista_expresiones .
 
-    TOK_IF             desplazar e ir al estado 35
-    TOK_WHILE          desplazar e ir al estado 36
-    TOK_SCANF          desplazar e ir al estado 37
-    TOK_PRINTF         desplazar e ir al estado 38
-    TOK_RETURN         desplazar e ir al estado 39
-    TOK_IDENTIFICADOR  desplazar e ir al estado 40
-
-    sentencias        ir al estado 143
-    sentencia         ir al estado 42
-    sentencia_simple  ir al estado 43
-    bloque            ir al estado 44
-    asignacion        ir al estado 45
-    elemento_vector   ir al estado 46
-    condicional       ir al estado 47
-    bucle             ir al estado 48
-    lectura           ir al estado 49
-    escritura         ir al estado 50
-    retorno_funcion   ir al estado 51
+    $default  reduce usando la regla 63 (resto_lista_expresiones)
 
 
 Estado 143
 
-   40 condicional: TOK_IF TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA TOK_ELSE TOK_LLAVEIZQUIERDA sentencias . TOK_LLAVEDERECHA
+   42 condicional: TOK_IF TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA TOK_ELSE . TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA
 
-    TOK_LLAVEDERECHA  desplazar e ir al estado 144
+    TOK_LLAVEIZQUIERDA  desplazar e ir al estado 144
 
 
 Estado 144
 
-   40 condicional: TOK_IF TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA TOK_ELSE TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA .
+   42 condicional: TOK_IF TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA TOK_ELSE TOK_LLAVEIZQUIERDA . sentencias TOK_LLAVEDERECHA
 
-    $default  reduce usando la regla 40 (condicional)
+    TOK_IF             desplazar e ir al estado 34
+    TOK_WHILE          desplazar e ir al estado 35
+    TOK_SCANF          desplazar e ir al estado 36
+    TOK_PRINTF         desplazar e ir al estado 37
+    TOK_RETURN         desplazar e ir al estado 38
+    TOK_IDENTIFICADOR  desplazar e ir al estado 39
+
+    sentencias        ir al estado 145
+    sentencia         ir al estado 41
+    sentencia_simple  ir al estado 42
+    bloque            ir al estado 43
+    asignacion        ir al estado 44
+    elemento_vector   ir al estado 45
+    condicional       ir al estado 46
+    bucle             ir al estado 47
+    lectura           ir al estado 48
+    escritura         ir al estado 49
+    retorno_funcion   ir al estado 50
+
+
+Estado 145
+
+   42 condicional: TOK_IF TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA TOK_ELSE TOK_LLAVEIZQUIERDA sentencias . TOK_LLAVEDERECHA
+
+    TOK_LLAVEDERECHA  desplazar e ir al estado 146
+
+
+Estado 146
+
+   42 condicional: TOK_IF TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA TOK_ELSE TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA .
+
+    $default  reduce usando la regla 42 (condicional)

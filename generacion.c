@@ -122,6 +122,10 @@ void escribir_inicio_main(FILE *fpasm)
         return;
     }
 
+
+    fprintf(fpasm, ";escribir_inicio_main\n");
+    fprintf(fpasm, "; -----------------------\n");
+    fprintf(fpasm, "; PROCEDIMIENTO PRINCIPAL\n");
     fprintf(fpasm, "main:\n");
     fprintf(fpasm, "\tmov dword [__esp], esp\n");
     
@@ -182,6 +186,8 @@ void escribir_operando(FILE *fpasm, char *nombre, int es_variable)
         return;
     }
 
+    fprintf(fpasm, ";escribir_operando\n");
+
     if (nombre == NULL || es_variable > 1 || es_variable < 0)
     {
         printf("Error: wrong arguments\n");
@@ -190,13 +196,12 @@ void escribir_operando(FILE *fpasm, char *nombre, int es_variable)
 
     if (es_variable)
     {
-        fprintf(fpasm, "\n\tmov eax, _%s\n", nombre);
-        fprintf(fpasm, "\tpush dword eax\n");
+        fprintf(fpasm, "\tpush dword _%s\n", nombre);
         return;
     }
     
-    fprintf(fpasm, "\n\tmov eax, %d\n", atoi(nombre));
-    fprintf(fpasm, "\tpush dword eax\n");
+    fprintf(fpasm, "\tpush dword %d\n", atoi(nombre));
+
     return;
 }
 /* 
@@ -260,6 +265,7 @@ que no se produce “Segmentation Fault”)
 */
 void sumar(FILE *fpasm, int es_variable_1, int es_variable_2)
 {
+    fprintf(fpasm, ";sumar\n");
 
     if (fpasm == NULL)
     {
@@ -274,20 +280,23 @@ void sumar(FILE *fpasm, int es_variable_1, int es_variable_2)
     }
 
     fprintf(fpasm, "\tpop dword ebx\n");
+    
+    if (es_variable_2)
+    {
+        fprintf(fpasm, "\tmov dword ebx, [ebx]\n");
+    }
+
     fprintf(fpasm, "\tpop dword eax\n");
 
     if (es_variable_1)
     {
-        fprintf(fpasm, "\tmov eax, [eax]\n");
+        fprintf(fpasm, "\tmov dword eax, [eax]\n");
     }
 
-    if (es_variable_2)
-    {
-        fprintf(fpasm, "\tmov ebx, [ebx]\n");
-    }
+    
 
     fprintf(fpasm, "\tadd eax, ebx\n");
-    fprintf(fpasm, "\tpush dword eax\n\n");
+    fprintf(fpasm, "\tpush dword eax\n");
 
     return;
 }
@@ -1201,12 +1210,13 @@ void declararFuncion(FILE *fd_asm, char *nombre_funcion, int num_var_loc)
         return;
     }
 
-    if (nombre_funcion == NULL || num_var_loc <= 0)
+    if (nombre_funcion == NULL || num_var_loc < 0)
     {
         printf("Error: wrong arguments\n");
         return;
     }
 
+    fprintf(fd_asm, "; declararFuncion: f() { var1, ... varnum_var_loc...\n");
     fprintf(fd_asm, "_%s:\n", nombre_funcion);
     fprintf(fd_asm, "\tpush ebp\n");
     fprintf(fd_asm, "\tmov ebp, esp\n");
@@ -1234,6 +1244,7 @@ void retornarFuncion(FILE *fd_asm, int es_variable)
         return;
     }
 
+    fprintf(fd_asm, "\t; retornarFuncion : return <cima_pila>\n");
     fprintf(fd_asm, "\tpop eax\n");
 
     if (es_variable)
@@ -1270,7 +1281,8 @@ void escribirParametro(FILE *fpasm, int pos_parametro, int num_total_parametros)
 
     d_ebp = 4 * (1 + (num_total_parametros - pos_parametro));
 
-    fprintf(fpasm, "\tlea eax, [ebp + %d]\n", d_ebp);
+    fprintf(fpasm, "; escribirParametro: %d (origen 0)\n", pos_parametro);
+    fprintf(fpasm, "\tlea eax, [ebp + %d]; direccion parametro %d\n", d_ebp, pos_parametro);
     fprintf(fpasm, "\tpush dword eax\n");
 }
 
@@ -1363,6 +1375,7 @@ void operandoEnPilaAArgumento(FILE *fd_asm, int es_variable)
         return;
     }
 
+    fprintf(fd_asm, ";operandoEnPilaAArgumento\n");
     if (es_variable)
     {
         fprintf(fd_asm, "\tpop dword eax\n");
