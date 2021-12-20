@@ -14,8 +14,8 @@ int main(int argc, char *argv[]) {
     char * token = NULL, *token1 = NULL;
     FILE *fin = NULL;
     FILE *fout = NULL;
-    int counter, i, len;
-    int found;
+    int counter, i, len = 0;
+    Hash_node *found = NULL, *node = NULL;
     int value;
     bool local_scope_open = false, is_in_local, declare_in_local, token_found;
     
@@ -66,9 +66,9 @@ int main(int argc, char *argv[]) {
             
             if(local_scope_open) {
                 found = get_value_from_hstable(local_simbols, token, strlen(token));
-                if(found != -1) {
+                if(found) {
                     token_found = true;
-                    fprintf(fout, "%s\t%d\n", token, found);
+                    fprintf(fout, "%s\t%d\n", found->key, found->value);
                 }
             
             } 
@@ -77,10 +77,10 @@ int main(int argc, char *argv[]) {
                 len = strlen(token);
                 found = get_value_from_hstable(global_simbols, token, len);
                 
-                if (found != -1) { /*Call Successful*/
-                    fprintf(fout, "%s\t%d\n", token, found);
+                if (found) { /*Call Successful*/
+                    fprintf(fout, "%s\t%d\n", found->key, found->value);
                 } else { /* Search Failure */
-                    fprintf(fout,"%s\t-1\n", token);
+                    fprintf(fout, "%s\t-1\n", token);
                 }
             }
             
@@ -98,16 +98,26 @@ int main(int argc, char *argv[]) {
             if(local_scope_open){
                 
                 found = get_value_from_hstable(local_simbols, token, strlen(token));
-                if (found == -1) {
+                if (!found) {
+                    
+                    node = (Hash_node*)malloc(sizeof(Hash_node));
+                    init_hs_node(node);
 
-                    if(add_node2HashTable(local_simbols, token, strlen(token), value) == -1){
+                    strcpy(node->key, token);
+                    node->value = value;
+
+                    len = strlen(node->key);
+                    if(add_node2HashTable(local_simbols, node, len) == -1){
                         printf("Error inserting the node =(\n");
                         return -1;
                     }
 
                     /* Output: declaration correct*/
-                    fprintf(fout, "%s\n", token);
+                    fprintf(fout, "%s\n", node->key);
                     declare_in_local = true;
+                    
+                    free(node);
+                    node = NULL;
                 }
                 else {
                     is_in_local = true;
@@ -116,7 +126,11 @@ int main(int argc, char *argv[]) {
             
             len = strlen(token);
             found = get_value_from_hstable(global_simbols, token, len);
-            if ((found == -1) && (declare_in_local == false)){ /*Declaration Successful*/
+            if ((!found) && (declare_in_local == false)){ /*Declaration Successful*/
+                
+                node = (Hash_node*)malloc(sizeof(Hash_node));
+                init_hs_node(node);
+
                 if (atoi(token1) < 0) {
                     
                     local_simbols = creat_hash_table();
@@ -126,12 +140,15 @@ int main(int argc, char *argv[]) {
                     }
                     local_scope_open = true;
 
-                    if(add_node2HashTable(global_simbols, token, strlen(token), value) == -1){
+                    strcpy(node->key, token);
+                    node->value = value;
+
+                    if(add_node2HashTable(global_simbols, node, strlen(token)) == -1){
                         printf("Error inserting the node =(\n");
                         return -1;
                     }
 
-                    if(add_node2HashTable(local_simbols, token, strlen(token), value) == -1){
+                    if(add_node2HashTable(local_simbols, node, strlen(token)) == -1){
                         printf("Error inserting the node =(\n");
                         return -1;
                     }
@@ -139,17 +156,22 @@ int main(int argc, char *argv[]) {
 
                 else {
                     len = strlen(token);
-                    if(add_node2HashTable(global_simbols, token, len, value) == -1){
+
+                    strcpy(node->key, token);
+                    node->value = value;
+                    
+                    if(add_node2HashTable(global_simbols, node, len) == -1){
                         printf("Error inserting the node =(\n");
                         return -1;
                     }
                 }
                 
                 /* Output: declaration correct*/
-                fprintf(fout, "%s\n", token);
-
+                fprintf(fout, "%s\n", node->key);
+                free(node);
+                node = NULL;
             
-            } else if(is_in_local == true || (is_in_local == false && declare_in_local == false && found != -1)) { /* token found*/
+            } else if(is_in_local == true || (is_in_local == false && declare_in_local == false && found)) { /* token found*/
                 /* Output: declaration error*/
                 fprintf(fout, "-1\t%s\n", token);
             }

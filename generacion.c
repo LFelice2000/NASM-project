@@ -17,7 +17,6 @@ void escribir_cabecera_bss(FILE *fpasm)
         return;
     }
 
-    fprintf(fpasm, ";escribir_cabecera_bss\n");
     fprintf(fpasm, "segment .bss\n\t__esp resd 1\n");
 }
 /*
@@ -34,10 +33,9 @@ void escribir_subseccion_data(FILE *fpasm)
         return;
     }
 
-    fprintf(fpasm, ";escribir_subseccion_data\n");
-    fprintf(fpasm, "segment .data\n");
-    fprintf(fpasm, "	msg_error_indice_vector db \"Indice de vector fuera de rango\", 0\n");
-    fprintf(fpasm, "	msg_error_division db \"Error division por 0\", 0\n");
+    fprintf(fpasm, "segment .data\n\n");
+    fprintf(fpasm, "div_error_message db \"Error for Division by zero\", 0\n");
+    fprintf(fpasm, "fin_indice_fuera_rango db \"Indice fuera de rango\",0\n\n");
 }   
 
 
@@ -62,7 +60,6 @@ void declarar_variable(FILE *fpasm, char *nombre, int tipo, int tamano)
     }
 
     /*BOOLEANO*/
-    fprintf(fpasm, ";declarar_variable\n");
     if (tipo)
     {
         fprintf(fpasm, "\t_%s resd %d\n", nombre, tamano);
@@ -94,17 +91,9 @@ void escribir_segmento_codigo(FILE *fpasm)
         return;
     }
 
-    /**	global main
-	extern malloc, free
-	extern scan_int, print_int, scan_boolean, print_boolean
-	extern print_endofline, print_blank, print_string*/
-
-    fprintf(fpasm, ";escribir_segmento_codigo\n");
-    fprintf(fpasm, "segment .text\n");
+    fprintf(fpasm, "\nsegment .text\n");
     fprintf(fpasm, "\tglobal main\n");
-    fprintf(fpasm, "\textern malloc, free\n");
-    fprintf(fpasm, "\textern scan_int, print_int, scan_boolean, print_boolean\n");
-    fprintf(fpasm, "\textern print_endofline, print_blank, print_string\n");
+    fprintf(fpasm, "\textern print_int, scan_int, print_boolean, scan_boolean, print_blank, print_endofline, print_string\n\n");
 }
 
 /*
@@ -122,10 +111,6 @@ void escribir_inicio_main(FILE *fpasm)
         return;
     }
 
-
-    fprintf(fpasm, ";escribir_inicio_main\n");
-    fprintf(fpasm, "; -----------------------\n");
-    fprintf(fpasm, "; PROCEDIMIENTO PRINCIPAL\n");
     fprintf(fpasm, "main:\n");
     fprintf(fpasm, "\tmov dword [__esp], esp\n");
     
@@ -186,8 +171,6 @@ void escribir_operando(FILE *fpasm, char *nombre, int es_variable)
         return;
     }
 
-    fprintf(fpasm, ";escribir_operando\n");
-
     if (nombre == NULL || es_variable > 1 || es_variable < 0)
     {
         printf("Error: wrong arguments\n");
@@ -196,12 +179,13 @@ void escribir_operando(FILE *fpasm, char *nombre, int es_variable)
 
     if (es_variable)
     {
-        fprintf(fpasm, "\tpush dword _%s\n", nombre);
+        fprintf(fpasm, "\n\tmov eax, _%s\n", nombre);
+        fprintf(fpasm, "\tpush dword eax\n");
         return;
     }
     
-    fprintf(fpasm, "\tpush dword %d\n", atoi(nombre));
-
+    fprintf(fpasm, "\n\tmov eax, %d\n", atoi(nombre));
+    fprintf(fpasm, "\tpush dword eax\n");
     return;
 }
 /* 
@@ -265,7 +249,6 @@ que no se produce “Segmentation Fault”)
 */
 void sumar(FILE *fpasm, int es_variable_1, int es_variable_2)
 {
-    fprintf(fpasm, ";sumar\n");
 
     if (fpasm == NULL)
     {
@@ -280,23 +263,20 @@ void sumar(FILE *fpasm, int es_variable_1, int es_variable_2)
     }
 
     fprintf(fpasm, "\tpop dword ebx\n");
-    
-    if (es_variable_2)
-    {
-        fprintf(fpasm, "\tmov dword ebx, [ebx]\n");
-    }
-
     fprintf(fpasm, "\tpop dword eax\n");
 
     if (es_variable_1)
     {
-        fprintf(fpasm, "\tmov dword eax, [eax]\n");
+        fprintf(fpasm, "\tmov eax, [eax]\n");
     }
 
-    
+    if (es_variable_2)
+    {
+        fprintf(fpasm, "\tmov ebx, [ebx]\n");
+    }
 
     fprintf(fpasm, "\tadd eax, ebx\n");
-    fprintf(fpasm, "\tpush dword eax\n");
+    fprintf(fpasm, "\tpush dword eax\n\n");
 
     return;
 }
@@ -1210,13 +1190,12 @@ void declararFuncion(FILE *fd_asm, char *nombre_funcion, int num_var_loc)
         return;
     }
 
-    if (nombre_funcion == NULL || num_var_loc < 0)
+    if (nombre_funcion == NULL || num_var_loc <= 0)
     {
         printf("Error: wrong arguments\n");
         return;
     }
 
-    fprintf(fd_asm, "; declararFuncion: f() { var1, ... varnum_var_loc...\n");
     fprintf(fd_asm, "_%s:\n", nombre_funcion);
     fprintf(fd_asm, "\tpush ebp\n");
     fprintf(fd_asm, "\tmov ebp, esp\n");
@@ -1244,7 +1223,6 @@ void retornarFuncion(FILE *fd_asm, int es_variable)
         return;
     }
 
-    fprintf(fd_asm, "\t; retornarFuncion : return <cima_pila>\n");
     fprintf(fd_asm, "\tpop eax\n");
 
     if (es_variable)
@@ -1281,8 +1259,7 @@ void escribirParametro(FILE *fpasm, int pos_parametro, int num_total_parametros)
 
     d_ebp = 4 * (1 + (num_total_parametros - pos_parametro));
 
-    fprintf(fpasm, "; escribirParametro: %d (origen 0)\n", pos_parametro);
-    fprintf(fpasm, "\tlea eax, [ebp + %d]; direccion parametro %d\n", d_ebp, pos_parametro);
+    fprintf(fpasm, "\tlea eax, [ebp + %d]\n", d_ebp);
     fprintf(fpasm, "\tpush dword eax\n");
 }
 
@@ -1375,7 +1352,6 @@ void operandoEnPilaAArgumento(FILE *fd_asm, int es_variable)
         return;
     }
 
-    fprintf(fd_asm, ";operandoEnPilaAArgumento\n");
     if (es_variable)
     {
         fprintf(fd_asm, "\tpop dword eax\n");
