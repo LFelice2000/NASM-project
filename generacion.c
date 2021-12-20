@@ -605,11 +605,11 @@ void igual(FILE *fpasm, int es_variable1, int es_variable2, int etiqueta)
     fprintf(fpasm, "\tpop dword eax\n");
     if (es_variable1)
     {
-        fprintf(fpasm, "\tmov eax, [eax]\n");
+        fprintf(fpasm, "\tmov dword eax, [eax]\n");
     }
     if (es_variable2)
     {
-        fprintf(fpasm, "\tmov ebx, [ebx]\n");
+        fprintf(fpasm, "\tmov dword ebx, [ebx]\n");
     }
 
     fprintf(fpasm, "\tcmp eax, ebx\n");

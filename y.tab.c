@@ -84,12 +84,16 @@
 
         int tipo_actual;
         int clase_actual;
+        int tag = 0;
+        int for_tag = 0;
+        int while_tag = 0;
 
         Hash_Table *global_simbols = NULL;
         Hash_Table *local_simbols = NULL;
         bool local_scope_open = false, is_in_local, declare_in_local, token_found;
         Hash_node *found = NULL;
         int value, len = 0;
+        int no_not = 0;
 
         int num_variables_locales_actual = 0;
         int pos_variable_local_actual = 0;
@@ -101,7 +105,7 @@
         FILE *declarations_file = NULL;
         char nombre_variable[50];
 
-#line 105 "y.tab.c" /* yacc.c:339  */
+#line 109 "y.tab.c" /* yacc.c:339  */
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -221,11 +225,11 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 42 "alfa.y" /* yacc.c:355  */
+#line 46 "alfa.y" /* yacc.c:355  */
 
         tipo_atributos atributos;
 
-#line 229 "y.tab.c" /* yacc.c:355  */
+#line 233 "y.tab.c" /* yacc.c:355  */
 };
 
 typedef union YYSTYPE YYSTYPE;
@@ -242,7 +246,7 @@ int yyparse (void);
 
 /* Copy the second part of user declarations.  */
 
-#line 246 "y.tab.c" /* yacc.c:358  */
+#line 250 "y.tab.c" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -489,11 +493,11 @@ union yyalloc
 /* YYNTOKENS -- Number of terminals.  */
 #define YYNTOKENS  41
 /* YYNNTS -- Number of nonterminals.  */
-#define YYNNTS  39
+#define YYNNTS  41
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  77
+#define YYNRULES  79
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  147
+#define YYNSTATES  149
 
 /* YYTRANSLATE[YYX] -- Symbol number corresponding to YYX as returned
    by yylex, with out-of-bounds checking.  */
@@ -543,14 +547,14 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,   134,   134,   140,   155,   160,   164,   165,   167,   171,
-     172,   174,   176,   178,   179,   181,   182,   184,   185,   187,
-     231,   237,   246,   247,   249,   250,   252,   261,   262,   264,
-     265,   267,   268,   270,   271,   272,   273,   275,   276,   278,
-     328,   330,   332,   333,   335,   337,   357,   382,   388,   393,
-     394,   395,   396,   397,   398,   399,   400,   444,   455,   456,
-     457,   458,   473,   474,   476,   477,   479,   483,   484,   485,
-     486,   487,   489,   490,   492,   493,   495,   504
+       0,   139,   139,   146,   161,   166,   170,   171,   174,   179,
+     180,   183,   186,   189,   190,   193,   194,   197,   198,   201,
+     245,   251,   260,   261,   264,   265,   268,   278,   279,   282,
+     283,   286,   287,   290,   291,   292,   293,   296,   297,   300,
+     350,   353,   356,   363,   369,   380,   384,   394,   415,   440,
+     446,   461,   476,   491,   506,   521,   537,   553,   570,   613,
+     624,   625,   626,   627,   643,   644,   647,   648,   651,   668,
+     685,   703,   721,   739,   757,   758,   761,   762,   765,   774
 };
 #endif
 
@@ -574,10 +578,10 @@ static const char *const yytname[] =
   "identificadores", "funciones", "fn_name", "fn_declaracion", "funcion",
   "parametros_funcion", "resto_parametros_funcion", "parametro_funcion",
   "declaraciones_funcion", "sentencias", "sentencia", "sentencia_simple",
-  "bloque", "asignacion", "elemento_vector", "condicional", "bucle",
-  "lectura", "escritura", "retorno_funcion", "exp", "lista_expresiones",
-  "resto_lista_expresiones", "comparacion", "constante",
-  "constante_logica", "constante_entera", "identificador", YY_NULLPTR
+  "bloque", "asignacion", "elemento_vector", "condicional", "if_exp",
+  "bucle", "while_exp", "lectura", "escritura", "retorno_funcion", "exp",
+  "lista_expresiones", "resto_lista_expresiones", "comparacion",
+  "constante", "constante_logica", "constante_entera", "identificador", YY_NULLPTR
 };
 #endif
 
@@ -594,12 +598,12 @@ static const yytype_uint16 yytoknum[] =
 };
 # endif
 
-#define YYPACT_NINF -37
+#define YYPACT_NINF -36
 
 #define yypact_value_is_default(Yystate) \
-  (!!((Yystate) == (-37)))
+  (!!((Yystate) == (-36)))
 
-#define YYTABLE_NINF -78
+#define YYTABLE_NINF -80
 
 #define yytable_value_is_error(Yytable_value) \
   0
@@ -608,21 +612,21 @@ static const yytype_uint16 yytoknum[] =
      STATE-NUM.  */
 static const yytype_int16 yypact[] =
 {
-     -37,    49,    51,   -37,    50,    41,   -37,   -37,    17,   -37,
-      41,   -19,   -37,   -37,   -37,    61,    62,   -37,   -37,    64,
-      67,    44,    17,   -37,    84,     1,    62,   -37,   -19,   -37,
-      96,    81,     1,    17,   100,   102,    90,    14,    14,    -3,
-     117,     1,   125,   -37,   -37,   118,   -37,   -37,   -37,   -37,
-     -37,   -37,   -37,   -37,   -37,   120,   -19,   126,   128,    14,
-      14,   -37,    14,    14,    14,   -10,   -37,   -37,   -37,    66,
-     -37,   -37,   -37,   129,    66,    14,    14,   -37,   -37,   -37,
-      14,   -37,   -37,   124,    17,   -37,     8,    60,    97,   130,
-      16,   -37,    14,    14,    14,    14,    14,    14,    14,    80,
-      66,    66,    41,   128,   131,   132,   -37,    14,    14,    14,
-      14,    14,    14,   -37,    16,    16,   -37,   -37,    86,   110,
-      40,   133,   -37,   -37,   -37,   -37,     1,     1,    66,    66,
-      66,    66,    66,    66,    14,   -37,   -37,   127,   134,    40,
-     137,   -37,   -37,   136,     1,   138,   -37
+     -36,     5,    17,   -36,    -2,    44,   -36,   -36,    31,   -36,
+      44,   -11,   -36,   -36,   -36,    10,    32,   -36,   -36,    27,
+      29,     9,    31,   -36,    60,     2,    32,   -36,   -11,   -36,
+      58,    48,     2,    31,    69,    72,    50,    16,    16,    15,
+      71,     2,    76,   -36,   -36,    91,   -36,     2,   -36,     2,
+     -36,   -36,   -36,   -36,   -36,   -36,   -36,    95,   -11,    74,
+     103,    16,    16,   -36,    16,    16,    16,   -10,   -36,   -36,
+     -36,    84,   -36,   -36,   -36,   102,    84,    16,    16,   -36,
+     -36,   -36,    16,    99,   119,   -36,   -36,   121,    31,   -36,
+      98,   110,    70,   125,    49,   -36,    16,    16,    16,    16,
+      16,    16,    16,   120,    84,    84,   140,   -36,    44,   103,
+     130,   131,   -36,    16,    16,    16,    16,    16,    16,   -36,
+      49,    49,   -36,   -36,    33,   105,    45,   135,   -36,   133,
+     -36,   -36,   -36,   -36,   -36,    84,    84,    84,    84,    84,
+      84,    16,   -36,   -36,     2,    45,   134,   -36,   -36
 };
 
   /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -631,38 +635,40 @@ static const yytype_int16 yypact[] =
 static const yytype_uint8 yydefact[] =
 {
        3,     0,     0,     1,     0,     0,    13,    14,     0,     4,
-       6,     0,     9,    10,    11,     0,    18,     7,    77,     0,
-      15,     0,     0,     5,     0,     0,    18,     8,     0,    76,
+       6,     0,     9,    10,    11,     0,    18,     7,    79,     0,
+      15,     0,     0,     5,     0,     0,    18,     8,     0,    78,
        0,     0,     0,    23,     0,     0,     0,     0,     0,     0,
-       0,    29,     0,    32,    33,     0,    37,    38,    34,    35,
-      36,    17,    16,    12,    19,     0,     0,     0,    25,     0,
-       0,    45,     0,     0,     0,    56,    74,    75,    60,    46,
-      57,    72,    73,     0,    47,     0,     0,    21,    30,    31,
-       0,     2,    26,     0,     0,    22,     0,     0,     0,     0,
-      52,    55,     0,     0,     0,     0,     0,     0,    63,     0,
-      39,    40,    28,    25,     0,     0,    58,     0,     0,     0,
-       0,     0,     0,    59,    48,    49,    50,    51,    53,    54,
-      65,     0,    41,    27,    20,    24,     0,     0,    66,    67,
-      68,    69,    70,    71,     0,    62,    61,     0,     0,    65,
-      42,    44,    64,     0,     0,     0,    43
+       0,    29,     0,    32,    33,     0,    37,     0,    38,     0,
+      34,    35,    36,    17,    16,    12,    19,     0,     0,     0,
+      25,     0,     0,    47,     0,     0,     0,    58,    76,    77,
+      62,    48,    59,    74,    75,     0,    49,     0,     0,    21,
+      30,    31,     0,     0,     0,     2,    26,     0,     0,    22,
+       0,     0,     0,     0,    54,    57,     0,     0,     0,     0,
+       0,     0,    65,     0,    39,    40,    42,    45,    28,    25,
+       0,     0,    60,     0,     0,     0,     0,     0,     0,    61,
+      50,    51,    52,    53,    55,    56,    67,     0,    41,     0,
+      27,    20,    24,    44,    46,    68,    69,    70,    71,    72,
+      73,     0,    64,    63,     0,    67,     0,    66,    43
 };
 
   /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int16 yypgoto[] =
 {
-     -37,   -37,   -37,   -37,   -37,    -5,   -37,   -37,   -37,   -37,
-      -4,   121,   135,   -37,   -37,   -37,   -37,    54,    69,   -37,
-     -31,   -37,   -37,   -37,   -37,   -25,   -37,   -37,   -37,   -37,
-     -37,   -36,   -37,    15,   -37,   -37,   -37,   139,    -8
+     -36,   -36,   -36,   -36,   -36,    -9,   -36,   -36,   -36,   -36,
+       1,   126,   132,   -36,   -36,   -36,   -36,    47,    73,   -36,
+     -30,   -36,   -36,   -36,   -36,   -25,   -36,   -36,   -36,   -36,
+     -36,   -36,   -36,   -35,   -36,    12,   -36,   -36,   -36,   138,
+      -7
 };
 
   /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int16 yydefgoto[] =
 {
       -1,     1,     2,    16,    32,     9,    10,    11,    12,    13,
-      14,    19,    23,    24,    25,    26,    57,    85,    58,   124,
-      40,    41,    42,    43,    44,    68,    46,    47,    48,    49,
-      50,    69,   121,   135,    89,    70,    71,    72,    73
+      14,    19,    23,    24,    25,    26,    59,    89,    60,   131,
+      40,    41,    42,    43,    44,    70,    46,    47,    48,    49,
+      50,    51,    52,    71,   127,   142,    93,    72,    73,    74,
+      75
 };
 
   /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -670,44 +676,44 @@ static const yytype_int16 yydefgoto[] =
      number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_int16 yytable[] =
 {
-      45,    55,    74,    20,    15,    17,   -77,    45,    75,    34,
-      78,    35,    36,    37,    38,    75,    45,    18,    31,    76,
-      20,     6,     7,    86,    87,   104,    88,    90,    91,    56,
-      62,    92,    93,    94,    95,    96,    97,    39,    63,    99,
-     100,    94,    95,    64,   101,     6,     7,     8,    82,     3,
-      65,    29,    66,    67,     4,   134,   114,   115,   116,   117,
-     118,   119,   120,    92,    93,    94,    95,    96,    97,    22,
-       5,   128,   129,   130,   131,   132,   133,   105,    27,    21,
-      56,    29,    28,    92,    93,    94,    95,    96,    97,    92,
-      93,    94,    95,    96,    97,   137,   138,   123,   139,   122,
-      33,    45,    45,    92,    93,    94,    95,    96,    97,    92,
-      93,    94,    95,   145,   106,    53,    59,    54,    60,    45,
-      92,    93,    94,    95,    96,    97,    61,   107,   108,   109,
-     110,   111,   112,    92,    93,    94,    95,    96,    77,    79,
-      80,    81,    84,    83,   102,    98,   143,   113,   140,    52,
-     136,   126,   127,   103,   142,   141,   144,   125,     0,   146,
-      30,    51
+      45,    17,    57,    76,    20,     3,   -79,    45,    77,    15,
+      34,    80,    35,    36,    37,    38,    45,    83,     5,    84,
+       4,    20,    45,    31,    45,    18,    90,    91,    21,    92,
+      94,    95,    64,    77,    58,     6,     7,    78,    39,    22,
+      65,    27,   103,   104,    28,    66,    29,   105,     6,     7,
+       8,    86,    67,    29,    68,    69,    96,    97,    98,    99,
+     141,   120,   121,   122,   123,   124,   125,   126,    96,    97,
+      98,    99,   100,   101,    98,    99,    33,    55,   135,   136,
+     137,   138,   139,   140,    56,    61,    63,   112,    62,    58,
+      81,    87,    79,    96,    97,    98,    99,   100,   101,   130,
+     113,   114,   115,   116,   117,   118,   145,    96,    97,    98,
+      99,   100,   101,    82,   146,   110,    85,    88,   102,    45,
+     106,    96,    97,    98,    99,   100,   101,   111,    96,    97,
+      98,    99,   100,    96,    97,    98,    99,   100,   101,   128,
+     107,   108,   119,    96,    97,    98,    99,   100,   101,   129,
+     133,   134,   143,   144,    54,   148,   132,   147,    53,    30,
+       0,   109
 };
 
 static const yytype_int16 yycheck[] =
 {
-      25,    32,    38,    11,     8,    10,    16,    32,    18,     8,
-      41,    10,    11,    12,    13,    18,    41,    36,    22,    22,
-      28,     4,     5,    59,    60,    17,    62,    63,    64,    33,
-      16,    23,    24,    25,    26,    27,    28,    36,    24,    75,
-      76,    25,    26,    29,    80,     4,     5,     6,    56,     0,
-      36,    37,    38,    39,     3,    15,    92,    93,    94,    95,
-      96,    97,    98,    23,    24,    25,    26,    27,    28,     7,
-      20,   107,   108,   109,   110,   111,   112,    17,    14,    18,
-      84,    37,    15,    23,    24,    25,    26,    27,    28,    23,
-      24,    25,    26,    27,    28,   126,   127,   102,   134,    19,
-      16,   126,   127,    23,    24,    25,    26,    27,    28,    23,
-      24,    25,    26,   144,    17,    19,    16,    36,    16,   144,
-      23,    24,    25,    26,    27,    28,    36,    30,    31,    32,
-      33,    34,    35,    23,    24,    25,    26,    27,    21,    14,
-      22,    21,    14,    17,    20,    16,     9,    17,    21,    28,
-      17,    20,    20,    84,   139,    21,    20,   103,    -1,    21,
-      21,    26
+      25,    10,    32,    38,    11,     0,    16,    32,    18,     8,
+       8,    41,    10,    11,    12,    13,    41,    47,    20,    49,
+       3,    28,    47,    22,    49,    36,    61,    62,    18,    64,
+      65,    66,    16,    18,    33,     4,     5,    22,    36,     7,
+      24,    14,    77,    78,    15,    29,    37,    82,     4,     5,
+       6,    58,    36,    37,    38,    39,    23,    24,    25,    26,
+      15,    96,    97,    98,    99,   100,   101,   102,    23,    24,
+      25,    26,    27,    28,    25,    26,    16,    19,   113,   114,
+     115,   116,   117,   118,    36,    16,    36,    17,    16,    88,
+      14,    17,    21,    23,    24,    25,    26,    27,    28,   108,
+      30,    31,    32,    33,    34,    35,   141,    23,    24,    25,
+      26,    27,    28,    22,   144,    17,    21,    14,    16,   144,
+      21,    23,    24,    25,    26,    27,    28,    17,    23,    24,
+      25,    26,    27,    23,    24,    25,    26,    27,    28,    19,
+      21,    20,    17,    23,    24,    25,    26,    27,    28,     9,
+      20,    20,    17,    20,    28,    21,   109,   145,    26,    21,
+      -1,    88
 };
 
   /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
@@ -716,19 +722,19 @@ static const yytype_uint8 yystos[] =
 {
        0,    42,    43,     0,     3,    20,     4,     5,     6,    46,
       47,    48,    49,    50,    51,    51,    44,    46,    36,    52,
-      79,    18,     7,    53,    54,    55,    56,    14,    15,    37,
-      78,    51,    45,    16,     8,    10,    11,    12,    13,    36,
+      81,    18,     7,    53,    54,    55,    56,    14,    15,    37,
+      80,    51,    45,    16,     8,    10,    11,    12,    13,    36,
       61,    62,    63,    64,    65,    66,    67,    68,    69,    70,
-      71,    53,    52,    19,    36,    61,    51,    57,    59,    16,
-      16,    36,    16,    24,    29,    36,    38,    39,    66,    72,
-      76,    77,    78,    79,    72,    18,    22,    21,    61,    14,
-      22,    21,    79,    17,    14,    58,    72,    72,    72,    75,
-      72,    72,    23,    24,    25,    26,    27,    28,    16,    72,
-      72,    72,    20,    59,    17,    17,    17,    30,    31,    32,
-      33,    34,    35,    17,    72,    72,    72,    72,    72,    72,
-      72,    73,    19,    46,    60,    58,    20,    20,    72,    72,
-      72,    72,    72,    72,    15,    74,    17,    61,    61,    72,
-      21,    21,    74,     9,    20,    61,    21
+      71,    72,    73,    53,    52,    19,    36,    61,    51,    57,
+      59,    16,    16,    36,    16,    24,    29,    36,    38,    39,
+      66,    74,    78,    79,    80,    81,    74,    18,    22,    21,
+      61,    14,    22,    61,    61,    21,    81,    17,    14,    58,
+      74,    74,    74,    77,    74,    74,    23,    24,    25,    26,
+      27,    28,    16,    74,    74,    74,    21,    21,    20,    59,
+      17,    17,    17,    30,    31,    32,    33,    34,    35,    17,
+      74,    74,    74,    74,    74,    74,    74,    75,    19,     9,
+      46,    60,    58,    20,    20,    74,    74,    74,    74,    74,
+      74,    15,    76,    17,    20,    74,    61,    76,    21
 };
 
   /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
@@ -738,10 +744,10 @@ static const yytype_uint8 yyr1[] =
       48,    49,    50,    51,    51,    52,    52,    53,    53,    54,
       55,    56,    57,    57,    58,    58,    59,    60,    60,    61,
       61,    62,    62,    63,    63,    63,    63,    64,    64,    65,
-      65,    66,    67,    67,    68,    69,    70,    71,    72,    72,
-      72,    72,    72,    72,    72,    72,    72,    72,    72,    72,
-      72,    72,    73,    73,    74,    74,    75,    75,    75,    75,
-      75,    75,    76,    76,    77,    77,    78,    79
+      65,    66,    67,    67,    68,    69,    70,    71,    72,    73,
+      74,    74,    74,    74,    74,    74,    74,    74,    74,    74,
+      74,    74,    74,    74,    75,    75,    76,    76,    77,    77,
+      77,    77,    77,    77,    78,    78,    79,    79,    80,    81
 };
 
   /* YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.  */
@@ -751,10 +757,10 @@ static const yytype_uint8 yyr2[] =
        1,     1,     5,     1,     1,     1,     3,     2,     0,     3,
        6,     3,     2,     0,     3,     0,     2,     1,     0,     1,
        2,     2,     1,     1,     1,     1,     1,     1,     1,     3,
-       3,     4,     7,    11,     7,     2,     2,     2,     3,     3,
-       3,     3,     2,     3,     3,     2,     1,     1,     3,     3,
-       1,     4,     2,     0,     3,     0,     3,     3,     3,     3,
-       3,     3,     1,     1,     1,     1,     1,     1
+       3,     4,     3,     7,     5,     3,     5,     2,     2,     2,
+       3,     3,     3,     3,     2,     3,     3,     2,     1,     1,
+       3,     3,     1,     4,     2,     0,     3,     0,     3,     3,
+       3,     3,     3,     3,     1,     1,     1,     1,     1,     1
 };
 
 
@@ -1431,16 +1437,16 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 135 "alfa.y" /* yacc.c:1646  */
+#line 140 "alfa.y" /* yacc.c:1646  */
     {
         escribir_fin(yyout);
         fprintf(yyout, ";R1:\t<programa> ::= main { <declaraciones> <funciones> <sentencias> }\n");
 }
-#line 1440 "y.tab.c" /* yacc.c:1646  */
+#line 1446 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 3:
-#line 140 "alfa.y" /* yacc.c:1646  */
+#line 146 "alfa.y" /* yacc.c:1646  */
     {
         
         global_simbols = creat_hash_table(); 
@@ -1454,107 +1460,115 @@ yyreduce:
         escribir_subseccion_data(yyout);
         escribir_cabecera_bss(yyout);  
 }
-#line 1458 "y.tab.c" /* yacc.c:1646  */
+#line 1464 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 4:
-#line 155 "alfa.y" /* yacc.c:1646  */
+#line 161 "alfa.y" /* yacc.c:1646  */
     {
         escribir_segmento_codigo(yyout);
 }
-#line 1466 "y.tab.c" /* yacc.c:1646  */
+#line 1472 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 5:
-#line 160 "alfa.y" /* yacc.c:1646  */
+#line 166 "alfa.y" /* yacc.c:1646  */
     {
         escribir_inicio_main(yyout);
 }
-#line 1474 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 6:
-#line 164 "alfa.y" /* yacc.c:1646  */
-    { fprintf(yyout, ";R2:\t<declaraciones> ::= <declaracion>\n");}
 #line 1480 "y.tab.c" /* yacc.c:1646  */
     break;
 
-  case 7:
-#line 165 "alfa.y" /* yacc.c:1646  */
-    { fprintf(yyout, ";R3:\t<declaraciones> ::= <declaracion> <declaraciones>\n");}
+  case 6:
+#line 170 "alfa.y" /* yacc.c:1646  */
+    { fprintf(yyout, ";R2:\t<declaraciones> ::= <declaracion>\n");}
 #line 1486 "y.tab.c" /* yacc.c:1646  */
     break;
 
+  case 7:
+#line 171 "alfa.y" /* yacc.c:1646  */
+    { fprintf(yyout, ";R3:\t<declaraciones> ::= <declaracion> <declaraciones>\n");
+}
+#line 1493 "y.tab.c" /* yacc.c:1646  */
+    break;
+
   case 8:
-#line 167 "alfa.y" /* yacc.c:1646  */
+#line 174 "alfa.y" /* yacc.c:1646  */
     { 
         
-        fprintf(yyout, ";R4:\t<declaracion> ::= <clase> <identificadores> ;\n"); }
-#line 1494 "y.tab.c" /* yacc.c:1646  */
+        fprintf(yyout, ";R4:\t<declaracion> ::= <clase> <identificadores> ;\n"); 
+}
+#line 1502 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 9:
-#line 171 "alfa.y" /* yacc.c:1646  */
+#line 179 "alfa.y" /* yacc.c:1646  */
     { clase_actual = ESCALAR; fprintf(yyout, ";R5:\t<clase> ::= <clase_escalar>\n"); }
-#line 1500 "y.tab.c" /* yacc.c:1646  */
+#line 1508 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 10:
-#line 172 "alfa.y" /* yacc.c:1646  */
-    { clase_actual = VECTOR; fprintf(yyout, ";R7:\t<clase> ::= <clase_vector>\n"); }
-#line 1506 "y.tab.c" /* yacc.c:1646  */
+#line 180 "alfa.y" /* yacc.c:1646  */
+    { clase_actual = VECTOR; fprintf(yyout, ";R7:\t<clase> ::= <clase_vector>\n"); 
+}
+#line 1515 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 11:
-#line 174 "alfa.y" /* yacc.c:1646  */
-    { fprintf(yyout, ";R9:\t<clase_escalar> ::= <tipo>\n"); }
-#line 1512 "y.tab.c" /* yacc.c:1646  */
+#line 183 "alfa.y" /* yacc.c:1646  */
+    { fprintf(yyout, ";R9:\t<clase_escalar> ::= <tipo>\n"); 
+}
+#line 1522 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 12:
-#line 176 "alfa.y" /* yacc.c:1646  */
-    { fprintf(yyout, ";R15:\t<clase_vector> ::= array <tipo> [<constante_entera>]\n"); }
-#line 1518 "y.tab.c" /* yacc.c:1646  */
+#line 186 "alfa.y" /* yacc.c:1646  */
+    { fprintf(yyout, ";R15:\t<clase_vector> ::= array <tipo> [<constante_entera>]\n"); 
+}
+#line 1529 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 13:
-#line 178 "alfa.y" /* yacc.c:1646  */
+#line 189 "alfa.y" /* yacc.c:1646  */
     { tipo_actual = INT; fprintf(yyout, ";R10:\t<tipo> ::= int\n"); }
-#line 1524 "y.tab.c" /* yacc.c:1646  */
+#line 1535 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 14:
-#line 179 "alfa.y" /* yacc.c:1646  */
-    { tipo_actual = BOOLEAN; fprintf(yyout, ";R11:\t<tipo> ::= boolean\n"); }
-#line 1530 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 15:
-#line 181 "alfa.y" /* yacc.c:1646  */
-    { fprintf(yyout, ";R18:\t<identificadores> ::= <identificador>\n"); }
-#line 1536 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 16:
-#line 182 "alfa.y" /* yacc.c:1646  */
-    { fprintf(yyout, ";R19:\t<identificadores> ::= <identificador> , <identificadores>\n"); }
+#line 190 "alfa.y" /* yacc.c:1646  */
+    { tipo_actual = BOOLEAN; fprintf(yyout, ";R11:\t<tipo> ::= boolean\n"); 
+}
 #line 1542 "y.tab.c" /* yacc.c:1646  */
     break;
 
-  case 17:
-#line 184 "alfa.y" /* yacc.c:1646  */
-    { fprintf(yyout, ";R20:\t<funciones> ::= <funcion> <funciones>\n"); }
+  case 15:
+#line 193 "alfa.y" /* yacc.c:1646  */
+    { fprintf(yyout, ";R18:\t<identificadores> ::= <identificador>\n"); }
 #line 1548 "y.tab.c" /* yacc.c:1646  */
     break;
 
+  case 16:
+#line 194 "alfa.y" /* yacc.c:1646  */
+    { fprintf(yyout, ";R19:\t<identificadores> ::= <identificador> , <identificadores>\n"); 
+}
+#line 1555 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 17:
+#line 197 "alfa.y" /* yacc.c:1646  */
+    { fprintf(yyout, ";R20:\t<funciones> ::= <funcion> <funciones>\n"); }
+#line 1561 "y.tab.c" /* yacc.c:1646  */
+    break;
+
   case 18:
-#line 185 "alfa.y" /* yacc.c:1646  */
-    { fprintf(yyout, ";R21:\t<funciones> ::= \n"); }
-#line 1554 "y.tab.c" /* yacc.c:1646  */
+#line 198 "alfa.y" /* yacc.c:1646  */
+    { fprintf(yyout, ";R21:\t<funciones> ::= \n"); 
+}
+#line 1568 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 19:
-#line 187 "alfa.y" /* yacc.c:1646  */
+#line 201 "alfa.y" /* yacc.c:1646  */
     {
         Hash_node node;
 
@@ -1598,21 +1612,21 @@ yyreduce:
         
         strcpy((yyval.atributos).lexema, (yyvsp[0].atributos).lexema);
 }
-#line 1602 "y.tab.c" /* yacc.c:1646  */
+#line 1616 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 20:
-#line 231 "alfa.y" /* yacc.c:1646  */
+#line 245 "alfa.y" /* yacc.c:1646  */
     {
         
         declararFuncion(yyout, (yyvsp[-3].atributos).lexema, num_variables_locales_actual);
         strcpy((yyval.atributos).lexema, (yyvsp[-5].atributos).lexema);
 }
-#line 1612 "y.tab.c" /* yacc.c:1646  */
+#line 1626 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 21:
-#line 237 "alfa.y" /* yacc.c:1646  */
+#line 251 "alfa.y" /* yacc.c:1646  */
     {
 
         hash_table_delete(local_simbols);
@@ -1621,35 +1635,37 @@ yyreduce:
 
         fprintf(yyout, ";R22:	<funcion> ::=function <tipo> <identificador> ( <parametros_funcion> ) { <declaraciones_funcion> <sentencias> }\n"); 
 }
-#line 1625 "y.tab.c" /* yacc.c:1646  */
+#line 1639 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 22:
-#line 246 "alfa.y" /* yacc.c:1646  */
+#line 260 "alfa.y" /* yacc.c:1646  */
     { fprintf(yyout, ";R23:\t<parametros_funcion> ::= <parametro_funcion> <resto_parametros_funcion>\n"); }
-#line 1631 "y.tab.c" /* yacc.c:1646  */
+#line 1645 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 23:
-#line 247 "alfa.y" /* yacc.c:1646  */
-    { fprintf(yyout, ";R24:\t<parametros_funcion> ::= \n"); }
-#line 1637 "y.tab.c" /* yacc.c:1646  */
+#line 261 "alfa.y" /* yacc.c:1646  */
+    { fprintf(yyout, ";R24:\t<parametros_funcion> ::= \n"); 
+}
+#line 1652 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 24:
-#line 249 "alfa.y" /* yacc.c:1646  */
+#line 264 "alfa.y" /* yacc.c:1646  */
     { fprintf(yyout, ";R25:\t<resto_parametros_funcion> ::= ; <parametro_funcion> <resto_parametros_funcion>\n"); }
-#line 1643 "y.tab.c" /* yacc.c:1646  */
+#line 1658 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 25:
-#line 250 "alfa.y" /* yacc.c:1646  */
-    { fprintf(yyout, ";R26:\t<resto_parametros_funcion> ::= \n"); }
-#line 1649 "y.tab.c" /* yacc.c:1646  */
+#line 265 "alfa.y" /* yacc.c:1646  */
+    { fprintf(yyout, ";R26:\t<resto_parametros_funcion> ::= \n"); 
+}
+#line 1665 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 26:
-#line 252 "alfa.y" /* yacc.c:1646  */
+#line 268 "alfa.y" /* yacc.c:1646  */
     { 
         /**num_parametros_actual++;
 
@@ -1657,84 +1673,90 @@ yyreduce:
 
         pos_parametro_actual++;*/
 
-        fprintf(yyout, ";R27:\t<parametro_funcion> ::= <tipo> <identificador>\n"); }
-#line 1662 "y.tab.c" /* yacc.c:1646  */
+        fprintf(yyout, ";R27:\t<parametro_funcion> ::= <tipo> <identificador>\n"); 
+}
+#line 1679 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 27:
-#line 261 "alfa.y" /* yacc.c:1646  */
+#line 278 "alfa.y" /* yacc.c:1646  */
     { fprintf(yyout, ";R28:\t<declaraciones_funcion> ::= <declaraciones>\n"); }
-#line 1668 "y.tab.c" /* yacc.c:1646  */
+#line 1685 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 28:
-#line 262 "alfa.y" /* yacc.c:1646  */
-    { fprintf(yyout, ";R29:\t<declaraciones_funcion> ::= \n"); }
-#line 1674 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 29:
-#line 264 "alfa.y" /* yacc.c:1646  */
-    {fprintf(yyout, ";R30:\t<sentencias> ::= <sentencia>\n");}
-#line 1680 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 30:
-#line 265 "alfa.y" /* yacc.c:1646  */
-    {fprintf(yyout, ";R31:\t<sentencias> ::= <sentencia> <sentencias>\n");}
-#line 1686 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 31:
-#line 267 "alfa.y" /* yacc.c:1646  */
-    {fprintf(yyout, ";R32:\t<sentencia> ::= <sentencia_simple> ;\n");}
+#line 279 "alfa.y" /* yacc.c:1646  */
+    { fprintf(yyout, ";R29:\t<declaraciones_funcion> ::= \n"); 
+}
 #line 1692 "y.tab.c" /* yacc.c:1646  */
     break;
 
-  case 32:
-#line 268 "alfa.y" /* yacc.c:1646  */
-    {fprintf(yyout, ";R33:\t<sentencia> ::= <bloque>\n");}
+  case 29:
+#line 282 "alfa.y" /* yacc.c:1646  */
+    {fprintf(yyout, ";R30:\t<sentencias> ::= <sentencia>\n");}
 #line 1698 "y.tab.c" /* yacc.c:1646  */
     break;
 
+  case 30:
+#line 283 "alfa.y" /* yacc.c:1646  */
+    {fprintf(yyout, ";R31:\t<sentencias> ::= <sentencia> <sentencias>\n");
+}
+#line 1705 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 31:
+#line 286 "alfa.y" /* yacc.c:1646  */
+    {fprintf(yyout, ";R32:\t<sentencia> ::= <sentencia_simple> ;\n");}
+#line 1711 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 32:
+#line 287 "alfa.y" /* yacc.c:1646  */
+    {fprintf(yyout, ";R33:\t<sentencia> ::= <bloque>\n");
+}
+#line 1718 "y.tab.c" /* yacc.c:1646  */
+    break;
+
   case 33:
-#line 270 "alfa.y" /* yacc.c:1646  */
+#line 290 "alfa.y" /* yacc.c:1646  */
     {fprintf(yyout, ";R34:\t<sentencia_simple> ::= <asignacion>\n");}
-#line 1704 "y.tab.c" /* yacc.c:1646  */
+#line 1724 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 34:
-#line 271 "alfa.y" /* yacc.c:1646  */
+#line 291 "alfa.y" /* yacc.c:1646  */
     {fprintf(yyout, ";R35:\t<sentencia_simple> ::= <lectura>\n");}
-#line 1710 "y.tab.c" /* yacc.c:1646  */
+#line 1730 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 35:
-#line 272 "alfa.y" /* yacc.c:1646  */
+#line 292 "alfa.y" /* yacc.c:1646  */
     {fprintf(yyout, ";R36:\t<sentencia_simple> ::= <escritura>\n");}
-#line 1716 "y.tab.c" /* yacc.c:1646  */
+#line 1736 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 36:
-#line 273 "alfa.y" /* yacc.c:1646  */
-    {fprintf(yyout, ";R38:\t<sentencia_simple> ::= <retorno_funcion>\n");}
-#line 1722 "y.tab.c" /* yacc.c:1646  */
+#line 293 "alfa.y" /* yacc.c:1646  */
+    {fprintf(yyout, ";R38:\t<sentencia_simple> ::= <retorno_funcion>\n");
+}
+#line 1743 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 37:
-#line 275 "alfa.y" /* yacc.c:1646  */
-    { fprintf(yyout, ";R40:\t<bloque> ::= <condicional>\n"); }
-#line 1728 "y.tab.c" /* yacc.c:1646  */
+#line 296 "alfa.y" /* yacc.c:1646  */
+    { fprintf(yyout, ";R40:\t<bloque> ::= <condicional>\n");}
+#line 1749 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 38:
-#line 276 "alfa.y" /* yacc.c:1646  */
-    { fprintf(yyout, ";R41:\t<bloque> ::= <bucle>\n"); }
-#line 1734 "y.tab.c" /* yacc.c:1646  */
+#line 297 "alfa.y" /* yacc.c:1646  */
+    { fprintf(yyout, ";R41:\t<bloque> ::= <bucle>\n"); 
+}
+#line 1756 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 39:
-#line 278 "alfa.y" /* yacc.c:1646  */
+#line 300 "alfa.y" /* yacc.c:1646  */
     {
         
         if(local_scope_open) {
@@ -1784,41 +1806,84 @@ yyreduce:
         fprintf(yyout, ";R43:\t<asignacion> ::= <identificador> = <exp>\n"); 
         
         }
-#line 1788 "y.tab.c" /* yacc.c:1646  */
+#line 1810 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 40:
-#line 328 "alfa.y" /* yacc.c:1646  */
-    { fprintf(yyout, ";R44:\t<asignacion> ::= <elemento_vector> = <exp>\n"); }
-#line 1794 "y.tab.c" /* yacc.c:1646  */
+#line 350 "alfa.y" /* yacc.c:1646  */
+    { fprintf(yyout, ";R44:\t<asignacion> ::= <elemento_vector> = <exp>\n"); 
+}
+#line 1817 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 41:
-#line 330 "alfa.y" /* yacc.c:1646  */
-    { fprintf(yyout, ";R48:\t<elemento_vector> ::= <identificador> [ <exp> ]\n"); }
-#line 1800 "y.tab.c" /* yacc.c:1646  */
+#line 353 "alfa.y" /* yacc.c:1646  */
+    { fprintf(yyout, ";R48:\t<elemento_vector> ::= <identificador> [ <exp> ]\n"); 
+}
+#line 1824 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 42:
-#line 332 "alfa.y" /* yacc.c:1646  */
-    {fprintf(yyout, ";R50\t<condicional> ::= if ( <exp> ) { <sentencias> }\n");}
-#line 1806 "y.tab.c" /* yacc.c:1646  */
+#line 356 "alfa.y" /* yacc.c:1646  */
+    {
+        
+        ifthenelse_fin(yyout, for_tag);
+
+        fprintf(yyout, ";R50\t<condicional> ::= if ( <exp> ) { <sentencias> }\n");
+        
+        }
+#line 1836 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 43:
-#line 333 "alfa.y" /* yacc.c:1646  */
-    {fprintf(yyout, ";R51\t<condicional> ::= if ( <exp> ) { <sentencias> } else { <sentencias> }\n");}
-#line 1812 "y.tab.c" /* yacc.c:1646  */
+#line 363 "alfa.y" /* yacc.c:1646  */
+    {
+                ifthenelse_fin_then(yyout, for_tag);
+                
+                fprintf(yyout, ";R51\t<condicional> ::= if ( <exp> ) { <sentencias> } else { <sentencias> }\n");
+}
+#line 1846 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 44:
-#line 335 "alfa.y" /* yacc.c:1646  */
-    { fprintf(yyout, ";R52:\t<bucle> ::= while( <exp> ) { <sentencias> }\n"); }
-#line 1818 "y.tab.c" /* yacc.c:1646  */
+#line 369 "alfa.y" /* yacc.c:1646  */
+    {
+        if((yyvsp[-2].atributos).tipo != BOOLEAN) {
+                fprintf(stdout, "Semantic Error (50) \n");
+                error = -1;
+                return -1;
+        }
+        
+        ifthen_inicio(yyout, (yyvsp[-2].atributos).es_direccion, for_tag);
+        for_tag++;
+}
+#line 1861 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 45:
-#line 337 "alfa.y" /* yacc.c:1646  */
+#line 380 "alfa.y" /* yacc.c:1646  */
+    { 
+        fprintf(yyout, ";R52:\t<bucle> ::= while( <exp> ) { <sentencias> }\n"); 
+}
+#line 1869 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 46:
+#line 384 "alfa.y" /* yacc.c:1646  */
+    {
+        if((yyvsp[-2].atributos).tipo != BOOLEAN){
+                fprintf(stdout, "Semantic Error (51) \n");
+                error = -1;
+                return -1;
+        }
+        /**while_inicio(yyout, $3.es_direccion, while_tag);*/
+        while_tag++;
+}
+#line 1883 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 47:
+#line 394 "alfa.y" /* yacc.c:1646  */
     {
         
         len = strlen((yyvsp[0].atributos).lexema);
@@ -1837,12 +1902,13 @@ yyreduce:
         }
        
 
-        fprintf(yyout, ";R54:\t<lectura> ::= scanf <identificador>\n");}
-#line 1842 "y.tab.c" /* yacc.c:1646  */
+        fprintf(yyout, ";R54:\t<lectura> ::= scanf <identificador>\n");
+}
+#line 1908 "y.tab.c" /* yacc.c:1646  */
     break;
 
-  case 46:
-#line 357 "alfa.y" /* yacc.c:1646  */
+  case 48:
+#line 415 "alfa.y" /* yacc.c:1646  */
     {
         
         if((yyvsp[0].atributos).es_direccion == 1) {
@@ -1867,75 +1933,186 @@ yyreduce:
         
         fprintf(yyout, ";R56:\t<escritura> ::= printf <exp>\n");
 }
-#line 1871 "y.tab.c" /* yacc.c:1646  */
+#line 1937 "y.tab.c" /* yacc.c:1646  */
     break;
 
-  case 47:
-#line 382 "alfa.y" /* yacc.c:1646  */
+  case 49:
+#line 440 "alfa.y" /* yacc.c:1646  */
     {
         retornarFuncion(yyout, 0);
 
         fprintf(yyout, ";R61:\t<retorno_funcion> ::= return <exp>\n");
 }
-#line 1881 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 48:
-#line 388 "alfa.y" /* yacc.c:1646  */
-    { 
-        sumar(yyout, 1, 1);
-
-        fprintf(yyout, ";R72:\t<exp> ::= <exp> + <exp>\n");
-        }
-#line 1891 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 49:
-#line 393 "alfa.y" /* yacc.c:1646  */
-    { fprintf(yyout, ";R73:\t<exp> ::= <exp> - <exp>\n"); }
-#line 1897 "y.tab.c" /* yacc.c:1646  */
+#line 1947 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 50:
-#line 394 "alfa.y" /* yacc.c:1646  */
-    { fprintf(yyout, ";R74:\t<exp> ::= <exp> / <exp>\n"); }
-#line 1903 "y.tab.c" /* yacc.c:1646  */
+#line 446 "alfa.y" /* yacc.c:1646  */
+    {
+                if((yyvsp[-2].atributos).tipo == (yyvsp[0].atributos).tipo && (yyvsp[-2].atributos).tipo == INT) {
+        
+                        (yyval.atributos).es_direccion = 0;
+                        (yyval.atributos).tipo = INT;
+
+                        sumar(yyout, (yyvsp[-2].atributos).es_direccion, (yyvsp[0].atributos).es_direccion);
+                        fprintf(yyout, ";R72:\t<exp> ::= <exp> + <exp>\n");
+                }
+                else {
+                        fprintf(stdout, "Semantic Error (72) types dont match\n");
+                        error = -1;
+                        return -1;
+                }
+        }
+#line 1967 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 51:
-#line 395 "alfa.y" /* yacc.c:1646  */
-    { fprintf(yyout, ";R75:\t<exp> ::= <exp> * <exp>\n"); }
-#line 1909 "y.tab.c" /* yacc.c:1646  */
+#line 461 "alfa.y" /* yacc.c:1646  */
+    { 
+                if((yyvsp[-2].atributos).tipo == (yyvsp[0].atributos).tipo && (yyvsp[-2].atributos).tipo == INT) {
+        
+                        (yyval.atributos).es_direccion = 0;
+                        (yyval.atributos).tipo = INT;
+
+                        restar(yyout, (yyvsp[-2].atributos).es_direccion, (yyvsp[0].atributos).es_direccion);
+                        fprintf(yyout, ";R73:\t<exp> ::= <exp> - <exp>\n");
+                }
+                else {
+                        fprintf(stdout, "Semantic Error (73) types dont match\n");
+                        error = -1;
+                        return -1;
+                } 
+        }
+#line 1987 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 52:
-#line 396 "alfa.y" /* yacc.c:1646  */
-    { fprintf(yyout, ";R76:\t<exp> ::= - <exp>\n"); }
-#line 1915 "y.tab.c" /* yacc.c:1646  */
+#line 476 "alfa.y" /* yacc.c:1646  */
+    {
+                if((yyvsp[-2].atributos).tipo == (yyvsp[0].atributos).tipo && (yyvsp[-2].atributos).tipo == INT) {
+        
+                        (yyval.atributos).es_direccion = 0;
+                        (yyval.atributos).tipo = INT;
+                        
+                        dividir(yyout, (yyvsp[-2].atributos).es_direccion, (yyvsp[0].atributos).es_direccion);
+                        fprintf(yyout, ";R74:\t<exp> ::= <exp> / <exp>\n");
+                }
+                else {
+                        fprintf(stdout, "Semantic Error (74) types dont match\n");
+                        error = -1;
+                        return -1;
+                }  
+        }
+#line 2007 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 53:
-#line 397 "alfa.y" /* yacc.c:1646  */
-    { fprintf(yyout, ";R77:\t<exp> ::= <exp> && <exp>\n"); }
-#line 1921 "y.tab.c" /* yacc.c:1646  */
+#line 491 "alfa.y" /* yacc.c:1646  */
+    { 
+                if((yyvsp[-2].atributos).tipo == (yyvsp[0].atributos).tipo && (yyvsp[-2].atributos).tipo == INT) {
+        
+                        (yyval.atributos).es_direccion = 0;
+                        (yyval.atributos).tipo = INT;
+
+                        multiplicar(yyout, (yyvsp[-2].atributos).es_direccion, (yyvsp[0].atributos).es_direccion);
+                        fprintf(yyout, ";R75:\t<exp> ::= <exp> * <exp>\n");
+                }
+                else {
+                        fprintf(stdout, "Semantic Error (75) types dont match\n");
+                        error = -1;
+                        return -1;
+                } 
+        }
+#line 2027 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 54:
-#line 398 "alfa.y" /* yacc.c:1646  */
-    { fprintf(yyout, ";R78:\t<exp> ::= <exp> || <exp>\n"); }
-#line 1927 "y.tab.c" /* yacc.c:1646  */
+#line 506 "alfa.y" /* yacc.c:1646  */
+    {
+                if((yyvsp[0].atributos).tipo == INT) {
+        
+                        (yyval.atributos).es_direccion = 0;
+                        (yyval.atributos).tipo = INT;
+
+                        cambiar_signo(yyout, (yyvsp[0].atributos).es_direccion);
+                        fprintf(yyout, ";R76:\t<exp> ::= - <exp>\n");
+                }
+                else {
+                        fprintf(stdout, "Semantic Error (76) types dont match\n");
+                        error = -1;
+                        return -1;
+                }
+        }
+#line 2047 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 55:
-#line 399 "alfa.y" /* yacc.c:1646  */
-    { fprintf(yyout, ";R79:\t<exp> ::= ! <exp>\n"); }
-#line 1933 "y.tab.c" /* yacc.c:1646  */
+#line 521 "alfa.y" /* yacc.c:1646  */
+    {
+                if((yyvsp[-2].atributos).tipo == (yyvsp[0].atributos).tipo && (yyvsp[-2].atributos).tipo == BOOLEAN) {
+                        y(yyout, (yyvsp[-2].atributos).es_direccion, (yyvsp[0].atributos).es_direccion);
+        
+                        (yyval.atributos).es_direccion = 0;
+                        (yyval.atributos).tipo = BOOLEAN;
+        
+                        fprintf(yyout, ";R77:\t<exp> ::= <exp> && <exp>\n"); 
+                }
+                else {
+                        fprintf(stdout, "Semantic Error (77) types dont match\n");
+                        error = -1;
+                        return -1;
+                }
+                        
+        }
+#line 2068 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 56:
-#line 400 "alfa.y" /* yacc.c:1646  */
+#line 537 "alfa.y" /* yacc.c:1646  */
     { 
+                if((yyvsp[-2].atributos).tipo == (yyvsp[0].atributos).tipo && (yyvsp[-2].atributos).tipo == BOOLEAN) {
+                       y(yyout, (yyvsp[-2].atributos).es_direccion, (yyvsp[0].atributos).es_direccion);
+        
+                        (yyval.atributos).es_direccion = 0;
+                        (yyval.atributos).tipo = BOOLEAN;
+        
+                        fprintf(yyout, ";R78:\t<exp> ::= <exp> && <exp>\n");
+                }
+                else {
+                        fprintf(stdout, "Semantic Error (78) types dont match\n");
+                        error = -1;
+                        return -1;
+                }
                 
+        }
+#line 2089 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 57:
+#line 553 "alfa.y" /* yacc.c:1646  */
+    { 
+                if((yyvsp[0].atributos).tipo == BOOLEAN) {
+                       no(yyout, (yyvsp[0].atributos).es_direccion, no_not);
+                       no_not++;
+        
+                        (yyval.atributos).es_direccion = 0;
+                        (yyval.atributos).tipo = BOOLEAN;
+        
+                        fprintf(yyout, ";R79:\t<exp> ::= ! <exp>\n"); 
+                }
+                else {
+                        fprintf(stdout, "Semantic Error (79) types dont match\n");
+                        error = -1;
+                        return -1;
+                }  
+                              
+        }
+#line 2111 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 58:
+#line 570 "alfa.y" /* yacc.c:1646  */
+    { 
                 if(local_scope_open) {
                         len = strlen((yyvsp[0].atributos).lexema);
                         found = get_value_from_hstable(local_simbols, (yyvsp[0].atributos).lexema, len);
@@ -1978,11 +2155,11 @@ yyreduce:
 
                 fprintf(yyout, ";R80:\t<exp> ::= <identificador>\n");
         }
-#line 1982 "y.tab.c" /* yacc.c:1646  */
+#line 2159 "y.tab.c" /* yacc.c:1646  */
     break;
 
-  case 57:
-#line 444 "alfa.y" /* yacc.c:1646  */
+  case 59:
+#line 613 "alfa.y" /* yacc.c:1646  */
     {
                 char tmp[100] = "\0";
 
@@ -1994,29 +2171,29 @@ yyreduce:
                 escribir_operando(yyout, tmp, 0);
 
                 fprintf(yyout, ";R81:\t<exp> ::= <constante>\n"); }
-#line 1998 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 58:
-#line 455 "alfa.y" /* yacc.c:1646  */
-    { (yyval.atributos).tipo = (yyvsp[-1].atributos).tipo; (yyval.atributos).es_direccion = (yyvsp[-1].atributos).es_direccion; fprintf(yyout, ";R82:\t<exp> ::= ( <exp> )\n"); }
-#line 2004 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 59:
-#line 456 "alfa.y" /* yacc.c:1646  */
-    { (yyval.atributos).tipo = (yyvsp[-1].atributos).tipo; (yyval.atributos).es_direccion = (yyvsp[-1].atributos).es_direccion; fprintf(yyout, ";R83:\t<exp> ::= ( <comparacion> )\n"); }
-#line 2010 "y.tab.c" /* yacc.c:1646  */
+#line 2175 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 60:
-#line 457 "alfa.y" /* yacc.c:1646  */
-    { (yyval.atributos).tipo = (yyvsp[0].atributos).tipo; (yyval.atributos).es_direccion = (yyvsp[0].atributos).es_direccion; fprintf(yyout, ";R85:\t<exp> ::= <elemento_vector>\n"); }
-#line 2016 "y.tab.c" /* yacc.c:1646  */
+#line 624 "alfa.y" /* yacc.c:1646  */
+    { (yyval.atributos).tipo = (yyvsp[-1].atributos).tipo; (yyval.atributos).es_direccion = (yyvsp[-1].atributos).es_direccion; fprintf(yyout, ";R82:\t<exp> ::= ( <exp> )\n"); }
+#line 2181 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 61:
-#line 458 "alfa.y" /* yacc.c:1646  */
+#line 625 "alfa.y" /* yacc.c:1646  */
+    { no_not = 0; (yyval.atributos).tipo = (yyvsp[-1].atributos).tipo; (yyval.atributos).es_direccion = (yyvsp[-1].atributos).es_direccion; fprintf(yyout, ";R83:\t<exp> ::= ( <comparacion> )\n"); }
+#line 2187 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 62:
+#line 626 "alfa.y" /* yacc.c:1646  */
+    { (yyval.atributos).tipo = (yyvsp[0].atributos).tipo; (yyval.atributos).es_direccion = (yyvsp[0].atributos).es_direccion; fprintf(yyout, ";R85:\t<exp> ::= <elemento_vector>\n"); }
+#line 2193 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 63:
+#line 627 "alfa.y" /* yacc.c:1646  */
     { 
                 
                 
@@ -2030,99 +2207,200 @@ yyreduce:
                 
                 llamarFuncion(yyout, $1.lexema, found->numero_parametros);*/
                 
-                fprintf(yyout, ";R88:\t<exp> ::= <identicador> ( <lista_expresiones> )\n"); }
-#line 2035 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 62:
-#line 473 "alfa.y" /* yacc.c:1646  */
-    { fprintf(yyout, ";R89:\t<lista_expresiones> ::= <exp> <resto_lista_expresiones>\n"); }
-#line 2041 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 63:
-#line 474 "alfa.y" /* yacc.c:1646  */
-    { fprintf(yyout, ";R90:\t<lista_expresiones> ::= \n"); }
-#line 2047 "y.tab.c" /* yacc.c:1646  */
+                fprintf(yyout, ";R88:\t<exp> ::= <identicador> ( <lista_expresiones> )\n"); 
+}
+#line 2213 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 64:
-#line 476 "alfa.y" /* yacc.c:1646  */
-    {fprintf(yyout, ";R91:\t<resto_lista_expresiones> ::= , <exp> <resto_lista_expresiones>\n");}
-#line 2053 "y.tab.c" /* yacc.c:1646  */
+#line 643 "alfa.y" /* yacc.c:1646  */
+    { fprintf(yyout, ";R89:\t<lista_expresiones> ::= <exp> <resto_lista_expresiones>\n"); }
+#line 2219 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 65:
-#line 477 "alfa.y" /* yacc.c:1646  */
-    {fprintf(yyout, ";R92:\t<resto_lista_expresiones> ::= \n"); }
-#line 2059 "y.tab.c" /* yacc.c:1646  */
+#line 644 "alfa.y" /* yacc.c:1646  */
+    { fprintf(yyout, ";R90:\t<lista_expresiones> ::= \n"); 
+}
+#line 2226 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 66:
-#line 479 "alfa.y" /* yacc.c:1646  */
-    {
-        
-        /**igual(FILE *fpasm, int es_variable1, int es_variable2, int etiqueta)*/
-        fprintf(yyout, ";R93:\t<comparacion> ::= <exp> == <exp>\n"); }
-#line 2068 "y.tab.c" /* yacc.c:1646  */
+#line 647 "alfa.y" /* yacc.c:1646  */
+    {fprintf(yyout, ";R91:\t<resto_lista_expresiones> ::= , <exp> <resto_lista_expresiones>\n");}
+#line 2232 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 67:
-#line 483 "alfa.y" /* yacc.c:1646  */
-    { fprintf(yyout, ";R94:\t<comparacion> ::= <exp> != <exp>\n"); }
-#line 2074 "y.tab.c" /* yacc.c:1646  */
+#line 648 "alfa.y" /* yacc.c:1646  */
+    {fprintf(yyout, ";R92:\t<resto_lista_expresiones> ::= \n"); 
+}
+#line 2239 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 68:
-#line 484 "alfa.y" /* yacc.c:1646  */
-    { fprintf(yyout, ";R95:\t<comparacion> ::= <exp> <= <exp>\n"); }
-#line 2080 "y.tab.c" /* yacc.c:1646  */
+#line 651 "alfa.y" /* yacc.c:1646  */
+    {
+        if ((yyvsp[-2].atributos).tipo == (yyvsp[0].atributos).tipo && (yyvsp[-2].atributos).tipo == INT){
+                (yyval.atributos).es_direccion = 0;
+                (yyval.atributos).tipo = BOOLEAN;
+                
+                igual(yyout, (yyvsp[-2].atributos).es_direccion, (yyvsp[0].atributos).es_direccion, tag);
+                tag++;
+
+                fprintf(yyout, ";R93:\t<comparacion> ::= <exp> == <exp>\n"); 
+
+        }
+        else {
+                fprintf(stdout, "Semantic Error (93) different types\n");
+                error = 1;
+                return -1;
+        }
+}
+#line 2261 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 69:
-#line 485 "alfa.y" /* yacc.c:1646  */
-    { fprintf(yyout, ";R96:\t<comparacion> ::= <exp> >= <exp>\n"); }
-#line 2086 "y.tab.c" /* yacc.c:1646  */
+#line 668 "alfa.y" /* yacc.c:1646  */
+    { 
+
+                        if((yyvsp[-2].atributos).tipo == (yyvsp[0].atributos).tipo && (yyvsp[-2].atributos).tipo == INT) {
+                                distinto(yyout, (yyvsp[-2].atributos).es_direccion, (yyvsp[0].atributos).es_direccion, tag);
+                                tag++;
+
+                                (yyval.atributos).es_direccion = 0;
+                                (yyval.atributos).tipo = BOOLEAN;
+                
+                                fprintf(yyout, ";R94:\t<comparacion> ::= <exp> != <exp>\n");
+                        }
+                        else {
+                                fprintf(stdout, "Semantic Error (94) types dont match\n");
+                                error = -1;
+                                return -1;
+                        }
+                }
+#line 2283 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 70:
-#line 486 "alfa.y" /* yacc.c:1646  */
-    { fprintf(yyout, ";R97:\t<comparacion> ::= <exp> < <exp>\n"); }
-#line 2092 "y.tab.c" /* yacc.c:1646  */
+#line 685 "alfa.y" /* yacc.c:1646  */
+    {
+                        
+                         if((yyvsp[-2].atributos).tipo == (yyvsp[0].atributos).tipo && (yyvsp[-2].atributos).tipo == INT) {
+                                menor_igual(yyout, (yyvsp[-2].atributos).es_direccion, (yyvsp[0].atributos).es_direccion, tag);
+                                tag++;
+                                
+                                (yyval.atributos).es_direccion = 0;
+                                (yyval.atributos).tipo = BOOLEAN;
+                
+                                     
+                                fprintf(yyout, ";R95:\t<comparacion> ::= <exp> <= <exp>\n"); 
+                        }
+                        else {
+                                fprintf(stdout, "Semantic Error (95) types dont match\n");
+                                error = -1;
+                                return -1;
+                        }
+                }
+#line 2306 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 71:
-#line 487 "alfa.y" /* yacc.c:1646  */
-    { fprintf(yyout, ";R98:\t<comparacion> ::= <exp> > <exp>\n"); }
-#line 2098 "y.tab.c" /* yacc.c:1646  */
+#line 703 "alfa.y" /* yacc.c:1646  */
+    { 
+                        
+                        if((yyvsp[-2].atributos).tipo == (yyvsp[0].atributos).tipo && (yyvsp[-2].atributos).tipo == INT) {
+                                mayor_igual(yyout, (yyvsp[-2].atributos).es_direccion, (yyvsp[0].atributos).es_direccion, tag);
+                                tag++;
+                                
+                                (yyval.atributos).es_direccion = 0;
+                                (yyval.atributos).tipo = BOOLEAN;
+                
+                                     
+                                fprintf(yyout, ";R96:\t<comparacion> ::= <exp> >= <exp>\n");  
+                        }
+                        else {
+                                fprintf(stdout, "Semantic Error (96) types dont match\n");
+                                error = -1;
+                                return -1;
+                        }
+                }
+#line 2329 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 72:
-#line 489 "alfa.y" /* yacc.c:1646  */
-    { (yyval.atributos).tipo = (yyvsp[0].atributos).tipo; (yyval.atributos).es_direccion = (yyvsp[0].atributos).es_direccion; fprintf(yyout, ";R99:\t<constante> ::= <constante_logica>\n"); }
-#line 2104 "y.tab.c" /* yacc.c:1646  */
+#line 721 "alfa.y" /* yacc.c:1646  */
+    {
+                        
+                        if((yyvsp[-2].atributos).tipo == (yyvsp[0].atributos).tipo && (yyvsp[-2].atributos).tipo == INT) {
+                                menor(yyout, (yyvsp[-2].atributos).es_direccion, (yyvsp[0].atributos).es_direccion, tag);
+                                tag++;
+                                
+                                (yyval.atributos).es_direccion = 0;
+                                (yyval.atributos).tipo = BOOLEAN;
+                
+                                     
+                                fprintf(yyout, ";R97:\t<comparacion> ::= <exp> < <exp>\n"); 
+                        }
+                        else {
+                                fprintf(stdout, "Semantic Error (97) types dont match\n");
+                                error = -1;
+                                return -1;
+                        }
+                }
+#line 2352 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 73:
-#line 490 "alfa.y" /* yacc.c:1646  */
-    { (yyval.atributos).tipo = (yyvsp[0].atributos).tipo; (yyval.atributos).es_direccion = (yyvsp[0].atributos).es_direccion; fprintf(yyout, ";R100:\t<constante> ::= <constante_entera\n"); }
-#line 2110 "y.tab.c" /* yacc.c:1646  */
+#line 739 "alfa.y" /* yacc.c:1646  */
+    { 
+                        
+                         if((yyvsp[-2].atributos).tipo == (yyvsp[0].atributos).tipo && (yyvsp[-2].atributos).tipo == INT) {
+                                mayor(yyout, (yyvsp[-2].atributos).es_direccion, (yyvsp[0].atributos).es_direccion, tag);
+                                tag++;
+                                
+                                (yyval.atributos).es_direccion = 0;
+                                (yyval.atributos).tipo = BOOLEAN;
+                                     
+                               fprintf(yyout, ";R98:\t<comparacion> ::= <exp> > <exp>\n"); 
+                        }
+                        else {
+                                fprintf(stdout, "Semantic Error (98) types dont match\n");
+                                error = -1;
+                                return -1;
+                }
+}
+#line 2374 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 74:
-#line 492 "alfa.y" /* yacc.c:1646  */
-    { fprintf(yyout, ";R102:\t<constante_logica> ::= true\n"); }
-#line 2116 "y.tab.c" /* yacc.c:1646  */
+#line 757 "alfa.y" /* yacc.c:1646  */
+    { (yyval.atributos).tipo = (yyvsp[0].atributos).tipo; (yyval.atributos).es_direccion = (yyvsp[0].atributos).es_direccion; fprintf(yyout, ";R99:\t<constante> ::= <constante_logica>\n"); }
+#line 2380 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 75:
-#line 493 "alfa.y" /* yacc.c:1646  */
-    { fprintf(yyout, ";R103:\t<constante_logica> ::= false\n"); }
-#line 2122 "y.tab.c" /* yacc.c:1646  */
+#line 758 "alfa.y" /* yacc.c:1646  */
+    { (yyval.atributos).tipo = (yyvsp[0].atributos).tipo; (yyval.atributos).es_direccion = (yyvsp[0].atributos).es_direccion; fprintf(yyout, ";R100:\t<constante> ::= <constante_entera\n"); 
+}
+#line 2387 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 76:
-#line 495 "alfa.y" /* yacc.c:1646  */
+#line 761 "alfa.y" /* yacc.c:1646  */
+    { (yyval.atributos).tipo = BOOLEAN; (yyval.atributos).es_direccion = 0; fprintf(yyout, ";R102:\t<constante_logica> ::= true\n"); }
+#line 2393 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 77:
+#line 762 "alfa.y" /* yacc.c:1646  */
+    {(yyval.atributos).tipo = BOOLEAN; (yyval.atributos).es_direccion = 0; fprintf(yyout, ";R103:\t<constante_logica> ::= false\n"); 
+}
+#line 2400 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 78:
+#line 765 "alfa.y" /* yacc.c:1646  */
     {
         (yyval.atributos).tipo = INT;
         (yyval.atributos).es_direccion = 0;
@@ -2131,11 +2409,11 @@ yyreduce:
         
         fprintf(yyout, ";R104:\t<constante_entera> ::= <numero>\n"); 
 }
-#line 2135 "y.tab.c" /* yacc.c:1646  */
+#line 2413 "y.tab.c" /* yacc.c:1646  */
     break;
 
-  case 77:
-#line 504 "alfa.y" /* yacc.c:1646  */
+  case 79:
+#line 774 "alfa.y" /* yacc.c:1646  */
     {
         Hash_node node;
         int len = 0; 
@@ -2200,11 +2478,11 @@ yyreduce:
         
 
 }
-#line 2204 "y.tab.c" /* yacc.c:1646  */
+#line 2482 "y.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 2208 "y.tab.c" /* yacc.c:1646  */
+#line 2486 "y.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -2432,7 +2710,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 569 "alfa.y" /* yacc.c:1906  */
+#line 839 "alfa.y" /* yacc.c:1906  */
 
 
 void yyerror (char const *str)

@@ -25,6 +25,6 @@ pruebaSintactico.o: alfa.h y.tab.h
 
 alfa: generacion.h
 	gcc -o alfa generacion.o hash.o lex.yy.o y.tab.o pruebaSintactico.o
-
+	
 clean:
-	rm -f alfa  lex.yy.c y.tab.c y.output hash.o generacion.o pruebaSintactico.o lex.yy.o y.tab.o
+	rm -f alfa lex.yy.c y.tab.c y.output hash.o generacion.o pruebaSintactico.o lex.yy.o y.tab.o prg1
