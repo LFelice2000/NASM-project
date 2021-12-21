@@ -20,7 +20,6 @@
         int tipo_actual;
         int clase_actual;
         int tag = 0;
-        int for_tag = 0;
         int while_tag = 0;
 
         Hash_Table *global_simbols = NULL;
@@ -39,6 +38,11 @@
 
         FILE *declarations_file = NULL;
         char nombre_variable[50];
+
+        int etiqueta = 0;
+        int getiqueta = 0;
+        int etiquetas[10];
+        int cima_etiquetas = -1;
 %}
 
 %union
@@ -116,6 +120,7 @@
 %type <atributos> retorno_funcion
 %type <atributos> lista_expresiones
 %type <atributos> resto_lista_expresiones
+%type <atributos> end_else
 %type <atributos> condicional
 %type <atributos> if_exp
 %type <atributos> comparacion
@@ -355,16 +360,27 @@ elemento_vector: TOK_IDENTIFICADOR TOK_CORCHETEIZQUIERDO exp TOK_CORCHETEDERECHO
 
 condicional: if_exp sentencias TOK_LLAVEDERECHA {
         
-        ifthenelse_fin(yyout, for_tag);
+        etiqueta = etiquetas[cima_etiquetas];
+        ifthen_fin(yyout, etiqueta);
+        cima_etiquetas--;
+
 
         fprintf(yyout, ";R50\t<condicional> ::= if ( <exp> ) { <sentencias> }\n");
         
         }
-        | if_exp sentencias TOK_LLAVEDERECHA TOK_ELSE TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA {
-                ifthenelse_fin_then(yyout, for_tag);
-                
+        | if_exp sentencias TOK_LLAVEDERECHA end_else TOK_ELSE TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA {
+                etiqueta = etiquetas[cima_etiquetas];
+                ifthenelse_fin(yyout, etiqueta);
+                cima_etiquetas--;
+
                 fprintf(yyout, ";R51\t<condicional> ::= if ( <exp> ) { <sentencias> } else { <sentencias> }\n");
 };       
+
+end_else: {
+        etiqueta = etiquetas[cima_etiquetas];
+
+        ifthenelse_fin_then(yyout, etiqueta);
+};
 
 if_exp: TOK_IF TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA {
         if($3.tipo != BOOLEAN) {
@@ -373,28 +389,38 @@ if_exp: TOK_IF TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIE
                 return -1;
         }
         
-        ifthen_inicio(yyout, $3.es_direccion, for_tag);
-        for_tag++;
+        getiqueta++;
+        cima_etiquetas++;
+        etiquetas[cima_etiquetas] = getiqueta;
+        etiqueta = getiqueta;
+
+        ifthen_inicio(yyout, $3.es_direccion, etiqueta);
+
 };
 
-bucle: while_exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA {
-
+bucle: while_exp body_while sentencias TOK_LLAVEDERECHA {
+ 
         while_fin(yyout, while_tag);
         while_tag++;
 
         fprintf(yyout, ";R52:\t<bucle> ::= while( <exp> ) { <sentencias> }\n"); 
 };
 
-while_exp: TOK_WHILE TOK_PARENTESISIZQUIERDO exp {
+body_while: exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA {
         
-        if($3.tipo != BOOLEAN){
+        if($1.tipo != BOOLEAN){
                 fprintf(stdout, "Semantic Error (52) \n");
                 error = -1;
                 return -1;
         }
 
+        while_exp_pila(yyout, $1.es_direccion, while_tag);
+};
+
+while_exp: TOK_WHILE TOK_PARENTESISIZQUIERDO {
+
         while_inicio(yyout, while_tag);
-        while_exp_pila(yyout, $3.es_direccion, while_tag);
+
 };
 
 lectura: TOK_SCANF TOK_IDENTIFICADOR {

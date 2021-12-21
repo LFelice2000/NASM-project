@@ -176,7 +176,7 @@ end2:
 ;D:	{
 	pop dword eax
 	cmp eax, 0
-	je near end_if0
+	je near end_if1
 
 ;D:	printf
 ;D:	0
@@ -199,6 +199,10 @@ end2:
 ;D:	}
 ;R30:	<sentencias> ::= <sentencia>
 ;D:	else
+	jmp near fin_ifelse1
+
+
+end_if1:
 ;D:	{
 ;D:	if
 ;D:	(
@@ -273,7 +277,7 @@ end4:
 ;D:	{
 	pop dword eax
 	cmp eax, 0
-	je near end_if1
+	je near end_if2
 
 ;D:	if
 ;D:	(
@@ -311,7 +315,7 @@ end5:
 ;D:	{
 	pop dword eax
 	cmp eax, 0
-	je near end_if2
+	je near end_if3
 
 ;D:	printf
 ;D:	1
@@ -334,6 +338,10 @@ end5:
 ;D:	}
 ;R30:	<sentencias> ::= <sentencia>
 ;D:	else
+	jmp near fin_ifelse3
+
+
+end_if3:
 ;D:	{
 ;D:	printf
 ;D:	5
@@ -355,18 +363,16 @@ end5:
 ;R32:	<sentencia> ::= <sentencia_simple> ;
 ;D:	}
 ;R30:	<sentencias> ::= <sentencia>
-	jmp near fin_ifelse3
 
-
-end_if3:
-;R51	<condicional> ::= if ( <exp> ) { <sentencias> } else { <sentencias> }
+fin_ifelse3:;R51	<condicional> ::= if ( <exp> ) { <sentencias> } else { <sentencias> }
 ;R40:	<bloque> ::= <condicional>
 ;R33:	<sentencia> ::= <bloque>
 ;D:	}
 ;R30:	<sentencias> ::= <sentencia>
 ;D:	if
 
-fin_ifelse3:;R50	<condicional> ::= if ( <exp> ) { <sentencias> }
+end_if2:
+;R50	<condicional> ::= if ( <exp> ) { <sentencias> }
 ;R40:	<bloque> ::= <condicional>
 ;R33:	<sentencia> ::= <bloque>
 ;D:	(
@@ -441,7 +447,7 @@ end7:
 ;D:	{
 	pop dword eax
 	cmp eax, 0
-	je near end_if3
+	je near end_if4
 
 ;D:	if
 ;D:	(
@@ -479,7 +485,7 @@ end8:
 ;D:	{
 	pop dword eax
 	cmp eax, 0
-	je near end_if4
+	je near end_if5
 
 ;D:	printf
 ;D:	2
@@ -502,6 +508,10 @@ end8:
 ;D:	}
 ;R30:	<sentencias> ::= <sentencia>
 ;D:	else
+	jmp near fin_ifelse5
+
+
+end_if5:
 ;D:	{
 ;D:	printf
 ;D:	6
@@ -523,18 +533,16 @@ end8:
 ;R32:	<sentencia> ::= <sentencia_simple> ;
 ;D:	}
 ;R30:	<sentencias> ::= <sentencia>
-	jmp near fin_ifelse5
 
-
-end_if5:
-;R51	<condicional> ::= if ( <exp> ) { <sentencias> } else { <sentencias> }
+fin_ifelse5:;R51	<condicional> ::= if ( <exp> ) { <sentencias> } else { <sentencias> }
 ;R40:	<bloque> ::= <condicional>
 ;R33:	<sentencia> ::= <bloque>
 ;D:	}
 ;R30:	<sentencias> ::= <sentencia>
 ;D:	if
 
-fin_ifelse5:;R50	<condicional> ::= if ( <exp> ) { <sentencias> }
+end_if4:
+;R50	<condicional> ::= if ( <exp> ) { <sentencias> }
 ;R40:	<bloque> ::= <condicional>
 ;R33:	<sentencia> ::= <bloque>
 ;D:	(
@@ -609,7 +617,7 @@ end10:
 ;D:	{
 	pop dword eax
 	cmp eax, 0
-	je near end_if5
+	je near end_if6
 
 ;D:	if
 ;D:	(
@@ -647,7 +655,7 @@ end11:
 ;D:	{
 	pop dword eax
 	cmp eax, 0
-	je near end_if6
+	je near end_if7
 
 ;D:	printf
 ;D:	3
@@ -670,6 +678,10 @@ end11:
 ;D:	}
 ;R30:	<sentencias> ::= <sentencia>
 ;D:	else
+	jmp near fin_ifelse7
+
+
+end_if7:
 ;D:	{
 ;D:	printf
 ;D:	7
@@ -691,18 +703,16 @@ end11:
 ;R32:	<sentencia> ::= <sentencia_simple> ;
 ;D:	}
 ;R30:	<sentencias> ::= <sentencia>
-	jmp near fin_ifelse7
 
-
-end_if7:
-;R51	<condicional> ::= if ( <exp> ) { <sentencias> } else { <sentencias> }
+fin_ifelse7:;R51	<condicional> ::= if ( <exp> ) { <sentencias> } else { <sentencias> }
 ;R40:	<bloque> ::= <condicional>
 ;R33:	<sentencia> ::= <bloque>
 ;D:	}
 ;R30:	<sentencias> ::= <sentencia>
 ;D:	if
 
-fin_ifelse7:;R50	<condicional> ::= if ( <exp> ) { <sentencias> }
+end_if6:
+;R50	<condicional> ::= if ( <exp> ) { <sentencias> }
 ;R40:	<bloque> ::= <condicional>
 ;R33:	<sentencia> ::= <bloque>
 ;D:	(
@@ -777,7 +787,7 @@ end13:
 ;D:	{
 	pop dword eax
 	cmp eax, 0
-	je near end_if7
+	je near end_if8
 
 ;D:	if
 ;D:	(
@@ -815,7 +825,7 @@ end14:
 ;D:	{
 	pop dword eax
 	cmp eax, 0
-	je near end_if8
+	je near end_if9
 
 ;D:	printf
 ;D:	4
@@ -838,6 +848,10 @@ end14:
 ;D:	}
 ;R30:	<sentencias> ::= <sentencia>
 ;D:	else
+	jmp near fin_ifelse9
+
+
+end_if9:
 ;D:	{
 ;D:	printf
 ;D:	8
@@ -859,29 +873,24 @@ end14:
 ;R32:	<sentencia> ::= <sentencia_simple> ;
 ;D:	}
 ;R30:	<sentencias> ::= <sentencia>
-	jmp near fin_ifelse9
 
-
-end_if9:
-;R51	<condicional> ::= if ( <exp> ) { <sentencias> } else { <sentencias> }
+fin_ifelse9:;R51	<condicional> ::= if ( <exp> ) { <sentencias> } else { <sentencias> }
 ;R40:	<bloque> ::= <condicional>
 ;R33:	<sentencia> ::= <bloque>
 ;D:	}
 ;R30:	<sentencias> ::= <sentencia>
 ;D:	}
 
-fin_ifelse9:;R50	<condicional> ::= if ( <exp> ) { <sentencias> }
+end_if8:
+;R50	<condicional> ::= if ( <exp> ) { <sentencias> }
 ;R40:	<bloque> ::= <condicional>
 ;R33:	<sentencia> ::= <bloque>
 ;R30:	<sentencias> ::= <sentencia>
 ;R31:	<sentencias> ::= <sentencia> <sentencias>
 ;R31:	<sentencias> ::= <sentencia> <sentencias>
 ;R31:	<sentencias> ::= <sentencia> <sentencias>
-	jmp near fin_ifelse9
 
-
-end_if9:
-;R51	<condicional> ::= if ( <exp> ) { <sentencias> } else { <sentencias> }
+fin_ifelse1:;R51	<condicional> ::= if ( <exp> ) { <sentencias> } else { <sentencias> }
 ;R40:	<bloque> ::= <condicional>
 ;R33:	<sentencia> ::= <bloque>
 ;D:	}
