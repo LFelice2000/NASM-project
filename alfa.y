@@ -377,18 +377,24 @@ if_exp: TOK_IF TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIE
         for_tag++;
 };
 
-bucle: while_exp sentencias TOK_LLAVEDERECHA { 
+bucle: while_exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA {
+
+        while_fin(yyout, while_tag);
+        while_tag++;
+
         fprintf(yyout, ";R52:\t<bucle> ::= while( <exp> ) { <sentencias> }\n"); 
 };
 
-while_exp: TOK_WHILE TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA {
+while_exp: TOK_WHILE TOK_PARENTESISIZQUIERDO exp {
+        
         if($3.tipo != BOOLEAN){
-                fprintf(stdout, "Semantic Error (51) \n");
+                fprintf(stdout, "Semantic Error (52) \n");
                 error = -1;
                 return -1;
         }
-        /**while_inicio(yyout, $3.es_direccion, while_tag);*/
-        while_tag++;
+
+        while_inicio(yyout, while_tag);
+        while_exp_pila(yyout, $3.es_direccion, while_tag);
 };
 
 lectura: TOK_SCANF TOK_IDENTIFICADOR {
