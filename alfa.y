@@ -41,7 +41,7 @@
 
         int etiqueta = 0;
         int getiqueta = 0;
-        int etiquetas[10];
+        int etiquetas[100];
         int cima_etiquetas = -1;
 %}
 
@@ -228,14 +228,15 @@ fn_name: TOK_FUNCTION tipo TOK_IDENTIFICADOR {
                 
                 len = strlen(node.key);
                 if(add_node2HashTable(global_simbols, &node, len) == -1){
-                printf("Error inserting the node =(\n");
-                return -1;
+                        printf("Error inserting the node =(\n");
+                        error = 1;
+                        return -1;
                 }
 
-                len = strlen(node.key);
                 if(add_node2HashTable(local_simbols, &node, len) == -1){
-                printf("Error inserting the node =(\n");
-                return -1;
+                        printf("Error inserting the node =(\n");
+                        error = 1;
+                        return -1;
                 }
         }
         
@@ -249,7 +250,7 @@ fn_name: TOK_FUNCTION tipo TOK_IDENTIFICADOR {
 
 fn_declaracion: fn_name TOK_PARENTESISIZQUIERDO parametros_funcion TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA declaraciones_funcion {
         
-        declararFuncion(yyout, $3.lexema, num_variables_locales_actual);
+        declararFuncion(yyout, $1.lexema, num_variables_locales_actual);
         strcpy($$.lexema, $1.lexema);
 };
 
@@ -271,11 +272,11 @@ resto_parametros_funcion: TOK_PUNTOYCOMA parametro_funcion resto_parametros_func
 };
 
 parametro_funcion: tipo identificador { 
-        /**num_parametros_actual++;
+        num_parametros_actual++;
 
         found = get_value_from_hstable()
 
-        pos_parametro_actual++;*/
+        pos_parametro_actual++;
 
         fprintf(yyout, ";R27:\t<parametro_funcion> ::= <tipo> <identificador>\n"); 
 };
@@ -360,26 +361,21 @@ elemento_vector: TOK_IDENTIFICADOR TOK_CORCHETEIZQUIERDO exp TOK_CORCHETEDERECHO
 
 condicional: if_exp sentencias TOK_LLAVEDERECHA {
         
-        etiqueta = etiquetas[cima_etiquetas];
-        ifthen_fin(yyout, etiqueta);
-        cima_etiquetas--;
-
+        ifthen_fin(yyout, $1.etiqueta);
 
         fprintf(yyout, ";R50\t<condicional> ::= if ( <exp> ) { <sentencias> }\n");
         
         }
-        | if_exp sentencias TOK_LLAVEDERECHA end_else TOK_ELSE TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA {
-                etiqueta = etiquetas[cima_etiquetas];
-                ifthenelse_fin(yyout, etiqueta);
-                cima_etiquetas--;
+        | end_else TOK_ELSE TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA {
+                ifthenelse_fin(yyout, $1.etiqueta);
 
                 fprintf(yyout, ";R51\t<condicional> ::= if ( <exp> ) { <sentencias> } else { <sentencias> }\n");
 };       
 
-end_else: {
-        etiqueta = etiquetas[cima_etiquetas];
+end_else: if_exp sentencias TOK_LLAVEDERECHA{
+        $$.etiqueta = $1.etiqueta;
 
-        ifthenelse_fin_then(yyout, etiqueta);
+        ifthenelse_fin_then(yyout, $1.etiqueta);
 };
 
 if_exp: TOK_IF TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA {
@@ -388,13 +384,11 @@ if_exp: TOK_IF TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIE
                 error = -1;
                 return -1;
         }
-        
-        getiqueta++;
-        cima_etiquetas++;
-        etiquetas[cima_etiquetas] = getiqueta;
-        etiqueta = getiqueta;
 
         ifthen_inicio(yyout, $3.es_direccion, etiqueta);
+        $$.etiqueta=etiqueta;
+
+        etiqueta++;
 
 };
 

@@ -1,6 +1,6 @@
 CFLAGS= -pedantic -g -Wall
 
-all: y.tab.o lex.yy.o hash.o generacion.o pruebaSintactico.o alfa
+all: y.tab.o lex.yy.o hash.o generacion.o pruebaSintactico.o alfa prg1.asm prg1.o prg1
 
 lex.yy.c: alfa.l
 	flex alfa.l
@@ -26,5 +26,14 @@ pruebaSintactico.o: alfa.h y.tab.h
 alfa: generacion.h
 	gcc -o alfa generacion.o hash.o lex.yy.o y.tab.o pruebaSintactico.o
 	
+prg1.asm: 
+	./alfa funciones.alfa prg1.asm
+
+prg1.o: 
+	nasm -felf32 prg1.asm
+
+prg1: 
+	gcc -m32 -o prg1 prg1.o alfalib.o
+
 clean:
-	rm -f alfa lex.yy.c y.tab.c y.output hash.o generacion.o pruebaSintactico.o lex.yy.o y.tab.o prg1
+	rm -f alfa lex.yy.c y.tab.c hash.o generacion.o pruebaSintactico pruebaSintactico.o lex.yy.o y.tab.o prg1 alfa prg1.o prg1.asm
