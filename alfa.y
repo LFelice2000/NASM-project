@@ -90,6 +90,7 @@
 %token <atributos> TOK_FALSE
 %token TOK_ERROR
 
+%type <atributos> param_identificador
 %type <atributos> fn_name
 %type <atributos> fn_declaracion
 %type <atributos> programa
@@ -225,6 +226,7 @@ fn_name: TOK_FUNCTION tipo TOK_IDENTIFICADOR {
 
                 strcpy(node.key, $3.lexema);
                 node.value = -1;
+                node.tipo = tipo_actual;
                 
                 len = strlen(node.key);
                 if(add_node2HashTable(global_simbols, &node, len) == -1){
@@ -249,8 +251,19 @@ fn_name: TOK_FUNCTION tipo TOK_IDENTIFICADOR {
 };
 
 fn_declaracion: fn_name TOK_PARENTESISIZQUIERDO parametros_funcion TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA declaraciones_funcion {
+        if(local_scope_open){
+                len = strlen($1.lexema);
+                found = get_value_from_hstable(local_simbols, $1.lexema, len);
+                if(!found) {
+                        fprintf(stdout, "Error (22) function not declared.\n");
+                        error = 1;
+                        return -1;
+                } 
+                found->numero_parametros = num_parametros_actual; 
+        }
         
         declararFuncion(yyout, $1.lexema, num_variables_locales_actual);
+
         strcpy($$.lexema, $1.lexema);
 };
 
@@ -260,26 +273,79 @@ funcion: fn_declaracion sentencias TOK_LLAVEDERECHA {
         local_scope_open = false;
         declare_in_local = true;
 
+        len = strlen($1.lexema);
+        found = get_value_from_hstable(global_simbols, $1.lexema, len);
+        if(!found) {
+                fprintf(stdout, "Error (22) function already declared.\n");
+                error = 1;
+                return -1;
+        } 
+        found->numero_parametros = num_parametros_actual; 
+
         fprintf(yyout, ";R22:	<funcion> ::=function <tipo> <identificador> ( <parametros_funcion> ) { <declaraciones_funcion> <sentencias> }\n"); 
 };
 
-parametros_funcion: parametro_funcion resto_parametros_funcion { fprintf(yyout, ";R23:\t<parametros_funcion> ::= <parametro_funcion> <resto_parametros_funcion>\n"); }
+parametros_funcion: parametro_funcion resto_parametros_funcion { 
+
+        fprintf(yyout, ";R23:\t<parametros_funcion> ::= <parametro_funcion> <resto_parametros_funcion>\n"); }
         | { fprintf(yyout, ";R24:\t<parametros_funcion> ::= \n"); 
 };
 
-resto_parametros_funcion: TOK_PUNTOYCOMA parametro_funcion resto_parametros_funcion { fprintf(yyout, ";R25:\t<resto_parametros_funcion> ::= ; <parametro_funcion> <resto_parametros_funcion>\n"); }
+resto_parametros_funcion: TOK_PUNTOYCOMA parametro_funcion resto_parametros_funcion { 
+        fprintf(yyout, ";R25:\t<resto_parametros_funcion> ::= ; <parametro_funcion> <resto_parametros_funcion>\n"); }
         | { fprintf(yyout, ";R26:\t<resto_parametros_funcion> ::= \n"); 
 };
 
-parametro_funcion: tipo identificador { 
-        num_parametros_actual++;
+parametro_funcion: tipo param_identificador { 
 
-        found = get_value_from_hstable()
-
-        pos_parametro_actual++;
-
+        strcpy($$.lexema, $2.lexema);
         fprintf(yyout, ";R27:\t<parametro_funcion> ::= <tipo> <identificador>\n"); 
 };
+
+param_identificador: TOK_IDENTIFICADOR {
+        Hash_node node;
+        int len = 0; 
+
+        printf("clase de %s a parametro\n", $1.lexema);
+        init_hs_node(&node);
+        strcpy(node.key, $1.lexema);
+        node.value = $1.valor_entero;
+        node.tipo = tipo_actual;
+        node.categoria = PARAMETER;
+        node.posicion_parametros = pos_parametro_actual;
+        
+        if (local_scope_open){
+                len = strlen($1.lexema);
+                found = get_value_from_hstable(local_simbols, $1.lexema, len);
+                if (!found) {
+                        len = strlen(node.key);
+                        if(add_node2HashTable(local_simbols, &node, len) == -1){
+                                fprintf(stdout, "Error inserting the node =(\n");
+                                return -1;
+                        }
+
+                        /* Output: declaration correct*/
+                        fprintf(stdout, "%s\n", $1.lexema);
+                }
+
+                found = get_value_from_hstable(global_simbols, $1.lexema, len);
+                if (!found) {
+                        len = strlen(node.key);
+                        if(add_node2HashTable(global_simbols, &node, len) == -1){
+                                fprintf(stdout, "Error inserting the node =(\n");
+                                return -1;
+                        }
+
+                        /* Output: declaration correct*/
+                        fprintf(stdout, "%s\n", $1.lexema);
+                }
+        }
+
+        pos_parametro_actual++;
+        num_parametros_actual++;
+        strcpy($$.lexema, $1.lexema);
+};
+
 
 declaraciones_funcion: declaraciones { fprintf(yyout, ";R28:\t<declaraciones_funcion> ::= <declaraciones>\n"); }
         | { fprintf(yyout, ";R29:\t<declaraciones_funcion> ::= \n"); 
@@ -336,11 +402,13 @@ asignacion: TOK_IDENTIFICADOR TOK_ASIGNACION exp  {
                 return -1;
         }
 
+        printf("%s, tipo %d = %s, tipo %d\n", found->key, found->tipo, $3.lexema, $3.tipo);
         if(found->tipo != $3.tipo) {
                 fprintf(stdout, "Error (43): wrong type\n");
-                error = 1;
+                error = -1;
                 return -1;
         }
+        
 
         if($3.es_direccion == 1) {
                 asignar(yyout, $1.lexema, 1);
@@ -464,8 +532,7 @@ escritura: TOK_PRINTF exp {
 };
       
 retorno_funcion: TOK_RETURN exp {
-        retornarFuncion(yyout, 0);
-
+        retornarFuncion(yyout, $2.es_direccion);
         fprintf(yyout, ";R61:\t<retorno_funcion> ::= return <exp>\n");
 };
 
@@ -593,7 +660,8 @@ exp: exp TOK_MAS exp {
                 }  
                               
         }
-        | TOK_IDENTIFICADOR { 
+        | TOK_IDENTIFICADOR {
+
                 if(local_scope_open) {
                         len = strlen($1.lexema);
                         found = get_value_from_hstable(local_simbols, $1.lexema, len);
@@ -605,6 +673,10 @@ exp: exp TOK_MAS exp {
                                         error = -1;
                                         return -1;
                                 }
+                        }
+
+                        if(found->categoria == PARAMETER){
+                                escribirParametro(yyout, found->posicion_parametros, num_parametros_actual);
                         }
 
                 } else {
@@ -632,8 +704,12 @@ exp: exp TOK_MAS exp {
                 $$.tipo = found->tipo;
                 $$.es_direccion = 1;
                 
-                escribir_operando(yyout, $1.lexema, 1);
+                if(found->categoria != PARAMETER) {
+                        escribir_operando(yyout, $1.lexema, 1);
+                }else {
 
+                }
+                
                 fprintf(yyout, ";R80:\t<exp> ::= <identificador>\n");
         }
         | constante {
@@ -653,7 +729,7 @@ exp: exp TOK_MAS exp {
         | identificador TOK_PARENTESISIZQUIERDO lista_expresiones TOK_PARENTESISDERECHO { 
                 
                 
-                /**found = get_value_from_hstable(global_simbols, $1.lexema, strlen($1.lexema));
+                found = get_value_from_hstable(global_simbols, $1.lexema, strlen($1.lexema));
                 printf("fucnion %d\n",found->numero_parametros);
                 if(!found) {
                         fprintf(stdout, "fuction not found (88)\n");
@@ -661,7 +737,9 @@ exp: exp TOK_MAS exp {
                         return -1;
                 }
                 
-                llamarFuncion(yyout, $1.lexema, found->numero_parametros);*/
+                llamarFuncion(yyout, $1.lexema, found->numero_parametros);
+
+                $$.tipo = found->tipo;
                 
                 fprintf(yyout, ";R88:\t<exp> ::= <identicador> ( <lista_expresiones> )\n"); 
 };
@@ -817,7 +895,6 @@ identificador: TOK_IDENTIFICADOR {
                 if (!found) {
 
                         node.posicion_variable_local = pos_variable_local_actual;
-                        
                         len = strlen(node.key);
                         if(add_node2HashTable(local_simbols, &node, len) == -1){
                                 fprintf(stdout, "Error inserting the node =(\n");
@@ -841,14 +918,14 @@ identificador: TOK_IDENTIFICADOR {
                         fprintf(stdout, "Error inserting the node =(\n");
                         return -1;
                 }
-                
+
                 if(tipo_actual == BOOLEAN) {
                         declarar_variable(yyout, $1.lexema, 1, 1);
                 }
                 else if(tipo_actual == INT) {
                         declarar_variable(yyout, $1.lexema, 0, 1);
                 }
-        
+                
                 /* Output: declaration correct*/
                 fprintf(stdout, "%s\n", $1.lexema);
         
@@ -856,6 +933,7 @@ identificador: TOK_IDENTIFICADOR {
         /* Output: declaration error*/
                 fprintf(stdout, "-1\t%s\n", $1.lexema);
         }
+
 
         fprintf(yyout, ";R108:\t<identificador> ::= TOK_IDENTIFICADOR\n");
         

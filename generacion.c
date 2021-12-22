@@ -1190,7 +1190,7 @@ void declararFuncion(FILE *fd_asm, char *nombre_funcion, int num_var_loc)
         return;
     }
 
-    if (nombre_funcion == NULL || num_var_loc <= 0)
+    if (nombre_funcion == NULL || num_var_loc < 0)
     {
         printf("Error: wrong arguments\n");
         return;

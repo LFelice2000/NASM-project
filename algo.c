@@ -67,3 +67,17 @@ int main(int argc, char **argv)
     escribir_fin(fd_asm);
     
     fclose(fd_asm);
+/*
+     int len = 0; 
+
+        len = strlen($2.lexema);
+        found = get_value_from_hstable(local_simbols, $2.lexema, len);
+        if(!found) {
+                fprintf(stdout, "Error (25): undeclared parameter %s\n", $2.lexema);
+                error = 1;
+                return -1;
+        } 
+        
+        escribirParametro(yyout, found->posicion_parametros, num_parametros_actual);
+    */
+}
