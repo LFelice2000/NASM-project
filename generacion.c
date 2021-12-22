@@ -56,7 +56,7 @@ void declarar_variable(FILE *fpasm, char *nombre, int tipo, int tamano)
 
     if (nombre == NULL || tipo < 0 || tamano < 0)
     {
-        printf("Error: wrong arguments\n");
+        printf("Error: wrong arguments declarar_variable\n");
     }
 
     /*BOOLEANO*/
@@ -173,7 +173,7 @@ void escribir_operando(FILE *fpasm, char *nombre, int es_variable)
 
     if (nombre == NULL || es_variable > 1 || es_variable < 0)
     {
-        printf("Error: wrong arguments\n");
+        printf("Error: wrong arguments escribir_operando\n");
         return;
     }
 
@@ -209,7 +209,7 @@ void asignar(FILE *fpasm, char *nombre, int es_variable)
 
     if (nombre == NULL || es_variable > 1 || es_variable < 0)
     {
-        printf("Error: wrong arguments\n");
+        printf("Error: wrong arguments asignar\n");
         return;
     }
 
@@ -258,7 +258,7 @@ void sumar(FILE *fpasm, int es_variable_1, int es_variable_2)
 
     if (es_variable_1 > 1 || es_variable_1 < 0 || es_variable_2 > 1 || es_variable_2 < 0)
     {
-        printf("Error: wrong arguments\n");
+        printf("Error: wrong arguments sumar\n");
         return;
     }
 
@@ -292,7 +292,7 @@ void restar(FILE *fpasm, int es_variable_1, int es_variable_2)
 
     if (es_variable_1 > 1 || es_variable_1 < 0 || es_variable_2 > 1 || es_variable_2 < 0)
     {
-        printf("Error: wrong arguments\n");
+        printf("Error: wrong arguments restar\n");
         return;
     }
 
@@ -326,7 +326,7 @@ void multiplicar(FILE *fpasm, int es_variable_1, int es_variable_2)
 
     if (es_variable_1 > 1 || es_variable_1 < 0 || es_variable_2 > 1 || es_variable_2 < 0)
     {
-        printf("Error: wrong arguments\n");
+        printf("Error: wrong arguments multiplicar\n");
         return;
     }
 
@@ -360,7 +360,7 @@ void dividir(FILE *fpasm, int es_variable_1, int es_variable_2)
 
     if (es_variable_1 > 1 || es_variable_1 < 0 || es_variable_2 > 1 || es_variable_2 < 0)
     {
-        printf("Error: wrong arguments\n");
+        printf("Error: wrong arguments dividir\n");
         return;
     }
 
@@ -397,7 +397,7 @@ void o(FILE *fpasm, int es_variable_1, int es_variable_2)
     }
     if (es_variable_1 < 0 || es_variable_2 < 0 || es_variable_1 > 1 || es_variable_2 > 1)
     {
-        printf("Error: Wrong arguments\n");
+        printf("Error: Wrong arguments o\n");
         return;
     }
 
@@ -432,7 +432,7 @@ void y(FILE *fpasm, int es_variable_1, int es_variable_2)
 
     if (es_variable_1 < 0 || es_variable_2 < 0 || es_variable_1 > 1 || es_variable_2 > 1)
     {
-        printf("Error: Wrong arguments\n");
+        printf("Error: Wrong arguments y\n");
         return;
     }
 
@@ -467,7 +467,7 @@ void cambiar_signo(FILE *fpasm, int es_variable)
 
     if (es_variable < 0 || es_variable > 1)
     {
-        printf("Error: Wrong arguments\n");
+        printf("Error: Wrong arguments cambiar_signo\n");
         return;
     }
 
@@ -501,7 +501,7 @@ void no(FILE *fpasm, int es_variable, int cuantos_no)
 
     if (cuantos_no < 0 || es_variable > 1 || es_variable < 0)
     {
-        printf("Error: wrong arguments\n");
+        printf("Error: wrong arguments no\n");
         return;
     }
     
@@ -597,7 +597,7 @@ void igual(FILE *fpasm, int es_variable1, int es_variable2, int etiqueta)
 
     if (es_variable1 < 0 || es_variable2 < 0 || es_variable1 > 1 || es_variable2 > 1 || etiqueta < 0)
     {
-        printf("Error: Wrong arguments\n");
+        printf("Error: Wrong arguments igual\n");
         return;
     }
 
@@ -633,7 +633,7 @@ void distinto(FILE *fpasm, int es_variable1, int es_variable2, int etiqueta)
 
     if (es_variable1 < 0 || es_variable2 < 0 || es_variable1 > 1 || es_variable2 > 1 || etiqueta < 0)
     {
-        printf("Error: Wrong arguments\n");
+        printf("Error: Wrong arguments distinto\n");
         return;
     }
 
@@ -669,7 +669,7 @@ void menor_igual(FILE *fpasm, int es_variable1, int es_variable2, int etiqueta)
 
     if (es_variable1 < 0 || es_variable2 < 0 || es_variable1 > 1 || es_variable2 > 1 || etiqueta < 0)
     {
-        printf("Error: Wrong arguments\n");
+        printf("Error: Wrong arguments menor_igual\n");
         return;
     }
 
@@ -706,7 +706,7 @@ void mayor_igual(FILE *fpasm, int es_variable1, int es_variable2, int etiqueta)
 
     if (es_variable1 < 0 || es_variable2 < 0 || es_variable1 > 1 || es_variable2 > 1 || etiqueta < 0)
     {
-        printf("Error: Wrong arguments\n");
+        printf("Error: Wrong arguments mayor_igual\n");
         return;
     }
 
@@ -742,7 +742,7 @@ void menor(FILE *fpasm, int es_variable1, int es_variable2, int etiqueta)
 
     if (es_variable1 < 0 || es_variable2 < 0 || es_variable1 > 1 || es_variable2 > 1 || etiqueta < 0)
     {
-        printf("Error: Wrong arguments\n");
+        printf("Error: Wrong arguments menor\n");
         return;
     }
 
@@ -778,7 +778,7 @@ void mayor(FILE *fpasm, int es_variable1, int es_variable2, int etiqueta)
 
     if (es_variable1 < 0 || es_variable2 < 0 || es_variable1 > 1 || es_variable2 > 1 || etiqueta < 0)
     {
-        printf("Error: Wrong arguments\n");
+        printf("Error: Wrong arguments mayor\n");
         return;
     }
 
@@ -823,7 +823,7 @@ void leer(FILE *fpasm, char *nombre, int tipo)
 
     if (nombre == NULL || tipo > 1 || tipo < 0)
     {
-        printf("Error: wrong arguments\n");
+        printf("Error: wrong arguments leer\n");
         return;
     }
 
@@ -858,7 +858,7 @@ void escribir(FILE *fpasm, int es_variable, int tipo)
 
     if (es_variable > 1 || es_variable < 0 || tipo > 1 || tipo < 0)
     {
-        printf("Error: wrong arguments\n");
+        printf("Error: wrong arguments escribir\n");
         return;
     }
 
@@ -903,7 +903,7 @@ void ifthenelse_inicio(FILE *fpasm, int exp_es_variable, int etiqueta)
 
     if (exp_es_variable > 1 || exp_es_variable < 0 || etiqueta < 0)
     {
-        printf("Error: wrong arguments\n");
+        printf("Error: wrong arguments ifthenelse_inicio\n");
         return;
     }
 
@@ -938,7 +938,7 @@ void ifthen_inicio(FILE *fpasm, int exp_es_variable, int etiqueta)
 
     if (exp_es_variable > 1 || exp_es_variable < 0 || etiqueta < 0)
     {
-        printf("Error: wrong arguments\n");
+        printf("Error: wrong arguments ifthen_inicio\n");
         return;
     }
 
@@ -973,7 +973,7 @@ void ifthen_fin(FILE *fpasm, int etiqueta)
 
     if (etiqueta < 0)
     {
-        printf("Error: wrong arguments\n");
+        printf("Error: wrong arguments ifthen_fin\n");
         return;
     }
 
@@ -1001,7 +1001,7 @@ void ifthenelse_fin_then(FILE *fpasm, int etiqueta)
 
     if (etiqueta < 0)
     {
-        printf("Error: wrong arguments\n");
+        printf("Error: wrong arguments ifthenelse_fin_then\n");
         return;
     }
 
@@ -1027,7 +1027,7 @@ void ifthenelse_fin(FILE *fpasm, int etiqueta)
 
     if (etiqueta < 0)
     {
-        printf("Error: wrong arguments\n");
+        printf("Error: wrong arguments ifthenelse_fin\n");
         return;
     }
 
@@ -1054,7 +1054,7 @@ void while_inicio(FILE *fpasm, int etiqueta)
 
     if (etiqueta < 0)
     {
-        printf("Error: wrong arguments\n");
+        printf("Error: wrong arguments while_inicio\n");
         return;
     }
 
@@ -1082,7 +1082,7 @@ void while_exp_pila(FILE *fpasm, int exp_es_variable, int etiqueta)
 
     if (exp_es_variable > 1 || exp_es_variable < 0 || etiqueta < 0)
     {
-        printf("Error: wrong arguments\n");
+        printf("Error: wrong arguments while_exp_pila\n");
         return;
     }
 
@@ -1119,7 +1119,7 @@ void while_fin(FILE *fpasm, int etiqueta)
 
     if (etiqueta < 0)
     {
-        printf("Error: wrong arguments\n");
+        printf("Error: wrong arguments while_fin\n");
         return;
     }
 
@@ -1146,7 +1146,7 @@ void escribir_elemento_vector(FILE *fpasm, char *nombre_vector, int tam_max, int
     }                           
 
     if(nombre_vector == NULL || tam_max < 0 || exp_es_direccion > 1 || exp_es_direccion < 0){
-        printf("Error: wrong arguments\n");
+        printf("Error: wrong arguments escribir_elemento_vector\n");
         return;
     }
 
@@ -1160,7 +1160,7 @@ void escribir_elemento_vector(FILE *fpasm, char *nombre_vector, int tam_max, int
     fprintf(fpasm, "\tcmp eax, 0\n");
     fprintf(fpasm, "\tjl near rango_error\n");
     fprintf(fpasm, "\tcmp eax, %d\n", tam_max);
-    fprintf(fpasm, "\tjge near rango_error\n"); //aca esta el problema discutir el error
+    fprintf(fpasm, "\tjg near rango_error\n"); //aca esta el problema discutir el error
     /* vector's address in edx */
     fprintf(fpasm, "\tmov dword edx, _%s\n", nombre_vector);
 
@@ -1192,7 +1192,7 @@ void declararFuncion(FILE *fd_asm, char *nombre_funcion, int num_var_loc)
 
     if (nombre_funcion == NULL || num_var_loc < 0)
     {
-        printf("Error: wrong arguments\n");
+        printf("Error: wrong arguments declararFuncion\n");
         return;
     }
 
@@ -1213,7 +1213,7 @@ void retornarFuncion(FILE *fd_asm, int es_variable)
 
     if (fd_asm == NULL)
     {
-        printf("Error: insert an open file.\n");
+        printf("Error: insert an open file. retornarFuncion\n");
         return;
     }
 
@@ -1253,7 +1253,7 @@ void escribirParametro(FILE *fpasm, int pos_parametro, int num_total_parametros)
 
     if (pos_parametro < 0 || num_total_parametros < 0)
     {
-        printf("Error: wrong arguments\n");
+        printf("Error: wrong arguments escribirParametro\n");
         return;
     }
 
@@ -1281,7 +1281,7 @@ void escribirVariableLocal(FILE *fpasm, int posicion_variable_local)
 
     if (posicion_variable_local < 1)
     {
-        printf("Error: wrong arguments\n");
+        printf("Error: wrong arguments escribirVariableLocal\n");
         return;
     }
 
@@ -1306,7 +1306,7 @@ void asignarDestinoEnPila(FILE *fpasm, int es_variable)
 
     if (es_variable > 1 || es_variable < 0)
     {
-        printf("Error: Wrong arguments\n");
+        printf("Error: Wrong arguments asignarDestinoEnPila\n");
         return;
     }
 
@@ -1348,7 +1348,7 @@ void operandoEnPilaAArgumento(FILE *fd_asm, int es_variable)
 
     if (es_variable > 1 || es_variable < 0)
     {
-        printf("Error: Wrong arguments\n");
+        printf("Error: Wrong arguments operandoEnPilaAArgumento\n");
         return;
     }
 
@@ -1378,7 +1378,7 @@ void llamarFuncion(FILE *fd_asm, char *nombre_funcion, int num_argumentos)
 
     if (nombre_funcion == NULL || num_argumentos <= 0)
     {
-        printf("Error: wrong arguments\n");
+        printf("Error: wrong arguments llamarFuncion\n");
         return;
     }
 
@@ -1404,7 +1404,7 @@ void limpiarPila(FILE *fd_asm, int num_argumentos)
 
     if (num_argumentos <= 0)
     {
-        printf("Error: wrong arguments\n");
+        printf("Error: wrong arguments limpiarPila\n");
         return;
     }
 

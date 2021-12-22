@@ -48,7 +48,7 @@ DIGIT [0-9]
 "/" { col += yyleng; fprintf(yyout, ";D:\t/\n"); return TOK_DIVISION; }
 "*" { col += yyleng; fprintf(yyout, ";D:\t*\n"); return TOK_ASTERISCO; }
 "&&" { col += yyleng; fprintf(yyout, ";D:\t&&\n"); return TOK_AND; }
-"||" { col += yyleng; fprintf(yyout, ";D:\t||"); return TOK_OR; }
+"||" { col += yyleng; fprintf(yyout, ";D:\t||\n"); return TOK_OR; }
 "!" { col += yyleng; fprintf(yyout, ";D:\t!"); return TOK_NOT; }
 "==" { col += yyleng; fprintf(yyout, ";D:\t==\n"); return TOK_IGUAL; }
 "!=" { col += yyleng; fprintf(yyout, ";D:\t!=\n"); return TOK_DISTINTO; }

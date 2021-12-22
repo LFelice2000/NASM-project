@@ -955,7 +955,7 @@ YY_RULE_SETUP
 case 32:
 YY_RULE_SETUP
 #line 51 "alfa.l"
-{ col += yyleng; fprintf(yyout, ";D:\t||"); return TOK_OR; }
+{ col += yyleng; fprintf(yyout, ";D:\t||\n"); return TOK_OR; }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP

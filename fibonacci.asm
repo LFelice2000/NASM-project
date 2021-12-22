@@ -221,8 +221,8 @@ fin_ifelse1:
 	add esp, 4
 	push dword eax
 ;R88:	<exp> ::= <identificador> ( <lista_expresiones> )
-;D:	;
-; escribirVariableLocal: 1 (origen 1)
+;D:	;escribirVariableLocal: 1 (origen 1)
+; 
 	lea eax, [ebp - 4]
 	push dword eax
 ; asignarDestinoEnPila:

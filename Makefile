@@ -27,7 +27,7 @@ alfa: generacion.h
 	gcc -o alfa generacion.o hash.o lex.yy.o y.tab.o pruebaSintactico.o
 	
 prg1.asm: 
-	./alfa funciones.alfa prg1.asm
+	./alfa error.alfa prg1.asm
 
 prg1.o: 
 	nasm -felf32 prg1.asm

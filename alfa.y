@@ -33,6 +33,8 @@
         int pos_variable_local_actual = 0;
         int num_parametros_actual = 0;
         int pos_parametro_actual = 0;
+        int numero_de_parametros_funcion_actuales = 0;
+        int numero_de_parametros_de_funcion = 0;
 
         int contador_parametro = 0;
 
@@ -40,9 +42,9 @@
         char nombre_variable[50];
 
         int etiqueta = 0;
-        int getiqueta = 0;
-        int etiquetas[100];
-        int cima_etiquetas = -1;
+
+        int tamanio_vector_actual = 0;
+        int posicion_a_escribir = 0;
 %}
 
 %union
@@ -84,6 +86,7 @@
 %token TOK_MAYORIGUAL          
 %token TOK_MENOR 
 %token TOK_MAYOR
+
 %token <atributos> TOK_IDENTIFICADOR
 %token <atributos> TOK_CONSTANTE_ENTERA
 %token <atributos> TOK_TRUE
@@ -91,6 +94,8 @@
 %token TOK_ERROR
 
 %type <atributos> param_identificador
+%type <atributos> parametro_exp
+%type <atributos> llamada_funcion
 %type <atributos> fn_name
 %type <atributos> fn_declaracion
 %type <atributos> programa
@@ -145,6 +150,8 @@
 programa: initialize_hash TOK_MAIN TOK_LLAVEIZQUIERDA declaraciones escritura1 funciones escritura2 sentencias TOK_LLAVEDERECHA 
 {
         escribir_fin(yyout);
+
+        hash_table_delete(global_simbols);
         fprintf(yyout, ";R1:\t<programa> ::= main { <declaraciones> <funciones> <sentencias> }\n");
 };
 
@@ -189,7 +196,14 @@ clase: clase_escalar { clase_actual = ESCALAR; fprintf(yyout, ";R5:\t<clase> ::=
 clase_escalar: tipo { fprintf(yyout, ";R9:\t<clase_escalar> ::= <tipo>\n"); 
 };
 
-clase_vector: TOK_ARRAY tipo TOK_CORCHETEIZQUIERDO constante_entera TOK_CORCHETEDERECHO { fprintf(yyout, ";R15:\t<clase_vector> ::= array <tipo> [<constante_entera>]\n"); 
+clase_vector: TOK_ARRAY tipo TOK_CORCHETEIZQUIERDO constante_entera TOK_CORCHETEDERECHO { 
+        tamanio_vector_actual = $4.valor_entero;
+        if ((tamanio_vector_actual < 1 ) || (tamanio_vector_actual > MAX_TAMANIO_VECTOR)) {
+                fprintf(stdout, "Semantic error (15) vector size wrong (MAXMIMUM 64 MINIMUM 1)\n");
+                error = -1;
+                return -1;
+        }
+        fprintf(yyout, ";R15:\t<clase_vector> ::= array <tipo> [<constante_entera>]\n"); 
 };
 
 tipo: TOK_INT { tipo_actual = INT; fprintf(yyout, ";R10:\t<tipo> ::= int\n"); }
@@ -260,6 +274,7 @@ fn_declaracion: fn_name TOK_PARENTESISIZQUIERDO parametros_funcion TOK_PARENTESI
                         return -1;
                 } 
                 found->numero_parametros = num_parametros_actual; 
+                found->numero_variables_locales = num_variables_locales_actual;
         }
         
         declararFuncion(yyout, $1.lexema, num_variables_locales_actual);
@@ -306,7 +321,6 @@ param_identificador: TOK_IDENTIFICADOR {
         Hash_node node;
         int len = 0; 
 
-        printf("clase de %s a parametro\n", $1.lexema);
         init_hs_node(&node);
         strcpy(node.key, $1.lexema);
         node.value = $1.valor_entero;
@@ -323,9 +337,9 @@ param_identificador: TOK_IDENTIFICADOR {
                                 fprintf(stdout, "Error inserting the node =(\n");
                                 return -1;
                         }
-
-                        /* Output: declaration correct*/
-                        fprintf(stdout, "%s\n", $1.lexema);
+                }
+                else {
+                        fprintf(stdout, "Semantic Err");
                 }
 
                 found = get_value_from_hstable(global_simbols, $1.lexema, len);
@@ -336,8 +350,6 @@ param_identificador: TOK_IDENTIFICADOR {
                                 return -1;
                         }
 
-                        /* Output: declaration correct*/
-                        fprintf(stdout, "%s\n", $1.lexema);
                 }
         }
 
@@ -370,6 +382,8 @@ bloque: condicional { fprintf(yyout, ";R40:\t<bloque> ::= <condicional>\n");}
 };
             
 asignacion: TOK_IDENTIFICADOR TOK_ASIGNACION exp  {
+
+        printf("%s\n", $3.lexema);
         
         if(local_scope_open) {
                 len = strlen($1.lexema);
@@ -379,7 +393,6 @@ asignacion: TOK_IDENTIFICADOR TOK_ASIGNACION exp  {
                         error = 1;
                         return -1;
                 }
-        
         } else {
                 len = strlen($1.lexema);
                 found = get_value_from_hstable(global_simbols, $1.lexema, len);
@@ -402,29 +415,70 @@ asignacion: TOK_IDENTIFICADOR TOK_ASIGNACION exp  {
                 return -1;
         }
 
-        printf("%s, tipo %d = %s, tipo %d\n", found->key, found->tipo, $3.lexema, $3.tipo);
         if(found->tipo != $3.tipo) {
                 fprintf(stdout, "Error (43): wrong type\n");
                 error = -1;
                 return -1;
         }
         
-
-        if($3.es_direccion == 1) {
-                asignar(yyout, $1.lexema, 1);
+        if(!local_scope_open) {
+                if($3.es_direccion == 1) {
+                        asignar(yyout, $1.lexema, 1);
+                }
+                else {
+                        asignar(yyout, $1.lexema, 0);
+                }
         }
         else {
-                asignar(yyout, $1.lexema, 0);
+                escribirVariableLocal(yyout, found->posicion_variable_local);
+                asignarDestinoEnPila(yyout, $3.es_direccion);
         }
                        
         fprintf(yyout, ";R43:\t<asignacion> ::= <identificador> = <exp>\n"); 
         
         }        
         
-        | elemento_vector TOK_ASIGNACION  exp { fprintf(yyout, ";R44:\t<asignacion> ::= <elemento_vector> = <exp>\n"); 
+        | elemento_vector TOK_ASIGNACION  exp { 
+                char tmp[5] = "\0";
+
+                if($1.tipo != $3.tipo) {
+                        fprintf(stdout, "Error (44): wrong type\n");
+                        error = -1;
+                        return -1;
+                }
+
+                sprintf(tmp, "%d", posicion_a_escribir);
+                escribir_operando(yyout, tmp, $3.es_direccion);
+                escribir_elemento_vector(yyout, $1.lexema, (tamanio_vector_actual-1), $3.es_direccion);
+                asignarDestinoEnPila(yyout, $3.es_direccion);
+                
+                fprintf(yyout, ";R44:\t<asignacion> ::= <elemento_vector> = <exp>\n"); 
 };
 
-elemento_vector: TOK_IDENTIFICADOR TOK_CORCHETEIZQUIERDO exp TOK_CORCHETEDERECHO { fprintf(yyout, ";R48:\t<elemento_vector> ::= <identificador> [ <exp> ]\n"); 
+elemento_vector: TOK_IDENTIFICADOR TOK_CORCHETEIZQUIERDO exp TOK_CORCHETEDERECHO {
+
+        len = strlen($1.lexema);
+        found = get_value_from_hstable(global_simbols, $1.lexema, len);
+        if(!found) {
+                fprintf(stdout, "Error (48): variable %s not declared.\n", $1.lexema);
+                error = 1;
+                return -1;
+        }
+        
+        if($3.tipo != INT) {
+                fprintf(stdout, "Error (48): Vector index must be integer\n");
+                error = 1;
+                return -1;  
+        }
+        
+        $$.tipo = found->tipo;
+        $$.es_direccion = 1;
+        posicion_a_escribir = $3.valor_entero;
+        strcpy($$.lexema, $1.lexema);
+
+        escribir_elemento_vector(yyout, found->key, (tamanio_vector_actual - 1), $3.es_direccion);
+
+        fprintf(yyout, ";R48:\t<elemento_vector> ::= <identificador> [ <exp> ]\n"); 
 };
 
 condicional: if_exp sentencias TOK_LLAVEDERECHA {
@@ -494,11 +548,15 @@ lectura: TOK_SCANF TOK_IDENTIFICADOR {
                 error = -1;
                 return -1;
         }
-
+        
+        /**if(clase_actual == VECTOR || clase_actual == FUNCTION) { VERIFICAR OTRAVEZZ
+                fprintf(stdout, "Semantic error (54) we can not read a function or a vector.\n");
+        }*/
+        
         if(found->tipo == BOOLEAN){
                 leer(yyout, found->key, 1);
         }
-        else {
+        else { /*Scan int*/
                 leer(yyout, found->key, 0);
         }
        
@@ -621,7 +679,7 @@ exp: exp TOK_MAS exp {
                         fprintf(yyout, ";R77:\t<exp> ::= <exp> && <exp>\n"); 
                 }
                 else {
-                        fprintf(stdout, "Semantic Error (77) types dont match\n");
+                        fprintf(stdout, "****Semantic error in line %d\n", line);
                         error = -1;
                         return -1;
                 }
@@ -629,12 +687,12 @@ exp: exp TOK_MAS exp {
         }    
         | exp TOK_OR exp { 
                 if($1.tipo == $3.tipo && $1.tipo == BOOLEAN) {
-                       y(yyout, $1.es_direccion, $3.es_direccion);
+                       o(yyout, $1.es_direccion, $3.es_direccion);
         
                         $$.es_direccion = 0;
                         $$.tipo = BOOLEAN;
         
-                        fprintf(yyout, ";R78:\t<exp> ::= <exp> && <exp>\n");
+                        fprintf(yyout, ";R78:\t<exp> ::= <exp> || <exp>\n");
                 }
                 else {
                         fprintf(stdout, "Semantic Error (78) types dont match\n");
@@ -679,36 +737,40 @@ exp: exp TOK_MAS exp {
                                 escribirParametro(yyout, found->posicion_parametros, num_parametros_actual);
                         }
 
+                       if(found->categoria == VARIABLE) {
+                               escribirVariableLocal(yyout,found->posicion_variable_local);
+                       }
+
                 } else {
                         len = strlen($1.lexema);
                         found = get_value_from_hstable(global_simbols, $1.lexema, len);
                         if(!found) {
-                                fprintf(stdout, "Error asignacion(80) not in global table\n");
-                                error = -1;
+                                fprintf(stdout, "****Semantic error in line %d: Acces to a not declare variable (%s).\n", line, $1.lexema);
+                                error = 1;
                                 return -1;
                         }
                 }
 
                 if(found->categoria == FUNCTION) {
-                        fprintf(stdout, "Semantic error (80) bad category.\n");
+                        fprintf(stdout, "****Semantic error in line %d\n", line);
                         error = -1;
                         return -1;
                 }
 
                 if(found->categoria == VECTOR) {
-                        fprintf(stdout, "Semantic error (80) bad category.\n");
+                        fprintf(stdout, "****Semantic error in line %d\n", line);
                         error = -1;
                         return -1;
                 }
 
+                if(!local_scope_open) {
+                        if(found->categoria != PARAMETER) {
+                                escribir_operando(yyout, $1.lexema, 1);
+                        }
+                }
+               
                 $$.tipo = found->tipo;
                 $$.es_direccion = 1;
-                
-                if(found->categoria != PARAMETER) {
-                        escribir_operando(yyout, $1.lexema, 1);
-                }else {
-
-                }
                 
                 fprintf(yyout, ";R80:\t<exp> ::= <identificador>\n");
         }
@@ -720,37 +782,52 @@ exp: exp TOK_MAS exp {
 
                 sprintf(tmp, "%d", $1.valor_entero);
 
-                escribir_operando(yyout, tmp, 0);
+                escribir_operando(yyout, tmp, $1.es_direccion);
 
                 fprintf(yyout, ";R81:\t<exp> ::= <constante>\n"); }
         | TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO { $$.tipo = $2.tipo; $$.es_direccion = $2.es_direccion; fprintf(yyout, ";R82:\t<exp> ::= ( <exp> )\n"); }
         | TOK_PARENTESISIZQUIERDO comparacion TOK_PARENTESISDERECHO { no_not = 0; $$.tipo = $2.tipo; $$.es_direccion = $2.es_direccion; fprintf(yyout, ";R83:\t<exp> ::= ( <comparacion> )\n"); }
         | elemento_vector { $$.tipo = $1.tipo; $$.es_direccion = $1.es_direccion; fprintf(yyout, ";R85:\t<exp> ::= <elemento_vector>\n"); }
-        | identificador TOK_PARENTESISIZQUIERDO lista_expresiones TOK_PARENTESISDERECHO { 
-                
-                
-                found = get_value_from_hstable(global_simbols, $1.lexema, strlen($1.lexema));
-                printf("fucnion %d\n",found->numero_parametros);
-                if(!found) {
-                        fprintf(stdout, "fuction not found (88)\n");
-                        error = 1;
-                        return -1;
+        | llamada_funcion TOK_PARENTESISIZQUIERDO lista_expresiones TOK_PARENTESISDERECHO {
+
+                if(local_scope_open) {
+                        llamarFuncion(yyout, $1.lexema, num_parametros_actual);
+                }else {
+                        llamarFuncion(yyout, $1.lexema, numero_de_parametros_de_funcion);
                 }
-                
-                llamarFuncion(yyout, $1.lexema, found->numero_parametros);
 
                 $$.tipo = found->tipo;
                 
                 fprintf(yyout, ";R88:\t<exp> ::= <identicador> ( <lista_expresiones> )\n"); 
 };
 
-lista_expresiones: exp resto_lista_expresiones { fprintf(yyout, ";R89:\t<lista_expresiones> ::= <exp> <resto_lista_expresiones>\n"); }
+llamada_funcion: identificador {
+
+        found = get_value_from_hstable(global_simbols, $1.lexema, strlen($1.lexema));
+        if(!found) {
+                fprintf(stdout, "Semantic error: function %s do not exist\n", $1.lexema);
+                error = 1;
+                return -1;
+        }
+
+        numero_de_parametros_funcion_actuales = 0;
+        numero_de_parametros_de_funcion = found->numero_parametros;
+
+        strcpy($$.lexema, $1.lexema);
+};
+
+lista_expresiones: parametro_exp resto_lista_expresiones { fprintf(yyout, ";R89:\t<lista_expresiones> ::= <exp> <resto_lista_expresiones>\n"); }
         | { fprintf(yyout, ";R90:\t<lista_expresiones> ::= \n"); 
 };
 
-resto_lista_expresiones: TOK_COMA exp resto_lista_expresiones {fprintf(yyout, ";R91:\t<resto_lista_expresiones> ::= , <exp> <resto_lista_expresiones>\n");}
+resto_lista_expresiones: TOK_COMA parametro_exp resto_lista_expresiones {fprintf(yyout, ";R91:\t<resto_lista_expresiones> ::= , <exp> <resto_lista_expresiones>\n");}
         | {fprintf(yyout, ";R92:\t<resto_lista_expresiones> ::= \n"); 
 };
+
+parametro_exp: exp {
+
+        operandoEnPilaAArgumento(yyout,  $1.es_direccion);
+}
 
 comparacion: exp TOK_IGUAL exp {
         if ($1.tipo == $3.tipo && $1.tipo == INT){
@@ -859,11 +936,11 @@ comparacion: exp TOK_IGUAL exp {
 };
 
 constante: constante_logica { $$.tipo = $1.tipo; $$.es_direccion = $1.es_direccion; fprintf(yyout, ";R99:\t<constante> ::= <constante_logica>\n"); }
-                | constante_entera { $$.tipo = $1.tipo; $$.es_direccion = $1.es_direccion; fprintf(yyout, ";R100:\t<constante> ::= <constante_entera\n"); 
+                | constante_entera { $$.tipo = $1.tipo; $$.es_direccion = $1.es_direccion; $$.valor_entero=$1.valor_entero; fprintf(yyout, ";R100:\t<constante> ::= <constante_entera\n"); 
 };
 
-constante_logica: TOK_TRUE { $$.tipo = BOOLEAN; $$.es_direccion = 0; fprintf(yyout, ";R102:\t<constante_logica> ::= true\n"); }
-                | TOK_FALSE  {$$.tipo = BOOLEAN; $$.es_direccion = 0; fprintf(yyout, ";R103:\t<constante_logica> ::= false\n"); 
+constante_logica: TOK_TRUE { $$.tipo = BOOLEAN; $$.es_direccion = 0; $$.valor_entero = 1; fprintf(yyout, ";R102:\t<constante_logica> ::= true\n"); }
+                | TOK_FALSE  {$$.tipo = BOOLEAN; $$.es_direccion = 0; $$.valor_entero = 0; fprintf(yyout, ";R103:\t<constante_logica> ::= false\n"); 
 };               
 
 constante_entera: TOK_CONSTANTE_ENTERA {
@@ -887,9 +964,13 @@ identificador: TOK_IDENTIFICADOR {
         node.value = $1.valor_entero;
         node.tipo = tipo_actual;
         node.categoria = clase_actual;
+
+        if(clase_actual == VECTOR) {
+                node.tamano = tamanio_vector_actual;
+        }
                 
         if(local_scope_open) {
-
+                
                 len = strlen($1.lexema);
                 found = get_value_from_hstable(local_simbols, $1.lexema, len);
                 if (!found) {
@@ -901,8 +982,8 @@ identificador: TOK_IDENTIFICADOR {
                                 return -1;
                         }
 
-                        /* Output: declaration correct*/
-                        fprintf(stdout, "%s\n", $1.lexema);
+                        pos_variable_local_actual++;
+                        num_variables_locales_actual++;
                         declare_in_local = true;
                 }
                 else {
@@ -919,15 +1000,17 @@ identificador: TOK_IDENTIFICADOR {
                         return -1;
                 }
 
-                if(tipo_actual == BOOLEAN) {
-                        declarar_variable(yyout, $1.lexema, 1, 1);
+                if(clase_actual == VARIABLE) {
+                        if(tipo_actual == BOOLEAN) {
+                                declarar_variable(yyout, $1.lexema, 1, 1);
+                        }
+                        else if(tipo_actual == INT) {
+                                declarar_variable(yyout, $1.lexema, 0, 1);
+                        }
                 }
-                else if(tipo_actual == INT) {
-                        declarar_variable(yyout, $1.lexema, 0, 1);
+                else if (clase_actual == VECTOR) {
+                        declarar_variable(yyout, $1.lexema, 1, tamanio_vector_actual);
                 }
-                
-                /* Output: declaration correct*/
-                fprintf(stdout, "%s\n", $1.lexema);
         
         } else if(is_in_local == true || (is_in_local == false && declare_in_local == false && !found)) { /* token found*/
         /* Output: declaration error*/
